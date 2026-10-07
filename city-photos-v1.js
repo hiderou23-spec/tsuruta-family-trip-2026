@@ -20,17 +20,36 @@
       src: "https://www.u-tokai.ac.jp/tachyon/2022/02/britishcolumbia.jpg",
       alt: "UBC Vancouver campus",
       caption: "UBC Vancouver"
+    },
+    d31: {
+      src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/%E8%B2%A1%E8%B3%80%E5%AF%BA%E9%90%98%E6%A5%BC.jpg/1280px-%E8%B2%A1%E8%B3%80%E5%AF%BA%E9%90%98%E6%A5%BC.jpg",
+      alt: "除夜の鐘の鐘楼",
+      caption: "大晦日 / 除夜の鐘 · Wikimedia Commons (CC BY-SA 4.0)"
     }
   };
 
   const style=document.createElement("style");
   style.textContent=`
     .trip-photo{
-      margin:14px 0 18px;
-      border-radius:18px;
-      overflow:hidden;
-      border:1px solid var(--line,#ddd);
+      position:relative;
+      margin:18px 6px 22px;
+      padding:9px 9px 0;
+      border-radius:6px;
+      overflow:visible;
+      border:1px solid #e8e1ee;
       background:#fff;
+      box-shadow:0 10px 24px rgba(85,72,105,.12);
+      transform:rotate(-.35deg);
+    }
+    .trip-photo::before{
+      content:"";
+      position:absolute;
+      width:78px;height:22px;
+      left:50%;top:-12px;
+      transform:translateX(-50%) rotate(-2deg);
+      background:rgba(255,224,168,.78);
+      border:1px solid rgba(225,192,126,.28);
+      z-index:2;
     }
     .trip-photo img{
       display:block;
