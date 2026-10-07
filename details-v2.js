@@ -3,6 +3,132 @@
   const host=document.querySelector('.wrap');
   if(!host)return;
 
+  const detailStyle=document.createElement('style');
+  detailStyle.textContent=`
+    #tripDetailOverlay,#tripFullInfoOverlay{
+      background:
+        radial-gradient(circle at 18px 18px,rgba(169,145,220,.06) 1.5px,transparent 1.6px) 0 0/28px 28px,
+        linear-gradient(180deg,#fffaf6 0%,#f9fbff 58%,#fff 100%) !important;
+      color:#273247;
+    }
+    #tripDetailOverlay>div,#tripFullInfoOverlay>div{
+      max-width:760px !important;
+      background:transparent !important;
+    }
+    #tripDetailOverlay>div>div:first-child,
+    #tripFullInfoOverlay>div>div:first-child{
+      background:rgba(255,250,246,.94) !important;
+      border-bottom:1px solid #e9e2ed !important;
+      box-shadow:0 5px 18px rgba(83,76,110,.06);
+    }
+    #tripDetailBack,#tripFullInfoBack{
+      background:#f5f1fb !important;
+      color:#5f6d85 !important;
+      border:1px solid #e1dbea !important;
+      box-shadow:0 2px 7px rgba(76,68,104,.06);
+    }
+    #tripDetailBody,#tripFullInfoBody{
+      padding-bottom:28px;
+    }
+    #tripDetailBody>div:first-child,
+    #tripFullInfoBody>div:first-child{
+      position:relative;
+      margin:16px 14px 0;
+      padding:28px 20px 18px !important;
+      border:1px solid #e8e1eb;
+      border-radius:18px 18px 0 0;
+      background:linear-gradient(135deg,#e8f5ff 0%,#f1eaff 52%,#fff0e4 100%);
+      box-shadow:0 10px 24px rgba(82,76,110,.08);
+    }
+    #tripDetailBody>div:first-child::before,
+    #tripFullInfoBody>div:first-child::before{
+      content:"";
+      position:absolute;
+      left:24px;top:-9px;
+      width:70px;height:18px;
+      transform:rotate(-4deg);
+      background:rgba(255,228,159,.78);
+      border:1px solid rgba(220,188,118,.25);
+    }
+    #tripDetailBody h1,#tripFullInfoBody h1{
+      color:#273247 !important;
+      letter-spacing:-.025em;
+    }
+    #tripDetailBody>div[style*="background:#f1f1f4"],
+    #tripFullInfoBody>div[style*="background:#f1f1f4"]{
+      margin:0 14px !important;
+      padding:9px 20px !important;
+      background:#f7f3fb !important;
+      color:#766d86 !important;
+      border-left:1px solid #e8e1eb;
+      border-right:1px solid #e8e1eb;
+      letter-spacing:.05em;
+    }
+    #tripDetailBody figure{
+      margin:0 22px 20px !important;
+      padding:9px 9px 0 !important;
+      border-radius:6px !important;
+      overflow:visible !important;
+      border:1px solid #e8e1ee !important;
+      background:#fff !important;
+      box-shadow:0 10px 24px rgba(85,72,105,.12);
+      transform:rotate(-.25deg);
+      position:relative;
+    }
+    #tripDetailBody figure::before{
+      content:"";
+      position:absolute;
+      width:72px;height:20px;
+      left:50%;top:-11px;
+      transform:translateX(-50%) rotate(-2deg);
+      background:rgba(255,224,168,.78);
+      border:1px solid rgba(225,192,126,.28);
+      z-index:2;
+    }
+    #tripDetailBody figure img{border-radius:2px}
+    #tripDetailBody .btn,#tripFullInfoBody .btn{
+      min-height:42px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:12px !important;
+      border:1px solid #ddd8e8 !important;
+      background:#fff !important;
+      color:#526077 !important;
+      box-shadow:0 3px 8px rgba(80,72,102,.05);
+      padding:8px 11px !important;
+      font-size:13px !important;
+    }
+    #tripDetailBody a[style*="color:#1683c5"]{
+      color:#607bb5 !important;
+      text-decoration:none !important;
+      font-weight:700;
+    }
+    #tripFullInfoBody>div:last-child{
+      margin:0 14px;
+      background:#fff;
+      border:1px solid #e8e1eb;
+      border-top:0;
+      border-radius:0 0 18px 18px;
+      box-shadow:0 10px 24px rgba(82,76,110,.06);
+    }
+    @media(max-width:640px){
+      #tripDetailBody>div:first-child,
+      #tripFullInfoBody>div:first-child{
+        margin:10px 10px 0;
+        padding:26px 16px 16px !important;
+      }
+      #tripDetailBody>div[style*="background:#f1f1f4"],
+      #tripFullInfoBody>div[style*="background:#f1f1f4"]{
+        margin:0 10px !important;
+        padding:8px 16px !important;
+      }
+      #tripDetailBody figure{margin:0 16px 18px !important}
+      #tripFullInfoBody>div:last-child{margin:0 10px}
+    }
+  `;
+  document.head.appendChild(detailStyle);
+
   // Hide old aggregate sections if present
   const old=document.getElementById('reservations'); if(old) old.style.display='none';
   const oldModal=document.getElementById('modal'); if(oldModal) oldModal.style.display='none';
@@ -11,7 +137,7 @@
   // Trip detail modal
   const overlay=document.createElement('div');
   overlay.id='tripDetailOverlay';
-  overlay.style.cssText='position:fixed;inset:0;z-index:1000;background:#f6f3ed;display:none;overflow:auto';
+  overlay.style.cssText='position:fixed;inset:0;z-index:1000;background:#fffaf6;display:none;overflow:auto';
   overlay.innerHTML=`
     <div style="max-width:760px;margin:0 auto;min-height:100%;background:#fff">
       <div style="position:sticky;top:0;z-index:3;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e5e5e5;padding:12px 16px;display:flex;align-items:center;gap:12px">
@@ -23,12 +149,12 @@
   document.body.appendChild(overlay);
   const fullOverlay=document.createElement('div');
   fullOverlay.id='tripFullInfoOverlay';
-  fullOverlay.style.cssText='position:fixed;inset:0;z-index:1100;background:#fff;display:none;overflow:auto';
+  fullOverlay.style.cssText='position:fixed;inset:0;z-index:1100;background:#fffaf6;display:none;overflow:auto';
   fullOverlay.innerHTML=`
     <div style="max-width:760px;margin:0 auto;min-height:100%;background:#fff">
       <div style="position:sticky;top:0;z-index:3;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid #e5e5e5;padding:12px 16px;display:flex;align-items:center;gap:12px">
         <button id="tripFullInfoBack" aria-label="戻る" style="width:44px;height:44px;border-radius:50%;border:0;background:#f1f2f2;font-size:28px;line-height:1;cursor:pointer">‹</button>
-        <div style="font-weight:700">Full info</div>
+        <div style="font-weight:700">予約メール詳細</div>
       </div>
       <div id="tripFullInfoBody"></div>
     </div>`;
@@ -39,11 +165,11 @@
     const x=(window.tripFullInfo||{})[key];
     const body=document.getElementById('tripFullInfoBody');
     if(!x){
-      body.innerHTML='<div style="padding:24px">Full infoを読み込めませんでした。ページを再読み込みしてください。</div>';
+      body.innerHTML='<div style="padding:24px">予約メール詳細を読み込めませんでした。ページを再読み込みしてください。</div>';
     }else{
       body.innerHTML=
         '<div style="padding:24px 22px 12px"><h1 style="font-size:30px;margin:0 0 6px">'+esc(x.title)+'</h1><div style="color:#6b6f72;font-size:14px">Source: '+esc(x.source)+'</div></div>'+
-        '<div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">FULL RESERVATION INFO</div>'+
+        '<div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">予約メール詳細</div>'+
         '<div style="padding:6px 22px 28px">'+
         (x.sections||[]).map(s=>'<div style="padding:15px 0;border-bottom:1px solid #eee"><div style="font-size:13px;color:#777;font-weight:700;margin-bottom:4px">'+esc(s[0])+'</div><div style="font-size:17px;line-height:1.55">'+esc(s[1])+'</div></div>').join('')+
         '<div style="margin-top:18px;font-size:12px;color:#777;line-height:1.5">元の予約メールから旅行に必要な情報を抽出して保存しています。個人Gmailへのアクセスは不要です。</div></div>';
@@ -85,7 +211,7 @@
     },
     "ZIPAIR ZG21":{
       type:"flight",title:"YVR → NRT",subtitle:"ZG21 (ZIPAIR Tokyo)",booking:"ZIPAIR ZG21",
-      dateLabel:"WED, DEC 30 – THU, DEC 31",depCity:"Vancouver",depTime:"9:30 AM",depZone:"PST",
+      dateLabel:"WED, DEC 30 – THU, DEC 31",depCity:"Vancouver",depTime:"9:30 AM",depZone:"PCT",
       arrCity:"Tokyo / Narita",arrTime:"12:45 PM",arrZone:"JST (+1 day)",duration:"10時間15分",
       terminalDep:"YVR",terminalArr:"Narita",fare:"ZIPAIR",seats:"座席詳細は未表示",
       baggage:"手荷物条件は予約内容で再確認",notes:"12/31 12:45 JST 成田到着予定。",
@@ -160,7 +286,7 @@
       <div style="padding:24px 22px 10px">
         <h1 style="font-size:34px;margin:4px 0 4px">${d.title}</h1>
         <div style="font-size:20px;margin-bottom:4px">${d.subtitle}</div>
-        <div style="font-size:18px">Confirmation <b>${reservation(d.booking)}</b></div>
+        <div style="font-size:18px">予約番号 <b>${reservation(d.booking)}</b></div>
       </div>
       <div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">${d.dateLabel}</div>
       <div style="padding:24px 24px 6px">
@@ -183,10 +309,10 @@
       </div>
       <div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px;margin-top:24px">DETAILS</div>
       <div style="padding:18px 22px;font-size:17px;line-height:1.7">
-        <div><b>Fare</b><br>${d.fare}</div>
-        <div style="margin-top:12px"><b>Seats</b><br>${d.seats}</div>
-        <div style="margin-top:12px"><b>Baggage</b><br>${d.baggage}</div>
-        <div style="margin-top:12px"><b>Notes</b><br>${d.notes}</div>
+        <div><b>運賃タイプ</b><br>${d.fare}</div>
+        <div style="margin-top:12px"><b>座席</b><br>${d.seats}</div>
+        <div style="margin-top:12px"><b>手荷物</b><br>${d.baggage}</div>
+        <div style="margin-top:12px"><b>メモ</b><br>${d.notes}</div>
         <div style="margin-top:18px">${fullInfoButton(d.booking)}</div>
         
       </div>`;
@@ -196,20 +322,20 @@
     return `
       <div style="padding:24px 22px 10px">
         <h1 style="font-size:32px;margin:4px 0 4px">${d.title}</h1>
-        <div style="font-size:18px">Confirmation <b>${reservation(d.booking)}</b></div>
+        <div style="font-size:18px">予約番号 <b>${reservation(d.booking)}</b></div>
       </div>
       <div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">${d.dateLabel}</div>
       ${heroPhotoHtml(d)}
       <div style="padding:22px;font-size:18px;line-height:1.7">
-        <div><b>Address</b><br>${d.address}</div>
+        <div><b>住所</b><br>${d.address}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
-          <div><b>Check in</b><br>${d.checkin}</div>
-          <div><b>Check out</b><br>${d.checkout}</div>
+          <div><b>チェックイン</b><br>${d.checkin}</div>
+          <div><b>チェックアウト</b><br>${d.checkout}</div>
         </div>
-        <div style="margin-top:18px"><b>Room</b><br>${d.room}</div>
-        <div style="margin-top:12px"><b>Guests</b><br>${d.guests}</div>
-        <div style="margin-top:12px"><b>Cancellation</b><br>${d.cancel}</div>
-        ${d.notes?'<div style="margin-top:12px"><b>Notes</b><br>'+d.notes+'</div>':''}
+        <div style="margin-top:18px"><b>客室</b><br>${d.room}</div>
+        <div style="margin-top:12px"><b>宿泊人数</b><br>${d.guests}</div>
+        <div style="margin-top:12px"><b>キャンセル条件</b><br>${d.cancel}</div>
+        ${d.notes?'<div style="margin-top:12px"><b>メモ</b><br>'+d.notes+'</div>':''}
         <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Maps</a>${fullInfoButton(d.booking)}</div>
       </div>`;
   }
@@ -218,14 +344,14 @@
     return `
       <div style="padding:24px 22px 10px">
         <h1 style="font-size:32px;margin:4px 0 4px">${d.title}</h1>
-        <div style="font-size:18px">Confirmation <b>${reservation(d.booking)}</b></div>
+        <div style="font-size:18px">予約番号 <b>${reservation(d.booking)}</b></div>
       </div>
       <div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">${d.dateLabel}</div>
       ${heroPhotoHtml(d)}
       <div style="padding:22px;font-size:18px;line-height:1.7">
-        <div><b>Time</b><br>${d.time}</div>
-        <div style="margin-top:12px"><b>Location</b><br>${d.location}</div>
-        <div style="margin-top:12px"><b>Details</b><br>${d.details}</div>
+        <div><b>時間</b><br>${d.time}</div>
+        <div style="margin-top:12px"><b>場所</b><br>${d.location}</div>
+        <div style="margin-top:12px"><b>内容</b><br>${d.details}</div>
         <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Maps</a>${fullInfoButton(d.booking)}</div>
       </div>`;
   }
