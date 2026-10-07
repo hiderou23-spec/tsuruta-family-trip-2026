@@ -2,7 +2,7 @@
 (function(){
   const photos = {
     d23: {
-      src: "https://www.visiteosusa.com.br/sites/default/files/styles/hero_l/public/images/hero_media_image/2025-02/16db584d-0a2b-4d99-b37f-27a5fac23628.jpeg?h=9a3d8190&itok=nCYfPN5-",
+      src: "https://assets.princess.com/is/image/princesscruises/honolulu-hawaii--shoreline-beach-hotels-mountain%3A16x9?ts=1710361271010",
       alt: "Waikiki Beach and Diamond Head",
       caption: "Honolulu / Waikīkī"
     },
@@ -17,7 +17,7 @@
       caption: "Victoria / Inner Harbour"
     },
     d29: {
-      src: "https://bm-communications-2021.sites.olt.ubc.ca/files/2021/07/MR-placeholder-1-940x897.jpg",
+      src: "https://www.u-tokai.ac.jp/tachyon/2022/02/britishcolumbia.jpg",
       alt: "UBC Vancouver campus",
       caption: "UBC Vancouver"
     }
