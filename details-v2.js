@@ -26,44 +26,44 @@
     "Delta DL198":{
       type:"flight",title:"HND → HNL",subtitle:"DL198 (Delta)",booking:"Delta DL198",
       dateLabel:"WED, DEC 23",depCity:"Tokyo / Haneda",depTime:"9:00 PM",depZone:"JST",
-      arrCity:"Honolulu",arrTime:"9:03 AM",arrZone:"HST",duration:"約7時間",
-      terminalDep:"羽田空港",terminalArr:"Honolulu",fare:"Delta Main Classic (L)",
+      arrCity:"Honolulu",arrTime:"9:03 AM",arrZone:"HST",duration:"7時間03分",
+      terminalDep:"羽田空港 Terminal 3",terminalArr:"HNL Terminal 2",fare:"Delta Main Classic (L)",
       seats:"Hidenori: 45C",baggage:"Hidenori分：受託手荷物1個・23kgまで無料の記載あり",
       notes:"家族本隊3名。変更・キャンセル条件は購入運賃規則に従う。",
-      map:"https://www.google.com/maps/search/?api=1&query=Haneda+Airport"
+      depMap:"https://maps.google.com/?q=Haneda+Airport+Terminal+3",arrMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
     },
     "Air Canada AC1783":{
       type:"flight",title:"YVR → HNL",subtitle:"AC1783 (Air Canada Rouge)",booking:"Air Canada AC1783",
       dateLabel:"WED, DEC 23",depCity:"Vancouver",depTime:"8:10 AM",depZone:"PST",
-      arrCity:"Honolulu",arrTime:"12:45 PM",arrZone:"HST",duration:"約6時間35分",
+      arrCity:"Honolulu",arrTime:"12:45 PM",arrZone:"HST",duration:"6時間35分",
       terminalDep:"YVR Terminal M",terminalArr:"HNL Terminal 2",fare:"Economy Latitude / Economy Class (B)",
       seats:"座席情報は未表示",baggage:"Air Canada運航便の手荷物規定に準拠",
       notes:"変更手数料なし。税・運賃差額は適用。",
-      map:"https://www.google.com/maps/search/?api=1&query=Vancouver+International+Airport"
+      depMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
     },
     "Air Canada AC1782":{
       type:"flight",title:"HNL → YVR",subtitle:"AC1782 (Air Canada Rouge)",booking:"Air Canada AC1782",
       dateLabel:"SUN, DEC 27",depCity:"Honolulu",depTime:"2:00 PM",depZone:"HST",
-      arrCity:"Vancouver",arrTime:"9:54 PM",arrZone:"PST",duration:"約5時間54分",
+      arrCity:"Vancouver",arrTime:"9:54 PM",arrZone:"PST",duration:"5時間54分",
       terminalDep:"HNL Terminal 2",terminalArr:"YVR Terminal M",fare:"Economy Standard / Economy Class (T)",
       seats:"25D（通路）・25E（中央）・25F（窓側）の確認あり",baggage:"Air Canada運航便の手荷物規定に準拠",
       notes:"変更は1人・片道 ¥15,800＋税・運賃差額。",
-      map:"https://www.google.com/maps/search/?api=1&query=Honolulu+International+Airport"
+      depMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2",arrMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal"
     },
     "ZIPAIR ZG21":{
       type:"flight",title:"YVR → NRT",subtitle:"ZG21 (ZIPAIR Tokyo)",booking:"ZIPAIR ZG21",
       dateLabel:"WED, DEC 30 – THU, DEC 31",depCity:"Vancouver",depTime:"9:30 AM",depZone:"PST",
-      arrCity:"Tokyo / Narita",arrTime:"12:45 PM",arrZone:"JST (+1 day)",duration:"約10時間15分",
+      arrCity:"Tokyo / Narita",arrTime:"12:45 PM",arrZone:"JST (+1 day)",duration:"10時間15分",
       terminalDep:"YVR",terminalArr:"Narita",fare:"ZIPAIR",seats:"座席詳細は未表示",
       baggage:"手荷物条件は予約内容で再確認",notes:"12/31 12:45 JST 成田到着予定。",
-      map:"https://www.google.com/maps/search/?api=1&query=Vancouver+International+Airport"
+      depMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.google.com/?q=Narita+International+Airport"
     },
     "Waikiki Shore by OUTRIGGER":{
       type:"hotel",title:"Waikiki Shore by OUTRIGGER",booking:"Waikiki Shore / Agoda",
       dateLabel:"DEC 23 – DEC 27",address:"2161 Kalia Rd, Honolulu, HI 96815",
       checkin:"3:00 PM以降",checkout:"11:00 AMまで",room:"One-Bedroom Park View",
       guests:"大人3名＋子ども1名",cancel:"予約メールのキャンセル条件に従う",
-      map:"https://www.google.com/maps/search/?api=1&query=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu"
+      map:"https://maps.google.com/?q=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu"
     },
     "Coast Coal Harbour Vancouver Hotel by APA":{
       type:"hotel",title:"Coast Coal Harbour Vancouver Hotel by APA",booking:"Coast Coal Harbour",
@@ -71,27 +71,27 @@
       checkin:"到着後",checkout:"12:00 PM",room:"Coast Two Queens",
       guests:"家族4名",cancel:"予約時の選択レート条件に従う",
       notes:"チェックイン時：写真付きID＋同名義クレジットカード",
-      map:"https://www.google.com/maps/search/?api=1&query=Coast+Coal+Harbour+Vancouver+Hotel+by+APA"
+      map:"https://maps.google.com/?q=Coast+Coal+Harbour+Vancouver+Hotel+by+APA"
     },
     "Chateau Victoria Hotel & Suites":{
       type:"hotel",title:"Chateau Victoria Hotel & Suites",booking:"Chateau Victoria / Expedia",
       dateLabel:"DEC 28 – DEC 29",address:"740 Burdett Ave, Victoria, BC V8W1B2",
       checkin:"4:00 PM – 12:00 AM",checkout:"11:00 AM想定",room:"Traditional Room / 2 Queen Beds",
       guests:"大人3名＋子ども1名",cancel:"12/27 11:59（現地）までキャンセル無料",
-      map:"https://www.google.com/maps/search/?api=1&query=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
+      map:"https://maps.google.com/?q=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
     },
     "West Coast Suites":{
       type:"hotel",title:"West Coast Suites at UBC",booking:"West Coast Suites",
       dateLabel:"DEC 29 – DEC 30",address:"5959 Student Union Blvd., Vancouver, BC V6T 1Z1",
       checkin:"4:00 PM",checkout:"11:00 AM",room:"Suite with Kitchen / King Bed & Queen Sofa Bed",
       guests:"家族4名",cancel:"到着前日16:00 PSTまでキャンセル無料、その後は初泊100%",
-      map:"https://www.google.com/maps/search/?api=1&query=West+Coast+Suites+UBC"
+      map:"https://maps.google.com/?q=West+Coast+Suites+UBC"
     },
     "Rock-A-Hula":{
       type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",
       dateLabel:"FRI, DEC 25",time:"5:30 PM",location:"Royal Hawaiian Shopping Center",
       details:"ビュッフェ＆ショー（オリジナル席）・大人4名。バウチャーをスマホ表示または印刷。",
-      map:"https://www.google.com/maps/search/?api=1&query=Royal+Hawaiian+Center+Honolulu"
+      map:"https://maps.google.com/?q=Royal+Hawaiian+Center+Honolulu"
     }
   };
 
@@ -115,11 +115,11 @@
           <div>
             <div style="font-size:20px">Depart ${d.depCity}</div>
             <div style="font-size:38px;font-weight:700;line-height:1.15">${d.depTime} <span style="font-size:22px;font-weight:400">${d.depZone}</span></div>
-            <div style="margin-top:12px;color:#1683c5;font-size:18px">${d.terminalDep}</div>
+            <div style="margin-top:12px;font-size:18px"><a href="${d.depMap}" target="_blank" rel="noopener" style="color:#1683c5;text-decoration:none">${d.terminalDep}　📍 Map</a></div>
             <div style="text-align:center;color:#666;margin:34px 0;font-size:20px">Duration <b style="color:#222">${d.duration}</b></div>
             <div style="font-size:20px">Arrive ${d.arrCity}</div>
             <div style="font-size:38px;font-weight:700;line-height:1.15">${d.arrTime} <span style="font-size:22px;font-weight:400">${d.arrZone}</span></div>
-            <div style="margin-top:12px;color:#1683c5;font-size:18px">${d.terminalArr}</div>
+            <div style="margin-top:12px;font-size:18px"><a href="${d.arrMap}" target="_blank" rel="noopener" style="color:#1683c5;text-decoration:none">${d.terminalArr}　📍 Map</a></div>
           </div>
         </div>
       </div>
@@ -129,7 +129,7 @@
         <div style="margin-top:12px"><b>Seats</b><br>${d.seats}</div>
         <div style="margin-top:12px"><b>Baggage</b><br>${d.baggage}</div>
         <div style="margin-top:12px"><b>Notes</b><br>${d.notes}</div>
-        <div style="margin-top:18px"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a></div>
+        
       </div>`;
   }
 
