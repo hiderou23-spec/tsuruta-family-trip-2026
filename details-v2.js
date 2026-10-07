@@ -225,6 +225,7 @@
       gallery:"https://hawaiivacationcondos.outrigger.com/hawaii/oahu/waikiki-shore-by-outrigger",
       checkin:"3:00 PM以降",checkout:"11:00 AMまで",room:"One-Bedroom Park View",
       guests:"大人3名＋子ども1名",cancel:"予約メールのキャンセル条件に従う",
+      phone:"+1 808 922 3871",email:"wsr@outrigger.com",
       map:"https://www.google.com/maps/search/?api=1&query=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu"
     },
     "Coast Coal Harbour Vancouver Hotel by APA":{
@@ -235,6 +236,7 @@
       gallery:"https://www.coasthotels.com/coast-coal-harbour-vancouver-hotel-by-apa/gallery",
       checkin:"到着後",checkout:"12:00 PM",room:"Coast Two Queens",
       guests:"予約メール：3 guests（4名利用予定なら要確認）",cancel:"予約時の選択レート条件に従う",
+      phone:"+1 604 697 0202",email:"cccinfo@coasthotels.com",
       notes:"チェックイン時：写真付きID＋同名義クレジットカード",
       map:"https://www.google.com/maps/search/?api=1&query=Coast+Coal+Harbour+Vancouver+Hotel+by+APA"
     },
@@ -246,6 +248,7 @@
       gallery:"https://chateauvictoria.com/",
       checkin:"4:00 PM – 12:00 AM",checkout:"11:00 AM",room:"Traditional Room / 2 Queen Beds",
       guests:"大人3名＋子ども1名",cancel:"12/27 11:59（現地）までキャンセル無料",
+      phone:"+1 250 382 4221",email:"reservations@chateauvictoria.com",
       map:"https://www.google.com/maps/search/?api=1&query=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
     },
     "West Coast Suites":{
@@ -256,6 +259,7 @@
       gallery:"https://www.google.com/travel/hotels/entity/ChgIhInK2Izw_4OSARoLL2cvMXY5Z3Y0aGgQAQ",
       checkin:"4:00 PM",checkout:"11:00 AM",room:"Suite with Kitchen / King Bed & Queen Sofa Bed",
       guests:"家族4名",cancel:"到着前日16:00 PSTまでキャンセル無料、その後は初泊100%",
+      phone:"+1 604 822 1000",email:"reservations@housing.ubc.ca",
       map:"https://www.google.com/maps/search/?api=1&query=West+Coast+Suites+UBC"
     },
     "Rock-A-Hula":{
@@ -328,6 +332,10 @@
       ${heroPhotoHtml(d)}
       <div style="padding:22px;font-size:18px;line-height:1.7">
         <div><b>住所</b><br>${d.address}</div>
+        <div style="margin-top:16px"><b>連絡先</b><br>
+          <a href="tel:${(d.phone||'').replace(/[^+\d]/g,'')}" style="color:#607bb5;text-decoration:none;font-weight:700">☎ ${d.phone||'—'}</a><br>
+          <a href="mailto:${d.email||''}" style="color:#607bb5;text-decoration:none;font-weight:700">✉ ${d.email||'—'}</a>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
           <div><b>チェックイン</b><br>${d.checkin}</div>
           <div><b>チェックアウト</b><br>${d.checkout}</div>
