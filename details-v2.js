@@ -24,7 +24,7 @@
 
   const data={
     "Delta DL198":{
-      type:"flight",title:"HND → HNL",subtitle:"DL198 (Delta)",booking:"Delta DL198",
+      type:"flight",title:"HND → HNL",subtitle:"DL198 (Delta)",booking:"Delta DL198",gmail:"https://mail.google.com/mail/u/0/#all/1a0d38a686f50da0",
       dateLabel:"WED, DEC 23",depCity:"Tokyo / Haneda",depTime:"9:00 PM",depZone:"JST",
       arrCity:"Honolulu",arrTime:"9:03 AM",arrZone:"HST",duration:"7時間03分",
       terminalDep:"羽田空港 Terminal 3",terminalArr:"HNL Terminal 2",fare:"Delta Main Classic (L)",
@@ -33,7 +33,7 @@
       depMap:"https://maps.google.com/?q=Haneda+Airport+Terminal+3",arrMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
     },
     "Air Canada AC1783":{
-      type:"flight",title:"YVR → HNL",subtitle:"AC1783 (Air Canada Rouge)",booking:"Air Canada AC1783",
+      type:"flight",title:"YVR → HNL",subtitle:"AC1783 (Air Canada Rouge)",booking:"Air Canada AC1783",gmail:"https://mail.google.com/mail/u/0/#all/1a0d3a58ec1e2a1f",
       dateLabel:"WED, DEC 23",depCity:"Vancouver",depTime:"8:10 AM",depZone:"PST",
       arrCity:"Honolulu",arrTime:"12:45 PM",arrZone:"HST",duration:"6時間35分",
       terminalDep:"YVR Terminal M",terminalArr:"HNL Terminal 2",fare:"Economy Latitude / Economy Class (B)",
@@ -42,7 +42,7 @@
       depMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
     },
     "Air Canada AC1782":{
-      type:"flight",title:"HNL → YVR",subtitle:"AC1782 (Air Canada Rouge)",booking:"Air Canada AC1782",
+      type:"flight",title:"HNL → YVR",subtitle:"AC1782 (Air Canada Rouge)",booking:"Air Canada AC1782",gmail:"https://mail.google.com/mail/u/0/#all/1a0d3b63ac64ddae",
       dateLabel:"SUN, DEC 27",depCity:"Honolulu",depTime:"2:00 PM",depZone:"HST",
       arrCity:"Vancouver",arrTime:"9:54 PM",arrZone:"PST",duration:"5時間54分",
       terminalDep:"HNL Terminal 2",terminalArr:"YVR Terminal M",fare:"Economy Standard / Economy Class (T)",
@@ -51,7 +51,7 @@
       depMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2",arrMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal"
     },
     "ZIPAIR ZG21":{
-      type:"flight",title:"YVR → NRT",subtitle:"ZG21 (ZIPAIR Tokyo)",booking:"ZIPAIR ZG21",
+      type:"flight",title:"YVR → NRT",subtitle:"ZG21 (ZIPAIR Tokyo)",booking:"ZIPAIR ZG21",gmail:"https://mail.google.com/mail/u/0/#all/1a0d8661a04f5d38",
       dateLabel:"WED, DEC 30 – THU, DEC 31",depCity:"Vancouver",depTime:"9:30 AM",depZone:"PST",
       arrCity:"Tokyo / Narita",arrTime:"12:45 PM",arrZone:"JST (+1 day)",duration:"10時間15分",
       terminalDep:"YVR",terminalArr:"Narita",fare:"ZIPAIR",seats:"座席詳細は未表示",
@@ -59,14 +59,14 @@
       depMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.google.com/?q=Narita+International+Airport"
     },
     "Waikiki Shore by OUTRIGGER":{
-      type:"hotel",title:"Waikiki Shore by OUTRIGGER",booking:"Waikiki Shore / Agoda",
+      type:"hotel",title:"Waikiki Shore by OUTRIGGER",booking:"Waikiki Shore / Agoda",gmail:"https://mail.google.com/mail/u/0/#all/1a0c43af8f2fe41b",
       dateLabel:"DEC 23 – DEC 27",address:"2161 Kalia Rd, Honolulu, HI 96815",
       checkin:"3:00 PM以降",checkout:"11:00 AMまで",room:"One-Bedroom Park View",
       guests:"大人3名＋子ども1名",cancel:"予約メールのキャンセル条件に従う",
       map:"https://maps.google.com/?q=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu"
     },
     "Coast Coal Harbour Vancouver Hotel by APA":{
-      type:"hotel",title:"Coast Coal Harbour Vancouver Hotel by APA",booking:"Coast Coal Harbour",
+      type:"hotel",title:"Coast Coal Harbour Vancouver Hotel by APA",booking:"Coast Coal Harbour",gmail:"https://mail.google.com/mail/u/0/#all/1a0c48366e404b7d",
       dateLabel:"DEC 27 – DEC 28",address:"1180 West Hastings Street, Vancouver, BC V6E 4R5",
       checkin:"到着後",checkout:"12:00 PM",room:"Coast Two Queens",
       guests:"家族4名",cancel:"予約時の選択レート条件に従う",
@@ -74,21 +74,21 @@
       map:"https://maps.google.com/?q=Coast+Coal+Harbour+Vancouver+Hotel+by+APA"
     },
     "Chateau Victoria Hotel & Suites":{
-      type:"hotel",title:"Chateau Victoria Hotel & Suites",booking:"Chateau Victoria / Expedia",
+      type:"hotel",title:"Chateau Victoria Hotel & Suites",booking:"Chateau Victoria / Expedia",gmail:"https://mail.google.com/mail/u/0/#all/1a0e76d57dff0cec",
       dateLabel:"DEC 28 – DEC 29",address:"740 Burdett Ave, Victoria, BC V8W1B2",
       checkin:"4:00 PM – 12:00 AM",checkout:"11:00 AM想定",room:"Traditional Room / 2 Queen Beds",
       guests:"大人3名＋子ども1名",cancel:"12/27 11:59（現地）までキャンセル無料",
       map:"https://maps.google.com/?q=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
     },
     "West Coast Suites":{
-      type:"hotel",title:"West Coast Suites at UBC",booking:"West Coast Suites",
+      type:"hotel",title:"West Coast Suites at UBC",booking:"West Coast Suites",gmail:"https://mail.google.com/mail/u/0/#all/1a0c454021cf5294",
       dateLabel:"DEC 29 – DEC 30",address:"5959 Student Union Blvd., Vancouver, BC V6T 1Z1",
       checkin:"4:00 PM",checkout:"11:00 AM",room:"Suite with Kitchen / King Bed & Queen Sofa Bed",
       guests:"家族4名",cancel:"到着前日16:00 PSTまでキャンセル無料、その後は初泊100%",
       map:"https://maps.google.com/?q=West+Coast+Suites+UBC"
     },
     "Rock-A-Hula":{
-      type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",
+      type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",gmail:"https://mail.google.com/mail/u/0/#all/1a0db63c32f62f91",
       dateLabel:"FRI, DEC 25",time:"5:30 PM",location:"Royal Hawaiian Shopping Center",
       details:"ビュッフェ＆ショー（オリジナル席）・大人4名。バウチャーをスマホ表示または印刷。",
       map:"https://maps.google.com/?q=Royal+Hawaiian+Center+Honolulu"
@@ -150,7 +150,7 @@
         <div style="margin-top:12px"><b>Guests</b><br>${d.guests}</div>
         <div style="margin-top:12px"><b>Cancellation</b><br>${d.cancel}</div>
         ${d.notes?'<div style="margin-top:12px"><b>Notes</b><br>'+d.notes+'</div>':''}
-        <div style="margin-top:20px"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a></div>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a>${d.gmail?'<a href="'+d.gmail+'" target="_blank" class="btn">✉️ Gmailで元メールを開く</a>':''}</div>
       </div>`;
   }
 
