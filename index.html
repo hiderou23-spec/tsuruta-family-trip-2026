@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261007-2230-themeb">
+<html lang="ja" data-build="20261007-2240-scrapbook">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -73,107 +73,143 @@
 
 <style id="theme-b-light-travel">
 :root{
-  --bg:#f6f9ff;
-  --card:#ffffff;
-  --text:#24324a;
-  --muted:#6f7b91;
-  --line:#dce5f2;
-  --accent:#6aaee8;
-  --accent2:#9b8cff;
-  --accent3:#f2b8d4;
-  --warn:#b67a2b;
-  --next:#fff8d8;
+  --bg:#fffaf6;
+  --card:#fffefa;
+  --text:#273247;
+  --muted:#788096;
+  --line:#e6dfeb;
+  --accent:#7eaee8;
+  --accent2:#aa91dc;
+  --accent3:#efb6c9;
+  --warn:#b7792d;
+  --next:#fff4c9;
 }
 body{
   background:
-    radial-gradient(circle at top left, rgba(191,226,255,.40), transparent 34%),
-    linear-gradient(180deg,#f8fbff 0%,#f7f5ff 42%,#fff 100%);
+    radial-gradient(circle at 18px 18px, rgba(169,145,220,.08) 1.5px, transparent 1.6px) 0 0/28px 28px,
+    linear-gradient(180deg,#fffaf6 0%,#f9fbff 55%,#fff 100%);
   color:var(--text);
 }
 .hero{
+  position:relative;
+  overflow:hidden;
   background:
-    linear-gradient(135deg,#dff4ff 0%,#eaf0ff 46%,#f3e8ff 100%) !important;
-  color:#26364f !important;
-  border:1px solid rgba(160,190,225,.55);
-  box-shadow:0 10px 30px rgba(75,120,170,.10);
+    radial-gradient(circle at 88% 18%,rgba(255,255,255,.75) 0 8%,transparent 9%),
+    linear-gradient(135deg,#cfeeff 0%,#e4e5ff 43%,#f2dff5 72%,#ffe9d6 100%) !important;
+  color:#28344c !important;
+  border:1px solid #ded8ec;
+  box-shadow:0 12px 28px rgba(82,76,117,.13);
 }
-.hero p{color:#53637c}
-.hero .legend{margin-top:14px}
+.hero::before{
+  content:"TRAVEL JOURNAL";
+  position:absolute;
+  left:-14px;top:13px;
+  transform:rotate(-7deg);
+  padding:4px 22px;
+  background:rgba(255,240,179,.88);
+  color:#7a6750;
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.16em;
+  box-shadow:0 2px 5px rgba(80,70,50,.08);
+}
+.hero::after{
+  content:"✈︎  ♡  ✦";
+  position:absolute;
+  right:20px;bottom:14px;
+  color:rgba(118,101,164,.55);
+  font-size:18px;
+  letter-spacing:7px;
+}
+.hero h1{
+  font-weight:800;
+  letter-spacing:-.025em;
+  text-shadow:0 1px 0 rgba(255,255,255,.75);
+}
+.hero p{color:#58647c}
 .update-stamp{
   background:rgba(255,255,255,.72) !important;
-  color:#52647d !important;
-  border:1px solid rgba(160,190,225,.42);
+  color:#59677f !important;
+  border:1px solid rgba(178,171,214,.42);
   opacity:1 !important;
+  box-shadow:0 4px 10px rgba(90,84,125,.06);
 }
-.badge.ok{
-  background:#e5f6f5 !important;
-  color:#24746d !important;
-}
-.badge.plan{
-  background:#eef2ff !important;
-  color:#5963a4 !important;
-}
-.badge.warn{
-  background:#fff1de !important;
-  color:#9a6121 !important;
-}
+.badge{border:1px solid rgba(255,255,255,.8)}
+.badge.ok{background:#dff5f2 !important;color:#287369 !important}
+.badge.plan{background:#edf1ff !important;color:#6269a3 !important}
+.badge.warn{background:#fff0dc !important;color:#9c6423 !important}
 .navwrap{
-  background:rgba(248,251,255,.93) !important;
-  border-bottom:1px solid #e3eaf4 !important;
+  background:rgba(255,250,246,.94) !important;
+  border-bottom:1px solid #eee7ef !important;
 }
 .nav a{
-  background:rgba(255,255,255,.92) !important;
-  border-color:#dbe5f2 !important;
-  color:#4d5b72 !important;
+  background:#fff !important;
+  border:1px solid #e2dceb !important;
+  color:#526077 !important;
+  box-shadow:0 3px 8px rgba(88,78,112,.04);
 }
+.nav a:nth-child(4n+1){background:#f4fbff !important}
+.nav a:nth-child(4n+2){background:#fff6fa !important}
+.nav a:nth-child(4n+3){background:#f7f3ff !important}
+.nav a:nth-child(4n+4){background:#fff9ea !important}
 .nav a.today{
-  background:linear-gradient(135deg,#6eb7ee,#9d8df5) !important;
+  background:linear-gradient(135deg,#82b9eb,#ad93de) !important;
   color:#fff !important;
   border-color:transparent !important;
 }
 .nav a.selected{
-  box-shadow:inset 0 0 0 2px #7aaee9 !important;
-  background:#f0f6ff !important;
+  box-shadow:inset 0 0 0 2px #91aee4,0 4px 9px rgba(105,92,145,.08) !important;
 }
 .section{
-  border-color:#e1e8f2 !important;
-  box-shadow:0 8px 24px rgba(80,110,150,.06);
+  position:relative;
+  background:rgba(255,255,255,.94) !important;
+  border:1px solid #e8e1eb !important;
+  box-shadow:0 10px 26px rgba(82,76,110,.07);
 }
-.section.today{
-  outline:3px solid rgba(110,183,238,.20) !important;
+.section::before{
+  content:"";
+  position:absolute;
+  width:54px;height:15px;
+  left:24px;top:-8px;
+  transform:rotate(-3deg);
+  background:rgba(210,235,255,.72);
+  border:1px solid rgba(174,208,230,.22);
 }
-.dot{
-  border-color:#78afe7 !important;
+.section:nth-of-type(even)::before{
+  left:auto;right:28px;
+  transform:rotate(4deg);
+  background:rgba(247,212,228,.72);
 }
-.vline{
-  background:#dbe5f2 !important;
-}
+.section h2{letter-spacing:-.018em}
+.section.today{outline:3px solid rgba(129,183,234,.18) !important}
+.dot{border-color:#86afe2 !important}
+.vline{background:#dfe5f0 !important}
 .item.next{
-  background:#fff9df !important;
-  box-shadow:inset 0 0 0 1px #f0dda1 !important;
+  background:#fff5cf !important;
+  box-shadow:inset 0 0 0 1px #eddaa0 !important;
 }
 .btn{
-  border-color:#dbe5f2 !important;
-  color:#4a5a74 !important;
+  border-color:#ddd9e8 !important;
   background:#fff !important;
+  color:#526077 !important;
+  box-shadow:0 2px 6px rgba(80,72,102,.04);
 }
-.btn:hover{
-  background:#f3f7ff !important;
+.trip-photo .trip-photo-caption{
+  color:#707990 !important;
+  font-style:italic;
 }
-.trip-photo{
-  border-color:#e1e8f2 !important;
-  box-shadow:0 8px 24px rgba(80,110,150,.07);
-}
+.footer{color:#8a8196 !important}
 @media(max-width:640px){
-  .hero{
-    border-radius:18px !important;
-  }
+  .hero{border-radius:18px !important}
+  .hero::before{left:-19px;top:10px;font-size:8px}
+  .hero::after{right:10px;bottom:11px;font-size:15px}
+  .section::before{left:18px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 22:30 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 22:40 JST</div>
 <div style="font-size:12px;opacity:.92">2026.12.23 – 12.31</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
@@ -250,7 +286,7 @@ body{
 <div class="item" data-ts="2026-12-30T09:30:00-08:00"><div class="time">09:30</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">ZIPAIR ZG21 出発 <span class="badge ok">確定</span></div><div class="note">YVR → NRT</div></div></div>
 </div></section>
 
-<section class="section" id="d31"><h2>12/31（木）Tokyo</h2><div class="sub">帰国</div><div class="timeline">
+<section class="section" id="d31"><h2>12/31（木）Tokyo</h2><div class="sub">帰国 · 大晦日</div><div class="timeline">
 <div class="item" data-ts="2026-12-31T12:45:00+09:00"><div class="time">12:45</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">成田空港到着 <span class="badge ok">確定</span></div><div class="actions"><a class="btn" target="_blank" href="https://maps.google.com/?q=Narita+International+Airport">📍 Maps</a></div></div></div>
 <div class="item" data-ts="2026-12-31T13:30:00+09:00"><div class="time">13:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">入国・荷物受取り</div></div></div>
 <div class="item" data-ts="2026-12-31T14:30:00+09:00"><div class="time">14:30</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">帰宅</div></div></div>
@@ -293,4 +329,9 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 const modal=document.getElementById('modal'),inp=document.getElementById('pw'),err=document.getElementById('err');function close(){modal.classList.remove('show');inp.value='';err.textContent=''}document.getElementById('unlock').onclick=()=>{modal.classList.add('show');setTimeout(()=>inp.focus(),50)};document.getElementById('cancel').onclick=close;document.getElementById('submit').onclick=async()=>{try{const d=await dec(inp.value),box=document.getElementById('reservationBox');box.innerHTML='';Object.entries(d).forEach(([n,c])=>{const e=document.createElement('div');e.className='secret';e.innerHTML='<b></b><div class="code"></div><button class="btn">コピー</button>';e.querySelector('b').textContent=n;e.querySelector('.code').textContent=c;e.querySelector('button').onclick=()=>cp(c);box.appendChild(e)});document.getElementById('unlock').style.display='none';document.getElementById('lock').style.display='inline-block';close()}catch(e){err.textContent='パスワードが違うか、暗号データを読み取れません。'}};inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('submit').click()};document.getElementById('lock').onclick=()=>{document.getElementById('reservationBox').innerHTML='';document.getElementById('lock').style.display='none';document.getElementById('unlock').style.display='inline-block'}
 })();
 </script>
-<script src="app-v2.js?v=20261007-2225-photos"></script>\n<script src="details-v2.js?v=20261007-2230-detailphotos"></script>\n<script src="tripit-list-v3.js?v=20261007-2225-photos"></script>\n<script src="version-check.js?v=20261007-2225-photos"></script>\n<script src="city-photos-v1.js?v=20261007-2235-photofix"></script>\n</body></html>
+<script src="app-v2.js?v=20261007-2240-scrapbook"></script>
+<script src="details-v2.js?v=20261007-2240-scrapbook"></script>
+<script src="tripit-list-v3.js?v=20261007-2240-scrapbook"></script>
+<script src="version-check.js?v=20261007-2240-scrapbook"></script>
+<script src="city-photos-v1.js?v=20261007-2240-scrapbook"></script>
+</body></html>
