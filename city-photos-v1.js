@@ -56,12 +56,14 @@
       width:100%;
       aspect-ratio:16/7;
       object-fit:cover;
+      filter:saturate(.88) contrast(.96) brightness(1.05);
     }
     .trip-photo .trip-photo-caption{
-      padding:7px 11px 8px;
-      font-size:12px;
-      color:#6d7472;
+      padding:8px 11px 9px;
+      font-size:11.5px;
+      color:#7e8190;
       background:#fff;
+      letter-spacing:.01em;
     }
     @media(max-width:640px){
       .trip-photo{margin:12px 0 16px;border-radius:14px}
