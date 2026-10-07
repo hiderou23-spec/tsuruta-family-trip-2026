@@ -63,7 +63,7 @@
       terminalDep:"羽田空港 Terminal 3",terminalArr:"HNL Terminal 2",fare:"Delta Main Classic (L)",
       seats:"Hidenori: 45C",baggage:"Hidenori分：受託手荷物1個・23kgまで無料の記載あり",
       notes:"家族本隊3名。変更・キャンセル条件は購入運賃規則に従う。",
-      depMap:"https://maps.google.com/?q=Haneda+Airport+Terminal+3",arrMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
+      depMap:"https://maps.apple.com/?q=Haneda+Airport+Terminal+3",arrMap:"https://maps.apple.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
     },
     "Air Canada AC1783":{
       type:"flight",title:"YVR → HNL",subtitle:"AC1783 (Air Canada Rouge)",booking:"Air Canada AC1783",
@@ -72,7 +72,7 @@
       terminalDep:"YVR Terminal M",terminalArr:"HNL Terminal 2",fare:"Economy Latitude / Economy Class (B)",
       seats:"座席情報は未表示",baggage:"Air Canada運航便の手荷物規定に準拠",
       notes:"変更手数料なし。税・運賃差額は適用。",
-      depMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
+      depMap:"https://maps.apple.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.apple.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2"
     },
     "Air Canada AC1782":{
       type:"flight",title:"HNL → YVR",subtitle:"AC1782 (Air Canada Rouge)",booking:"Air Canada AC1782",
@@ -81,7 +81,7 @@
       terminalDep:"HNL Terminal 2",terminalArr:"YVR Terminal M",fare:"Economy Standard / Economy Class (T)",
       seats:"25D（通路）・25E（中央）・25F（窓側）の確認あり",baggage:"Air Canada運航便の手荷物規定に準拠",
       notes:"変更は1人・片道 ¥15,800＋税・運賃差額。",
-      depMap:"https://maps.google.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2",arrMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal"
+      depMap:"https://maps.apple.com/?q=Daniel+K+Inouye+International+Airport+Terminal+2",arrMap:"https://maps.apple.com/?q=Vancouver+International+Airport+International+Terminal"
     },
     "ZIPAIR ZG21":{
       type:"flight",title:"YVR → NRT",subtitle:"ZG21 (ZIPAIR Tokyo)",booking:"ZIPAIR ZG21",
@@ -89,7 +89,7 @@
       arrCity:"Tokyo / Narita",arrTime:"12:45 PM",arrZone:"JST (+1 day)",duration:"10時間15分",
       terminalDep:"YVR",terminalArr:"Narita",fare:"ZIPAIR",seats:"座席詳細は未表示",
       baggage:"手荷物条件は予約内容で再確認",notes:"12/31 12:45 JST 成田到着予定。",
-      depMap:"https://maps.google.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.google.com/?q=Narita+International+Airport"
+      depMap:"https://maps.apple.com/?q=Vancouver+International+Airport+International+Terminal",arrMap:"https://maps.apple.com/?q=Narita+International+Airport"
     },
     "Waikiki Shore by OUTRIGGER":{
       type:"hotel",title:"Waikiki Shore by OUTRIGGER",booking:"Waikiki Shore / Agoda",
@@ -99,7 +99,7 @@
       gallery:"https://hawaiivacationcondos.outrigger.com/hawaii/oahu/waikiki-shore-by-outrigger",
       checkin:"3:00 PM以降",checkout:"11:00 AMまで",room:"One-Bedroom Park View",
       guests:"大人3名＋子ども1名",cancel:"予約メールのキャンセル条件に従う",
-      map:"https://maps.google.com/?q=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu"
+      map:"https://maps.apple.com/?q=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu"
     },
     "Coast Coal Harbour Vancouver Hotel by APA":{
       type:"hotel",title:"Coast Coal Harbour Vancouver Hotel by APA",booking:"Coast Coal Harbour",
@@ -110,7 +110,7 @@
       checkin:"到着後",checkout:"12:00 PM",room:"Coast Two Queens",
       guests:"家族4名",cancel:"予約時の選択レート条件に従う",
       notes:"チェックイン時：写真付きID＋同名義クレジットカード",
-      map:"https://maps.google.com/?q=Coast+Coal+Harbour+Vancouver+Hotel+by+APA"
+      map:"https://maps.apple.com/?q=Coast+Coal+Harbour+Vancouver+Hotel+by+APA"
     },
     "Chateau Victoria Hotel & Suites":{
       type:"hotel",title:"Chateau Victoria Hotel & Suites",booking:"Chateau Victoria / Expedia",
@@ -120,7 +120,7 @@
       gallery:"https://chateauvictoria.com/",
       checkin:"4:00 PM – 12:00 AM",checkout:"11:00 AM想定",room:"Traditional Room / 2 Queen Beds",
       guests:"大人3名＋子ども1名",cancel:"12/27 11:59（現地）までキャンセル無料",
-      map:"https://maps.google.com/?q=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
+      map:"https://maps.apple.com/?q=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
     },
     "West Coast Suites":{
       type:"hotel",title:"West Coast Suites at UBC",booking:"West Coast Suites",
@@ -130,7 +130,7 @@
       gallery:"https://www.google.com/travel/hotels/entity/ChgIhInK2Izw_4OSARoLL2cvMXY5Z3Y0aGgQAQ",
       checkin:"4:00 PM",checkout:"11:00 AM",room:"Suite with Kitchen / King Bed & Queen Sofa Bed",
       guests:"家族4名",cancel:"到着前日16:00 PSTまでキャンセル無料、その後は初泊100%",
-      map:"https://maps.google.com/?q=West+Coast+Suites+UBC"
+      map:"https://maps.apple.com/?q=West+Coast+Suites+UBC"
     },
     "Rock-A-Hula":{
       type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",
@@ -139,7 +139,7 @@
       photoCaption:"Rock-A-Hula / official",
       gallery:"https://www.rockahulahawaii.com/jp/gallery",
       details:"ビュッフェ＆ショー（オリジナル席）・大人4名。バウチャーをスマホ表示または印刷。",
-      map:"https://maps.google.com/?q=Royal+Hawaiian+Center+Honolulu"
+      map:"https://maps.apple.com/?q=Royal+Hawaiian+Center+Honolulu"
     }
   };
 
@@ -209,7 +209,7 @@
         <div style="margin-top:12px"><b>Guests</b><br>${d.guests}</div>
         <div style="margin-top:12px"><b>Cancellation</b><br>${d.cancel}</div>
         ${d.notes?'<div style="margin-top:12px"><b>Notes</b><br>'+d.notes+'</div>':''}
-        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a>${fullInfoButton(d.booking)}</div>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Maps</a>${fullInfoButton(d.booking)}</div>
       </div>`;
   }
 
@@ -225,7 +225,7 @@
         <div><b>Time</b><br>${d.time}</div>
         <div style="margin-top:12px"><b>Location</b><br>${d.location}</div>
         <div style="margin-top:12px"><b>Details</b><br>${d.details}</div>
-        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a>${fullInfoButton(d.booking)}</div>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Maps</a>${fullInfoButton(d.booking)}</div>
       </div>`;
   }
 
