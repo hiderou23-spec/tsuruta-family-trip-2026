@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261007-2215">
+<html lang="ja" data-build="20261007-2218">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -18,10 +18,34 @@
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}.modal.show{display:flex}.box{width:min(420px,100%);background:#fff;border-radius:16px;padding:18px}.box input{width:100%;padding:10px;border:1px solid #bbb;border-radius:9px;font:inherit;margin:8px 0}.err{color:#a33;font-size:12px;min-height:18px}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#17211f;color:#fff;padding:8px 12px;border-radius:10px;font-size:12px;opacity:0;transition:.2s}.toast.show{opacity:1}.footer{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
 @media(max-width:640px){.wrap{padding:8px 8px 38px.nav{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.nav a{padding:7px 3px;font-size:12px;min-width:0}.navwrap{padding:7px 0}}.hero{border-radius:16px;padding:18px 14px}.hero h1{font-size:23px}.section{padding:14px 11px}.cardgrid{grid-template-columns:1fr}.item{grid-template-columns:54px 16px 1fr;gap:7px}}
 </style>
+
+<style id="mobile-header-fix">
+@media(max-width:640px){
+  .hero{padding:14px 14px 18px}
+  .update-stamp{
+    position:static !important;
+    float:right;
+    margin:0 0 8px 12px;
+    max-width:155px;
+    font-size:10.5px;
+    line-height:1.35;
+    padding:6px 8px;
+  }
+  .hero h1{
+    clear:both;
+    margin-top:10px;
+    font-size:23px;
+    line-height:1.2;
+  }
+  .hero > div:first-child:not(.update-stamp){
+    padding-top:2px;
+  }
+}
+</style>
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 22:15 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 22:18 JST</div>
 <div style="font-size:12px;opacity:.92">2026.12.23 – 12.31</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
@@ -141,4 +165,4 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 const modal=document.getElementById('modal'),inp=document.getElementById('pw'),err=document.getElementById('err');function close(){modal.classList.remove('show');inp.value='';err.textContent=''}document.getElementById('unlock').onclick=()=>{modal.classList.add('show');setTimeout(()=>inp.focus(),50)};document.getElementById('cancel').onclick=close;document.getElementById('submit').onclick=async()=>{try{const d=await dec(inp.value),box=document.getElementById('reservationBox');box.innerHTML='';Object.entries(d).forEach(([n,c])=>{const e=document.createElement('div');e.className='secret';e.innerHTML='<b></b><div class="code"></div><button class="btn">コピー</button>';e.querySelector('b').textContent=n;e.querySelector('.code').textContent=c;e.querySelector('button').onclick=()=>cp(c);box.appendChild(e)});document.getElementById('unlock').style.display='none';document.getElementById('lock').style.display='inline-block';close()}catch(e){err.textContent='パスワードが違うか、暗号データを読み取れません。'}};inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('submit').click()};document.getElementById('lock').onclick=()=>{document.getElementById('reservationBox').innerHTML='';document.getElementById('lock').style.display='none';document.getElementById('unlock').style.display='inline-block'}
 })();
 </script>
-<script src="app-v2.js?v=20261007-2215"></script>\n<script src="details-v2.js?v=20261007-2215"></script>\n<script src="tripit-list-v3.js?v=20261007-2215"></script>\n<script src="version-check.js?v=1"></script>\n</body></html>
+<script src="app-v2.js?v=20261007-2218"></script>\n<script src="details-v2.js?v=20261007-2218"></script>\n<script src="tripit-list-v3.js?v=20261007-2218"></script>\n<script src="version-check.js?v=1"></script>\n</body></html>
