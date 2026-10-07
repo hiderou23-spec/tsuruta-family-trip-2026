@@ -1,16 +1,16 @@
 
 (async function(){
   try{
-    const r=await fetch('version.json?t='+Date.now(),{cache:'no-store'});
-    if(!r.ok)return;
-    const v=await r.json();
-    const current=document.documentElement.dataset.build||'';
-    if(v.version && current && v.version!==current){
+    const here=document.documentElement.dataset.build||'';
+    const probe=location.pathname+'?__latest='+Date.now();
+    const html=await fetch(probe,{cache:'no-store'}).then(r=>r.text());
+    const m=html.match(/data-build="([^"]+)"/);
+    const latest=m&&m[1];
+    if(latest && here && latest!==here){
       const u=new URL(location.href);
-      if(u.searchParams.get('build')!==v.version){
-        u.searchParams.set('build',v.version);
-        location.replace(u.toString());
-      }
+      u.searchParams.set('build',latest);
+      u.searchParams.set('_',Date.now());
+      location.replace(u.toString());
     }
   }catch(_){}
 })();
