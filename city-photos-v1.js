@@ -75,7 +75,9 @@
     if(!section || section.querySelector(".trip-photo")) return;
     const photo=document.createElement("figure");
     photo.className="trip-photo";
-    photo.innerHTML='<img loading="lazy" decoding="async" src="'+p.src+'" alt="'+p.alt+'"><figcaption class="trip-photo-caption">'+p.caption+'</figcaption>';
+    photo.innerHTML='<img loading="lazy" decoding="async" src="'+p.src+'" alt="'+p.alt+'"><div class="trip-photo-fallback" style="display:none;min-height:150px;align-items:center;justify-content:center;padding:18px;text-align:center;color:#707990;background:#f7f7fa">写真を表示できません</div><figcaption class="trip-photo-caption">'+p.caption+'</figcaption>';
+    const img=photo.querySelector('img');
+    img.addEventListener('error',()=>{img.style.display='none';photo.querySelector('.trip-photo-fallback').style.display='flex'});
     const sub=section.querySelector(".sub");
     if(sub) sub.insertAdjacentElement("afterend",photo);
     else section.insertBefore(photo,section.querySelector(".timeline"));
