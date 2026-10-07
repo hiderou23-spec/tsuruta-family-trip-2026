@@ -15,6 +15,7 @@
     localStorage.setItem(KEY,JSON.stringify({id:m.id,label:m.label}));
     window.tripFamilyProfile={id:m.id};
     renderBadge();
+    document.dispatchEvent(new CustomEvent('tripFamilyProfileReady',{detail:{id:m.id,source:'selection'}}));
   }
 
   const style=document.createElement('style');
@@ -67,6 +68,7 @@
   if(current){
     window.tripFamilyProfile={id:current.id};
     renderBadge();
+    document.dispatchEvent(new CustomEvent('tripFamilyProfileReady',{detail:{id:current.id,source:'stored'}}));
   }else{
     setTimeout(open,400);
   }
