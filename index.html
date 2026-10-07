@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261007-2215-fullinfo">
+<html lang="ja" data-build="20261007-2220-nav2">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -42,10 +42,38 @@
   }
 }
 </style>
+
+<style id="date-nav-mobile-v2">
+@media(max-width:640px){
+  #dateNav.nav{
+    display:grid !important;
+    grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+    gap:6px !important;
+    overflow:visible !important;
+    width:100% !important;
+  }
+  #dateNav.nav a{
+    min-width:0 !important;
+    width:auto !important;
+    padding:7px 2px !important;
+    font-size:11.5px !important;
+    line-height:1.15 !important;
+    white-space:normal !important;
+    text-align:center !important;
+  }
+  #dateNav.nav a:nth-child(n+6){
+    grid-row:2;
+  }
+  #dateNav.nav a:nth-child(6){grid-column:1}
+  #dateNav.nav a:nth-child(7){grid-column:2}
+  #dateNav.nav a:nth-child(8){grid-column:3}
+  #dateNav.nav a:nth-child(9){grid-column:4}
+}
+</style>
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 22:15 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 22:20 JST</div>
 <div style="font-size:12px;opacity:.92">2026.12.23 – 12.31</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
@@ -53,7 +81,7 @@
 </header>
 <div class="status" id="liveStatus">旅行開始前です。</div>
 <div class="navwrap"><nav class="nav" id="dateNav">
-<a href="#d23" data-date="2026-12-23" data-tz="Pacific/Honolulu">12/23</a><a href="#d24" data-date="2026-12-24" data-tz="Pacific/Honolulu">12/24</a><a href="#d25" data-date="2026-12-25" data-tz="Pacific/Honolulu">12/25</a><a href="#d26" data-date="2026-12-26" data-tz="Pacific/Honolulu">12/26</a><a href="#d27" data-date="2026-12-27" data-tz="Pacific/Honolulu">12/27</a><a href="#d28" data-date="2026-12-28" data-tz="America/Vancouver">12/28</a><a href="#d29" data-date="2026-12-29" data-tz="America/Vancouver">12/29</a><a href="#d30" data-date="2026-12-30" data-tz="America/Vancouver">12/30</a><a href="#d31" data-date="2026-12-31" data-tz="Asia/Tokyo">12/31</a>
+<a href="#d23" data-date="2026-12-23" data-tz="Pacific/Honolulu">12/23 水</a><a href="#d24" data-date="2026-12-24" data-tz="Pacific/Honolulu">12/24 木</a><a href="#d25" data-date="2026-12-25" data-tz="Pacific/Honolulu">12/25 金</a><a href="#d26" data-date="2026-12-26" data-tz="Pacific/Honolulu">12/26 土</a><a href="#d27" data-date="2026-12-27" data-tz="Pacific/Honolulu">12/27 日</a><a href="#d28" data-date="2026-12-28" data-tz="America/Vancouver">12/28 月</a><a href="#d29" data-date="2026-12-29" data-tz="America/Vancouver">12/29 火</a><a href="#d30" data-date="2026-12-30" data-tz="America/Vancouver">12/30 水</a><a href="#d31" data-date="2026-12-31" data-tz="Asia/Tokyo">12/31 木</a>
 </nav></div>
 
 <section class="section" id="d23"><h2>12/23（水）東京・Vancouver → Honolulu</h2><div class="sub">家族4人がホノルルで合流</div><div class="timeline">
@@ -165,4 +193,4 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 const modal=document.getElementById('modal'),inp=document.getElementById('pw'),err=document.getElementById('err');function close(){modal.classList.remove('show');inp.value='';err.textContent=''}document.getElementById('unlock').onclick=()=>{modal.classList.add('show');setTimeout(()=>inp.focus(),50)};document.getElementById('cancel').onclick=close;document.getElementById('submit').onclick=async()=>{try{const d=await dec(inp.value),box=document.getElementById('reservationBox');box.innerHTML='';Object.entries(d).forEach(([n,c])=>{const e=document.createElement('div');e.className='secret';e.innerHTML='<b></b><div class="code"></div><button class="btn">コピー</button>';e.querySelector('b').textContent=n;e.querySelector('.code').textContent=c;e.querySelector('button').onclick=()=>cp(c);box.appendChild(e)});document.getElementById('unlock').style.display='none';document.getElementById('lock').style.display='inline-block';close()}catch(e){err.textContent='パスワードが違うか、暗号データを読み取れません。'}};inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('submit').click()};document.getElementById('lock').onclick=()=>{document.getElementById('reservationBox').innerHTML='';document.getElementById('lock').style.display='none';document.getElementById('unlock').style.display='inline-block'}
 })();
 </script>
-<script src="app-v2.js?v=20261007-2215-fullinfo"></script>\n<script src="details-v2.js?v=20261007-2215-fullinfo"></script>\n<script src="tripit-list-v3.js?v=20261007-2215-fullinfo"></script>\n<script src="version-check.js?v=20261007-2215-fullinfo"></script>\n</body></html>
+<script src="app-v2.js?v=20261007-2220-nav2"></script>\n<script src="details-v2.js?v=20261007-2220-nav2"></script>\n<script src="tripit-list-v3.js?v=20261007-2220-nav2"></script>\n<script src="version-check.js?v=20261007-2220-nav2"></script>\n</body></html>
