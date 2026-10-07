@@ -20,7 +20,7 @@
   const specs=[
     {needle:'Delta DL198',key:'Delta DL198',icon:'✈',summary:'HND → HNL',extra:'DL198 (Delta) · Arrive 09:03 HST'},
     {needle:'AC1783',key:'Air Canada AC1783',icon:'✈',summary:'YVR → HNL',extra:'AC1783 (Air Canada Rouge) · Arrive 12:45 HST'},
-    {needle:'AC1782',key:'Air Canada AC1782',icon:'✈',summary:'HNL → YVR',extra:'AC1782 (Air Canada Rouge) · Arrive 21:54 PST'},
+    {needle:'AC1782',key:'Air Canada AC1782',icon:'✈',summary:'HNL → YVR',extra:'AC1782 (Air Canada Rouge) · Arrive 22:54 PCT'},
     {needle:'ZIPAIR ZG21',key:'ZIPAIR ZG21',icon:'✈',summary:'YVR → NRT',extra:'ZG21 (ZIPAIR Tokyo) · Arrive 12:45 JST (+1 day)'},
     {needle:'Waikiki Shore',key:'Waikiki Shore / Agoda',icon:'🛏',summary:'Waikiki Shore by OUTRIGGER',extra:'Check in 15:00 / Check out 11:00'},
     {needle:'Coast Coal Harbour',key:'Coast Coal Harbour',icon:'🛏',summary:'Coast Coal Harbour Vancouver Hotel by APA',extra:'12/27–12/28 · Coast Two Queens'},
