@@ -4,11 +4,11 @@
   style.textContent=`
     .item.tripit-row{grid-template-columns:62px 42px 1fr;gap:10px;padding:8px 6px;min-height:78px}
     .tripit-row .dotcol{position:relative}
-    .tripit-row .dot{width:38px;height:38px;border:0;background:#1688cc;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-top:0;z-index:1}
-    .tripit-row .vline{width:4px;background:#1688cc;margin-top:0}
-    .tripit-row .title{font-size:18px;line-height:1.2}
-    .tripit-meta{font-size:13px;color:#6a6f73;line-height:1.35;margin-top:3px}
-    .tripit-confirm{font-weight:700}
+    .tripit-row .dot{width:38px;height:38px;border:0;background:linear-gradient(135deg,#74b5e8,#9b91dc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;margin-top:0;z-index:1;box-shadow:0 4px 10px rgba(104,127,178,.16)}
+    .tripit-row .vline{width:3px;background:#d6dfef;margin-top:0}
+    .tripit-row .title{font-size:18px;line-height:1.2;font-weight:800;color:#273247}
+    .tripit-meta{font-size:12.5px;color:#81899a;line-height:1.4;margin-top:4px}
+    .tripit-confirm{font-weight:800;color:#4a5871;letter-spacing:.02em}
     @media(max-width:640px){
       .item.tripit-row{grid-template-columns:58px 40px 1fr;gap:8px}
       .tripit-row .title{font-size:17px}
@@ -48,7 +48,7 @@
       meta.className='tripit-meta';
       meta.dataset.resKey=spec.key;
       const conf=confirmation(spec.key);
-      meta.innerHTML=spec.extra+(conf?'<br>Confirmation: <span class="tripit-confirm">'+conf+'</span>':'');
+      meta.innerHTML=spec.extra+(conf?'<br>予約番号: <span class="tripit-confirm">'+conf+'</span>':'');
       content.appendChild(meta);
     });
   }
@@ -60,7 +60,7 @@
       const spec=specs.find(s=>s.key===k);
       if(!spec) return;
       const conf=confirmation(k);
-      meta.innerHTML=spec.extra+(conf?'<br>Confirmation: <span class="tripit-confirm">'+conf+'</span>':'');
+      meta.innerHTML=spec.extra+(conf?'<br>予約番号: <span class="tripit-confirm">'+conf+'</span>':'');
     });
   });
 })();
