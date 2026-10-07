@@ -67,7 +67,7 @@
     },
     "Air Canada AC1783":{
       type:"flight",title:"YVR → HNL",subtitle:"AC1783 (Air Canada Rouge)",booking:"Air Canada AC1783",
-      dateLabel:"WED, DEC 23",depCity:"Vancouver",depTime:"8:10 AM",depZone:"PST",
+      dateLabel:"WED, DEC 23",depCity:"Vancouver",depTime:"9:10 AM",depZone:"PCT",
       arrCity:"Honolulu",arrTime:"12:45 PM",arrZone:"HST",duration:"6時間35分",
       terminalDep:"YVR Terminal M",terminalArr:"HNL Terminal 2",fare:"Economy Latitude / Economy Class (B)",
       seats:"座席情報は未表示",baggage:"Air Canada運航便の手荷物規定に準拠",
@@ -77,7 +77,7 @@
     "Air Canada AC1782":{
       type:"flight",title:"HNL → YVR",subtitle:"AC1782 (Air Canada Rouge)",booking:"Air Canada AC1782",
       dateLabel:"SUN, DEC 27",depCity:"Honolulu",depTime:"2:00 PM",depZone:"HST",
-      arrCity:"Vancouver",arrTime:"9:54 PM",arrZone:"PST",duration:"5時間54分",
+      arrCity:"Vancouver",arrTime:"10:54 PM",arrZone:"PCT",duration:"5時間54分",
       terminalDep:"HNL Terminal 2",terminalArr:"YVR Terminal M",fare:"Economy Standard / Economy Class (T)",
       seats:"25D（通路）・25E（中央）・25F（窓側）の確認あり",baggage:"Air Canada運航便の手荷物規定に準拠",
       notes:"変更は1人・片道 ¥15,800＋税・運賃差額。",
@@ -108,7 +108,7 @@
       photoCaption:"Coast Coal Harbour Vancouver Hotel by APA / official",
       gallery:"https://www.coasthotels.com/coast-coal-harbour-vancouver-hotel-by-apa/gallery",
       checkin:"到着後",checkout:"12:00 PM",room:"Coast Two Queens",
-      guests:"家族4名",cancel:"予約時の選択レート条件に従う",
+      guests:"予約メール：3 guests（4名利用予定なら要確認）",cancel:"予約時の選択レート条件に従う",
       notes:"チェックイン時：写真付きID＋同名義クレジットカード",
       map:"https://www.google.com/maps/search/?api=1&query=Coast+Coal+Harbour+Vancouver+Hotel+by+APA"
     },
@@ -118,7 +118,7 @@
       photo:"https://ik.warmlyyours.com/img/victoria-bc-inner-harbor-skyline-at-dusk-de1f2c.jpeg?ik-sdk-version=ruby-1.0.10",
       photoCaption:"Victoria Inner Harbour / hotel is in downtown Victoria",
       gallery:"https://chateauvictoria.com/",
-      checkin:"4:00 PM – 12:00 AM",checkout:"11:00 AM想定",room:"Traditional Room / 2 Queen Beds",
+      checkin:"4:00 PM – 12:00 AM",checkout:"11:00 AM",room:"Traditional Room / 2 Queen Beds",
       guests:"大人3名＋子ども1名",cancel:"12/27 11:59（現地）までキャンセル無料",
       map:"https://www.google.com/maps/search/?api=1&query=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
     },
@@ -144,11 +144,12 @@
   };
 
   function reservation(name){return (window.tripReservations||{})[name]||'—'}
-  function fullInfoButton(key){return '<button type="button" class="btn" onclick="showTripFullInfo(\''+key.replace(/'/g,"\\'")+'\')">📄 Full info</button>'}
+  function fullInfoButton(key){return '<button type="button" class="btn" onclick="showTripFullInfo(\''+key.replace(/'/g,"\\'")+'\')">📄 予約メール詳細</button>'}
   function heroPhotoHtml(d){
     if(!d.photo)return '';
     return '<figure style="margin:0 22px 18px;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;background:#fff">'+
-      '<img src="'+d.photo+'" alt="'+(d.photoCaption||d.title)+'" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover">'+
+      '<img src="'+d.photo+'" alt="'+(d.photoCaption||d.title)+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover">'+
+      '<div style="display:none;min-height:140px;align-items:center;justify-content:center;padding:20px;color:#737b8f;background:#f7f7fa;text-align:center">写真を表示できません。下の「写真を見る」から公式ページをご確認ください。</div>'+
       '<figcaption style="padding:7px 10px;font-size:12px;color:#6d7472">'+(d.photoCaption||'')+
       (d.gallery?' · <a href="'+d.gallery+'" target="_blank" rel="noopener" style="color:#1683c5">写真を見る</a>':'')+
       '</figcaption></figure>';
