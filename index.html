@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#f6f3ed;--card:#fff;--text:#17211f;--muted:#65716e;--line:#d9dedb;--accent:#2b6e68;--warn:#a86a14;--next:#fff5cc}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.55}
-.wrap{max-width:980px;margin:auto;padding:12px 14px 50px}.hero{background:linear-gradient(135deg,#1f615d,#4a8b84);color:#fff;border-radius:22px;padding:22px 20px}.hero h1{margin:0 0 6px;font-size:29px}.hero p{margin:3px 0}.legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.badge{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700}.ok{background:#dff2ed;color:#175e56}.plan{background:#eef1ef;color:#47514f}.warn{background:#fff0d7;color:#8b560e}
+.wrap{max-width:980px;margin:auto;padding:12px 14px 50px}.hero{background:linear-gradient(135deg,#1f615d,#4a8b84);color:#fff;border-radius:22px;padding:22px 20px}.hero h1{margin:0 0 6px;font-size:29px}.update-stamp{position:absolute;top:14px;right:18px;font-size:11px;line-height:1.35;text-align:right;opacity:.92;background:rgba(255,255,255,.12);padding:6px 8px;border-radius:10px}.hero{position:relative}.hero p{margin:3px 0}.legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.badge{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700}.ok{background:#dff2ed;color:#175e56}.plan{background:#eef1ef;color:#47514f}.warn{background:#fff0d7;color:#8b560e}
 .status{font-size:12px;color:var(--muted);margin:8px 2px}.status strong{color:var(--text)}
 .navwrap{position:sticky;top:0;z-index:20;background:rgba(246,243,237,.97);backdrop-filter:blur(8px);padding:8px 0;border-bottom:1px solid #ece9e2}.nav{display:flex;gap:7px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;text-decoration:none;color:var(--text);background:#fff;border:1px solid var(--line);padding:7px 10px;border-radius:11px;font-size:13px;font-weight:600}.nav a.today{background:var(--accent);color:#fff}.nav a.selected{box-shadow:inset 0 0 0 2px var(--accent)}
 .section{background:var(--card);border:1px solid #e5e7e5;border-radius:18px;padding:18px;margin:12px 0;scroll-margin-top:64px}.section.today{outline:3px solid rgba(43,110,104,.22)}.section h2{margin:0;font-size:21px}.sub{color:var(--muted);font-size:13px;margin-top:2px}
@@ -21,7 +21,7 @@
 </head>
 <body>
 <div class="wrap">
-<header class="hero">
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 21:55 JST</div>
 <div style="font-size:12px;opacity:.92">2026.12.23 – 12.31</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
