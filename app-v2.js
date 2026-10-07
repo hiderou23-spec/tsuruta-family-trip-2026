@@ -28,6 +28,8 @@
   async function loadData(){
     if(!cfg) cfg=await fetch('crypto-config.json',{cache:'no-store'}).then(r=>r.json());
     if(!resData) resData=await fetch('reservations.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
+  }
+  async function loadFullData(){
     if(!fullData) fullData=await fetch('full-info.enc.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
   }
   async function privateFromPassword(pw){
@@ -50,14 +52,18 @@
   }
 
   async function decryptFullInfo(pk){
-    await loadData();
     const out={};
-    for(const [name,o] of Object.entries(fullData.items||{})){
-      const raw=await crypto.subtle.decrypt({name:'RSA-OAEP'},pk,b64u(o.key));
-      const aes=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['decrypt']);
-      const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(o.iv)},aes,b64u(o.ct));
-      out[name]=JSON.parse(td.decode(pt));
-    }
+    try{
+      await loadFullData();
+      for(const [name,o] of Object.entries(fullData.items||{})){
+        try{
+          const raw=await crypto.subtle.decrypt({name:'RSA-OAEP'},pk,b64u(o.key));
+          const aes=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['decrypt']);
+          const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(o.iv)},aes,b64u(o.ct));
+          out[name]=JSON.parse(td.decode(pt));
+        }catch(_){}
+      }
+    }catch(_){}
     window.tripFullInfo=out;
     document.dispatchEvent(new CustomEvent('tripFullInfoReady',{detail:out}));
   }
@@ -84,8 +90,8 @@
   async function unlockWith(jwk){
     const pk=await importPrivate(jwk);
     await decryptReservations(pk);
-    await decryptFullInfo(pk);
     gate.style.display='none'; app.style.display='block';
+    decryptFullInfo(pk);
   }
 
   document.getElementById('familyUnlock').onclick=async()=>{
