@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Tsuruta Family Trip 2026</title>
+<style>
+:root{--bg:#f6f3ed;--card:#fff;--text:#17211f;--muted:#65716e;--line:#d9dedb;--accent:#2b6e68;--warn:#a86a14;--next:#fff5cc}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.55}
+.wrap{max-width:980px;margin:auto;padding:12px 14px 50px}.hero{background:linear-gradient(135deg,#1f615d,#4a8b84);color:#fff;border-radius:22px;padding:22px 20px}.hero h1{margin:0 0 6px;font-size:29px}.hero p{margin:3px 0}.legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.badge{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700}.ok{background:#dff2ed;color:#175e56}.plan{background:#eef1ef;color:#47514f}.warn{background:#fff0d7;color:#8b560e}
+.status{font-size:12px;color:var(--muted);margin:8px 2px}.status strong{color:var(--text)}
+.navwrap{position:sticky;top:0;z-index:20;background:rgba(246,243,237,.97);backdrop-filter:blur(8px);padding:8px 0;border-bottom:1px solid #ece9e2}.nav{display:flex;gap:7px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;text-decoration:none;color:var(--text);background:#fff;border:1px solid var(--line);padding:7px 10px;border-radius:11px;font-size:13px;font-weight:600}.nav a.today{background:var(--accent);color:#fff}
+.section{background:var(--card);border:1px solid #e5e7e5;border-radius:18px;padding:18px;margin:12px 0;scroll-margin-top:64px}.section.today{outline:3px solid rgba(43,110,104,.22)}.section h2{margin:0;font-size:21px}.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.timeline{margin-top:14px}.item{display:grid;grid-template-columns:62px 18px 1fr;gap:9px;min-height:57px;padding:3px 5px;border-radius:12px}.item.next{background:var(--next);box-shadow:inset 0 0 0 1px #ead37a}.item.past{opacity:.58}.time{font-weight:700;font-size:13px;text-align:right}.dotcol{display:flex;flex-direction:column;align-items:center}.dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--accent);background:#fff;margin-top:4px}.dot.warn{border-color:var(--warn)}.vline{width:2px;background:var(--line);flex:1;margin-top:4px}.item:last-child .vline{display:none}.title{font-weight:700}.note{font-size:12px;color:var(--muted);margin-top:2px}
+.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none}.details{margin-top:7px}.details summary{cursor:pointer;font-size:12px;font-weight:700}.detailbody{padding:7px 9px;background:#f7f8f7;border:1px solid #e4e6e4;border-radius:9px;margin-top:5px;font-size:12px;color:#48524f}
+.cardgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.secret{border:1px solid var(--line);border-radius:13px;padding:11px;background:#fafbfa}.secret b{display:block}.code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:16px;margin:5px 0}.alert{border:1px solid #efc37f;background:#fff5e6;border-radius:13px;padding:11px 13px;margin-top:11px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;z-index:100;padding:18px}.modal.show{display:flex}.box{width:min(420px,100%);background:#fff;border-radius:16px;padding:18px}.box input{width:100%;padding:10px;border:1px solid #bbb;border-radius:9px;font:inherit;margin:8px 0}.err{color:#a33;font-size:12px;min-height:18px}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#17211f;color:#fff;padding:8px 12px;border-radius:10px;font-size:12px;opacity:0;transition:.2s}.toast.show{opacity:1}.footer{font-size:11px;color:var(--muted);text-align:center;margin-top:20px}
+@media(max-width:640px){.wrap{padding:8px 8px 38px}.hero{border-radius:16px;padding:18px 14px}.hero h1{font-size:23px}.section{padding:14px 11px}.cardgrid{grid-template-columns:1fr}.item{grid-template-columns:54px 16px 1fr;gap:7px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+<div style="font-size:12px;opacity:.92">2026.12.23 – 12.31</div>
+<h1>Tsuruta Family Trip 2026</h1>
+<p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
+<div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><span class="badge warn">! 要確認</span></div>
+</header>
+<div class="status" id="liveStatus">旅行開始前です。</div>
+<div class="navwrap"><nav class="nav" id="dateNav">
+<a href="#d23" data-date="2026-12-23" data-tz="Pacific/Honolulu">12/23</a><a href="#d24" data-date="2026-12-24" data-tz="Pacific/Honolulu">12/24</a><a href="#d25" data-date="2026-12-25" data-tz="Pacific/Honolulu">12/25</a><a href="#d26" data-date="2026-12-26" data-tz="Pacific/Honolulu">12/26</a><a href="#d27" data-date="2026-12-27" data-tz="Pacific/Honolulu">12/27</a><a href="#d28" data-date="2026-12-28" data-tz="America/Vancouver">12/28</a><a href="#d29" data-date="2026-12-29" data-tz="America/Vancouver">12/29</a><a href="#d30" data-date="2026-12-30" data-tz="America/Vancouver">12/30</a><a href="#d31" data-date="2026-12-31" data-tz="Asia/Tokyo">12/31</a>
+</nav></div>
+
+<section class="section" id="d23"><h2>12/23（水）東京・Vancouver → Honolulu</h2><div class="sub">家族4人がホノルルで合流</div><div class="timeline">
+<div class="item" data-ts="2026-12-23T17:30:00+09:00"><div class="time">17:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">自宅を出発</div><div class="note">羽田へ。</div></div></div>
+<div class="item" data-ts="2026-12-23T18:30:00+09:00"><div class="time">18:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">羽田空港到着</div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Haneda+Airport+Terminal+3">📍 Maps</a></div></div></div>
+<div class="item" data-ts="2026-12-23T21:00:00+09:00"><div class="time">21:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Delta DL198 出発 <span class="badge ok">確定</span></div><details class="details"><summary>フライト詳細</summary><div class="detailbody">HND 21:00 → HNL 09:03（現地）/ 家族本隊3名</div></details></div></div>
+<div class="item" data-ts="2026-12-23T08:10:00-08:00"><div class="time">08:10</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">咲喜さん AC1783 出発 <span class="badge ok">確定</span></div><div class="note">YVR → HNL / Air Canada Rouge</div></div></div>
+<div class="item" data-ts="2026-12-23T09:03:00-10:00"><div class="time">09:03</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">家族本隊 Honolulu到着 <span class="badge ok">確定</span></div></div></div>
+<div class="item" data-ts="2026-12-23T12:45:00-10:00"><div class="time">12:45</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">咲喜さん Honolulu到着 <span class="badge ok">確定</span></div><div class="note">家族4人が合流。</div></div></div>
+<div class="item" data-ts="2026-12-23T15:00:00-10:00"><div class="time">15:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Waikiki Shore by OUTRIGGER チェックイン <span class="badge ok">確定</span></div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu">📍 Maps</a></div></div></div>
+<div class="item" data-ts="2026-12-23T18:00:00-10:00"><div class="time">18:00</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">夕食</div></div></div>
+</div></section>
+
+<section class="section" id="d24"><h2>12/24（木）Honolulu</h2><div class="sub">Christmas Eve</div><div class="timeline">
+<div class="item" data-ts="2026-12-24T08:00:00-10:00"><div class="time">08:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">朝食</div></div></div>
+<div class="item" data-ts="2026-12-24T09:30:00-10:00"><div class="time">09:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">ビーチ・観光</div></div></div>
+<div class="item" data-ts="2026-12-24T12:30:00-10:00"><div class="time">12:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">昼食</div></div></div>
+<div class="item" data-ts="2026-12-24T14:00:00-10:00"><div class="time">14:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">買い物・観光</div></div></div>
+<div class="item" data-ts="2026-12-24T18:00:00-10:00"><div class="time">18:00</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">Christmas Eve Dinner</div></div></div>
+</div></section>
+
+<section class="section" id="d25"><h2>12/25（金）Honolulu</h2><div class="sub">Rock-A-Hula Dinner Show</div><div class="timeline">
+<div class="item" data-ts="2026-12-25T08:30:00-10:00"><div class="time">08:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">朝食</div></div></div>
+<div class="item" data-ts="2026-12-25T10:00:00-10:00"><div class="time">10:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">午前自由行動</div></div></div>
+<div class="item" data-ts="2026-12-25T13:00:00-10:00"><div class="time">13:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">昼食</div></div></div>
+<div class="item" data-ts="2026-12-25T16:30:00-10:00"><div class="time">16:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">ホテルへ戻って準備</div></div></div>
+<div class="item" data-ts="2026-12-25T17:30:00-10:00"><div class="time">17:30</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">Rock-A-Hula ビュッフェ＆ショー <span class="badge ok">確定</span></div><div class="note">Royal Hawaiian Shopping Center / オリジナル席 / 大人4名</div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Royal+Hawaiian+Center+Honolulu">📍 Maps</a></div></div></div>
+</div></section>
+
+<section class="section" id="d26"><h2>12/26（土）Honolulu</h2><div class="sub">ハワイ最終フルデー</div><div class="timeline">
+<div class="item" data-ts="2026-12-26T08:00:00-10:00"><div class="time">08:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">朝食</div></div></div>
+<div class="item" data-ts="2026-12-26T09:30:00-10:00"><div class="time">09:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">終日自由行動</div></div></div>
+<div class="item" data-ts="2026-12-26T17:30:00-10:00"><div class="time">17:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">夕食</div></div></div>
+<div class="item" data-ts="2026-12-26T20:00:00-10:00"><div class="time">20:00</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">荷造り</div></div></div>
+</div></section>
+
+<section class="section" id="d27"><h2>12/27（日）Honolulu → Vancouver</h2><div class="sub">Coast Coal Harbour宿泊</div><div class="timeline">
+<div class="item" data-ts="2026-12-27T08:00:00-10:00"><div class="time">08:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">朝食</div></div></div>
+<div class="item" data-ts="2026-12-27T11:00:00-10:00"><div class="time">11:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Waikiki Shore チェックアウト <span class="badge ok">確定</span></div></div></div>
+<div class="item" data-ts="2026-12-27T14:00:00-10:00"><div class="time">14:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Air Canada AC1782 出発 <span class="badge ok">確定</span></div></div></div>
+<div class="item" data-ts="2026-12-27T21:54:00-08:00"><div class="time">21:54</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Vancouver到着 <span class="badge ok">確定</span></div></div></div>
+<div class="item" data-ts="2026-12-27T23:30:00-08:00"><div class="time">23:30</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">Coast Coal Harbour チェックイン <span class="badge ok">確定</span></div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Coast+Coal+Harbour+Vancouver+Hotel+by+APA+1180+West+Hastings">📍 Maps</a></div></div></div>
+</div></section>
+
+<section class="section" id="d28"><h2>12/28（月）Vancouver → Victoria</h2><div class="sub">Victoria 1泊</div><div class="timeline">
+<div class="item" data-ts="2026-12-28T07:30:00-08:00"><div class="time">07:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">朝食</div></div></div>
+<div class="item" data-ts="2026-12-28T08:30:00-08:00"><div class="time">08:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Coastチェックアウト</div></div></div>
+<div class="item" data-ts="2026-12-28T08:45:00-08:00"><div class="time">08:45</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Vancouver Harbour Flight Centreへ</div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Harbour+Air+Vancouver+Harbour+Flight+Centre">📍 Maps</a></div></div></div>
+<div class="item"><div class="time">要確認</div><div class="dotcol"><div class="dot warn"></div><div class="vline"></div></div><div><div class="title">Harbour AirでVictoriaへ <span class="badge warn">要確認</span></div><div class="note">正確な便時刻は未確認。</div></div></div>
+<div class="item" data-ts="2026-12-28T16:00:00-08:00"><div class="time">16:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Chateau Victoria チェックイン <span class="badge ok">確定</span></div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC">📍 Maps</a></div></div></div>
+<div class="item" data-ts="2026-12-28T18:00:00-08:00"><div class="time">18:00</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">Victoriaで夕食</div></div></div>
+</div></section>
+
+<section class="section" id="d29"><h2>12/29（火）Victoria → Vancouver / UBC</h2><div class="sub">フェリー＋バスでVancouverへ戻る</div><div class="timeline">
+<div class="item" data-ts="2026-12-29T08:00:00-08:00"><div class="time">08:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">朝食</div></div></div>
+<div class="item" data-ts="2026-12-29T09:00:00-08:00"><div class="time">09:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Victoria散策</div></div></div>
+<div class="item" data-ts="2026-12-29T11:00:00-08:00"><div class="time">11:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Chateau Victoria チェックアウト</div></div></div>
+<div class="item"><div class="time">要確認</div><div class="dotcol"><div class="dot warn"></div><div class="vline"></div></div><div><div class="title">BC Ferries Connector＋フェリー <span class="badge warn">要確認</span></div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=721+Douglas+St+Victoria+BC">📍 乗車地点</a></div></div></div>
+<div class="item" data-ts="2026-12-29T18:30:00-08:00"><div class="time">到着後</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">West Coast Suites チェックイン <span class="badge ok">確定</span></div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=West+Coast+Suites+UBC+5959+Student+Union+Blvd+Vancouver">📍 Maps</a></div></div></div>
+</div></section>
+
+<section class="section" id="d30"><h2>12/30（水）UBC → YVR → Tokyo</h2><div class="sub">帰国便（早朝移動）</div><div class="timeline">
+<div class="item" data-ts="2026-12-30T05:30:00-08:00"><div class="time">05:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">起床・簡単な朝食</div></div></div>
+<div class="item" data-ts="2026-12-30T05:50:00-08:00"><div class="time">05:50</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">West Coast Suitesを早朝チェックアウト</div></div></div>
+<div class="item" data-ts="2026-12-30T06:40:00-08:00"><div class="time">06:40</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">YVR到着</div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Vancouver+International+Airport">📍 Maps</a></div></div></div>
+<div class="item" data-ts="2026-12-30T09:30:00-08:00"><div class="time">09:30</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">ZIPAIR ZG21 出発 <span class="badge ok">確定</span></div><div class="note">YVR → NRT</div></div></div>
+</div></section>
+
+<section class="section" id="d31"><h2>12/31（木）Tokyo</h2><div class="sub">帰国</div><div class="timeline">
+<div class="item" data-ts="2026-12-31T12:45:00+09:00"><div class="time">12:45</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">成田空港到着 <span class="badge ok">確定</span></div><div class="actions"><a class="btn" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Narita+International+Airport">📍 Maps</a></div></div></div>
+<div class="item" data-ts="2026-12-31T13:30:00+09:00"><div class="time">13:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">入国・荷物受取り</div></div></div>
+<div class="item" data-ts="2026-12-31T14:30:00+09:00"><div class="time">14:30</div><div class="dotcol"><div class="dot"></div></div><div><div class="title">帰宅</div></div></div>
+</div></section>
+
+<section class="section" id="reservations"><h2>予約番号</h2><div class="sub">家族共通パスワードを入力すると、この端末上だけで復号します。</div><div class="actions" style="margin:12px 0"><button class="btn" id="unlock">🔐 予約番号を表示</button><button class="btn" id="lock" style="display:none">🔒 隠す</button></div><div id="reservationBox" class="cardgrid"></div><div class="alert"><b>要確認</b><br>① Harbour Airの正確な便時刻　② 12/29 BC Ferries Connectorの正確な便時刻</div></section>
+<div class="footer">時刻は各予定の現地時間。フライト・交通機関の変更時は再確認。</div>
+</div>
+
+<div class="modal" id="modal"><div class="box"><h3>予約番号を表示</h3><div class="note">家族共通パスワードを入力してください。パスワードは送信されません。</div><input id="pw" type="password" autocomplete="current-password"><div class="err" id="err"></div><div class="actions"><button class="btn" id="cancel">キャンセル</button><button class="btn" id="submit">復号する</button></div></div></div>
+<div class="toast" id="toast">コピーしました</div>
+
+<script>
+(function(){
+const E={"v":1,"kdf":"PBKDF2-SHA256","iter":250000,"alg":"AES-GCM-256","salt":"+nZSZx9AfR/LqlhiABACvg==","iv":"bfIMDQKDdWpICbE2","ct":"fCjSd44hgJHIg/8BF9Q5njZrnt51L10w9g/NICjVGrzky6xGb183SInLIvKAIQToNq18t4uF2FJqDz0bT1w2a8LhzGyslRoOTjWLaEKq3R9WV13iyS7ZN46X5EAu7UTgdoiaChWZDBu7mqwPgT8gJe8FxLRu+frLJXik1Mt7aXwCHagLelM7DNgA8N4sKuZ5R+C6/ZIK9NFz5J969HhkcUyxQVfCKG1pp9tEwxuMH1o+JmqbWR5bWU+Lh4ZtL/UGUYLDgl5GkVbdRZcnShty82c1v5PJ2n+X7Qa90oHhbvZpybaE4FDIHVZZ+EzOkywObZ1D+cSh8i8xAghA4L9Okg9lu3b9jQ+QQT2YM7tDFJcVZTMLcjZu3PZ25XcekxBYSVIEAkrkMURc/TKBgZEMxutalrIY/AG7o4zXaP9gu+araZCGsii/3n/6v9gfk/ux+PuC"};
+const now=new Date(),items=[...document.querySelectorAll('.item[data-ts]')].sort((a,b)=>new Date(a.dataset.ts)-new Date(b.dataset.ts));
+items.forEach(x=>{if(new Date(x.dataset.ts)<now)x.classList.add('past')});const nx=items.find(x=>new Date(x.dataset.ts)>=now);if(nx){nx.classList.add('next');document.getElementById('liveStatus').innerHTML='<strong>次の予定：</strong>'+nx.querySelector('.title').textContent.trim()}
+function ymd(tz){const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now),m={};p.forEach(x=>m[x.type]=x.value);return m.year+'-'+m.month+'-'+m.day}
+document.querySelectorAll('#dateNav a').forEach(a=>{if(a.dataset.date===ymd(a.dataset.tz)){a.classList.add('today');const s=document.querySelector(a.getAttribute('href'));if(s)s.classList.add('today')}});
+const toast=document.getElementById('toast');function show(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1400)}async function cp(t){try{await navigator.clipboard.writeText(t);show('コピーしました')}catch(e){prompt('コピーしてください',t)}}
+const te=new TextEncoder(),td=new TextDecoder();function u8(b){const s=atob(b),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
+async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(pw),'PBKDF2',false,['deriveKey']);const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:u8(E.salt),iterations:E.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:u8(E.iv)},k,u8(E.ct));return JSON.parse(td.decode(pt))}
+const modal=document.getElementById('modal'),inp=document.getElementById('pw'),err=document.getElementById('err');function close(){modal.classList.remove('show');inp.value='';err.textContent=''}document.getElementById('unlock').onclick=()=>{modal.classList.add('show');setTimeout(()=>inp.focus(),50)};document.getElementById('cancel').onclick=close;document.getElementById('submit').onclick=async()=>{try{const d=await dec(inp.value),box=document.getElementById('reservationBox');box.innerHTML='';Object.entries(d).forEach(([n,c])=>{const e=document.createElement('div');e.className='secret';e.innerHTML='<b></b><div class="code"></div><button class="btn">コピー</button>';e.querySelector('b').textContent=n;e.querySelector('.code').textContent=c;e.querySelector('button').onclick=()=>cp(c);box.appendChild(e)});document.getElementById('unlock').style.display='none';document.getElementById('lock').style.display='inline-block';close()}catch(e){err.textContent='パスワードが違うか、暗号データを読み取れません。'}};inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('submit').click()};document.getElementById('lock').onclick=()=>{document.getElementById('reservationBox').innerHTML='';document.getElementById('lock').style.display='none';document.getElementById('unlock').style.display='inline-block'}
+})();
+</script>
+</body></html>
