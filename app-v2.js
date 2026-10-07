@@ -24,10 +24,11 @@
   function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const x=atob(s),a=new Uint8Array(x.length);for(let i=0;i<x.length;i++)a[i]=x.charCodeAt(i);return a}
   function enc64(a){let s='';new Uint8Array(a).forEach(x=>s+=String.fromCharCode(x));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 
-  let cfg,resData;
+  let cfg,resData,fullData;
   async function loadData(){
     if(!cfg) cfg=await fetch('crypto-config.json',{cache:'no-store'}).then(r=>r.json());
-    if(!resData) resData=await fetch('reservations.json',{cache:'no-store'}).then(r=>r.json());
+    if(!resData) resData=await fetch('reservations.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
+    if(!fullData) fullData=await fetch('full-info.enc.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
   }
   async function privateFromPassword(pw){
     await loadData();
@@ -46,6 +47,19 @@
     }
     window.tripReservations=out;
     document.dispatchEvent(new CustomEvent('tripReservationsReady',{detail:out}));
+  }
+
+  async function decryptFullInfo(pk){
+    await loadData();
+    const out={};
+    for(const [name,o] of Object.entries(fullData.items||{})){
+      const raw=await crypto.subtle.decrypt({name:'RSA-OAEP'},pk,b64u(o.key));
+      const aes=await crypto.subtle.importKey('raw',raw,{name:'AES-GCM'},false,['decrypt']);
+      const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(o.iv)},aes,b64u(o.ct));
+      out[name]=JSON.parse(td.decode(pt));
+    }
+    window.tripFullInfo=out;
+    document.dispatchEvent(new CustomEvent('tripFullInfoReady',{detail:out}));
   }
 
   function openDb(){return new Promise((resolve,reject)=>{const q=indexedDB.open('trip-vault',1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains('keys'))q.result.createObjectStore('keys')};q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)})}
@@ -70,6 +84,7 @@
   async function unlockWith(jwk){
     const pk=await importPrivate(jwk);
     await decryptReservations(pk);
+    await decryptFullInfo(pk);
     gate.style.display='none'; app.style.display='block';
   }
 
