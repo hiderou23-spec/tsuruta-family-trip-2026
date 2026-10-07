@@ -10,7 +10,7 @@
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic",sans-serif;line-height:1.55}
 .wrap{max-width:980px;margin:auto;padding:12px 14px 50px}.hero{background:linear-gradient(135deg,#1f615d,#4a8b84);color:#fff;border-radius:22px;padding:22px 20px}.hero h1{margin:0 0 6px;font-size:29px}.hero p{margin:3px 0}.legend{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.badge{display:inline-flex;border-radius:999px;padding:4px 8px;font-size:11px;font-weight:700}.ok{background:#dff2ed;color:#175e56}.plan{background:#eef1ef;color:#47514f}.warn{background:#fff0d7;color:#8b560e}
 .status{font-size:12px;color:var(--muted);margin:8px 2px}.status strong{color:var(--text)}
-.navwrap{position:sticky;top:0;z-index:20;background:rgba(246,243,237,.97);backdrop-filter:blur(8px);padding:8px 0;border-bottom:1px solid #ece9e2}.nav{display:flex;gap:7px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;text-decoration:none;color:var(--text);background:#fff;border:1px solid var(--line);padding:7px 10px;border-radius:11px;font-size:13px;font-weight:600}.nav a.today{background:var(--accent);color:#fff}
+.navwrap{position:sticky;top:0;z-index:20;background:rgba(246,243,237,.97);backdrop-filter:blur(8px);padding:8px 0;border-bottom:1px solid #ece9e2}.nav{display:flex;gap:7px;overflow:auto;scrollbar-width:none}.nav::-webkit-scrollbar{display:none}.nav a{white-space:nowrap;text-decoration:none;color:var(--text);background:#fff;border:1px solid var(--line);padding:7px 10px;border-radius:11px;font-size:13px;font-weight:600}.nav a.today{background:var(--accent);color:#fff}.nav a.selected{box-shadow:inset 0 0 0 2px var(--accent)}
 .section{background:var(--card);border:1px solid #e5e7e5;border-radius:18px;padding:18px;margin:12px 0;scroll-margin-top:64px}.section.today{outline:3px solid rgba(43,110,104,.22)}.section h2{margin:0;font-size:21px}.sub{color:var(--muted);font-size:13px;margin-top:2px}
 .timeline{margin-top:14px}.item{display:grid;grid-template-columns:62px 18px 1fr;gap:9px;min-height:57px;padding:3px 5px;border-radius:12px}.item.next{background:var(--next);box-shadow:inset 0 0 0 1px #ead37a}.item.past{opacity:.58}.time{font-weight:700;font-size:13px;text-align:right}.dotcol{display:flex;flex-direction:column;align-items:center}.dot{width:11px;height:11px;border-radius:50%;border:2px solid var(--accent);background:#fff;margin-top:4px}.dot.warn{border-color:var(--warn)}.vline{width:2px;background:var(--line);flex:1;margin-top:4px}.item:last-child .vline{display:none}.title{font-weight:700}.note{font-size:12px;color:var(--muted);margin-top:2px}
 .actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:7px}.btn{border:1px solid var(--line);background:#fff;color:var(--text);border-radius:9px;padding:5px 8px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none}.details{margin-top:7px}.details summary{cursor:pointer;font-size:12px;font-weight:700}.detailbody{padding:7px 9px;background:#f7f8f7;border:1px solid #e4e6e4;border-radius:9px;margin-top:5px;font-size:12px;color:#48524f}
@@ -117,7 +117,24 @@ const E={"v":1,"kdf":"PBKDF2-SHA256","iter":250000,"alg":"AES-GCM-256","salt":"+
 const now=new Date(),items=[...document.querySelectorAll('.item[data-ts]')].sort((a,b)=>new Date(a.dataset.ts)-new Date(b.dataset.ts));
 items.forEach(x=>{if(new Date(x.dataset.ts)<now)x.classList.add('past')});const nx=items.find(x=>new Date(x.dataset.ts)>=now);if(nx){nx.classList.add('next');document.getElementById('liveStatus').innerHTML='<strong>次の予定：</strong>'+nx.querySelector('.title').textContent.trim()}
 function ymd(tz){const p=new Intl.DateTimeFormat('en-CA',{timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(now),m={};p.forEach(x=>m[x.type]=x.value);return m.year+'-'+m.month+'-'+m.day}
-document.querySelectorAll('#dateNav a').forEach(a=>{if(a.dataset.date===ymd(a.dataset.tz)){a.classList.add('today');const s=document.querySelector(a.getAttribute('href'));if(s)s.classList.add('today')}});
+document.querySelectorAll('#dateNav a').forEach(a=>{
+  if(a.dataset.date===ymd(a.dataset.tz)){
+    a.classList.add('today');
+    const s=document.querySelector(a.getAttribute('href'));
+    if(s)s.classList.add('today');
+  }
+  a.addEventListener('click',function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    const sel=this.getAttribute('href');
+    const target=document.querySelector(sel);
+    if(!target)return;
+    document.querySelectorAll('#dateNav a').forEach(x=>x.classList.remove('selected'));
+    this.classList.add('selected');
+    target.scrollIntoView({behavior:'smooth',block:'start',inline:'nearest'});
+    try{history.replaceState(null,'',sel)}catch(_){}
+  });
+});
 const toast=document.getElementById('toast');function show(m){toast.textContent=m;toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),1400)}async function cp(t){try{await navigator.clipboard.writeText(t);show('コピーしました')}catch(e){prompt('コピーしてください',t)}}
 const te=new TextEncoder(),td=new TextDecoder();function u8(b){const s=atob(b),a=new Uint8Array(s.length);for(let i=0;i<s.length;i++)a[i]=s.charCodeAt(i);return a}
 async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(pw),'PBKDF2',false,['deriveKey']);const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:u8(E.salt),iterations:E.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:u8(E.iv)},k,u8(E.ct));return JSON.parse(td.decode(pt))}
