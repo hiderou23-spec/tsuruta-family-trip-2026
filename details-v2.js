@@ -94,6 +94,9 @@
     "Waikiki Shore by OUTRIGGER":{
       type:"hotel",title:"Waikiki Shore by OUTRIGGER",booking:"Waikiki Shore / Agoda",
       dateLabel:"DEC 23 – DEC 27",address:"2161 Kalia Rd, Honolulu, HI 96815",
+      photo:"https://hawaiivacationcondos.outrigger.com/AdaptiveImages/optimizely/deee51eb-73c6-4ff4-85d5-72707d43eaae/waikiki-shore-by-outrigger-exterior-aerial.jpg?cropbottom=3733&croptop=743&height=768&stamp=956f050f92ec251cec9398d7ae7ea4d05112bba7&width=1152",
+      photoCaption:"Waikiki Shore by OUTRIGGER / official",
+      gallery:"https://hawaiivacationcondos.outrigger.com/hawaii/oahu/waikiki-shore-by-outrigger",
       checkin:"3:00 PM以降",checkout:"11:00 AMまで",room:"One-Bedroom Park View",
       guests:"大人3名＋子ども1名",cancel:"予約メールのキャンセル条件に従う",
       map:"https://maps.google.com/?q=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu"
@@ -101,6 +104,9 @@
     "Coast Coal Harbour Vancouver Hotel by APA":{
       type:"hotel",title:"Coast Coal Harbour Vancouver Hotel by APA",booking:"Coast Coal Harbour",
       dateLabel:"DEC 27 – DEC 28",address:"1180 West Hastings Street, Vancouver, BC V6E 4R5",
+      photo:"https://image-tc.galaxy.tf/wijpeg-34x0rffxc7v5obaj074nntjl/coast-coal-harbour-vancouver-hotel-exterior.jpg?width=1280",
+      photoCaption:"Coast Coal Harbour Vancouver Hotel by APA / official",
+      gallery:"https://www.coasthotels.com/coast-coal-harbour-vancouver-hotel-by-apa/gallery",
       checkin:"到着後",checkout:"12:00 PM",room:"Coast Two Queens",
       guests:"家族4名",cancel:"予約時の選択レート条件に従う",
       notes:"チェックイン時：写真付きID＋同名義クレジットカード",
@@ -109,6 +115,9 @@
     "Chateau Victoria Hotel & Suites":{
       type:"hotel",title:"Chateau Victoria Hotel & Suites",booking:"Chateau Victoria / Expedia",
       dateLabel:"DEC 28 – DEC 29",address:"740 Burdett Ave, Victoria, BC V8W1B2",
+      photo:"https://ik.warmlyyours.com/img/victoria-bc-inner-harbor-skyline-at-dusk-de1f2c.jpeg?ik-sdk-version=ruby-1.0.10",
+      photoCaption:"Victoria Inner Harbour / hotel is in downtown Victoria",
+      gallery:"https://chateauvictoria.com/",
       checkin:"4:00 PM – 12:00 AM",checkout:"11:00 AM想定",room:"Traditional Room / 2 Queen Beds",
       guests:"大人3名＋子ども1名",cancel:"12/27 11:59（現地）までキャンセル無料",
       map:"https://maps.google.com/?q=Chateau+Victoria+Hotel+Suites+740+Burdett+Ave+Victoria+BC"
@@ -116,6 +125,9 @@
     "West Coast Suites":{
       type:"hotel",title:"West Coast Suites at UBC",booking:"West Coast Suites",
       dateLabel:"DEC 29 – DEC 30",address:"5959 Student Union Blvd., Vancouver, BC V6T 1Z1",
+      photo:"https://bm-communications-2021.sites.olt.ubc.ca/files/2021/07/MR-placeholder-1-940x897.jpg",
+      photoCaption:"UBC Vancouver campus",
+      gallery:"https://www.google.com/travel/hotels/entity/ChgIhInK2Izw_4OSARoLL2cvMXY5Z3Y0aGgQAQ",
       checkin:"4:00 PM",checkout:"11:00 AM",room:"Suite with Kitchen / King Bed & Queen Sofa Bed",
       guests:"家族4名",cancel:"到着前日16:00 PSTまでキャンセル無料、その後は初泊100%",
       map:"https://maps.google.com/?q=West+Coast+Suites+UBC"
@@ -123,6 +135,9 @@
     "Rock-A-Hula":{
       type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",
       dateLabel:"FRI, DEC 25",time:"5:30 PM",location:"Royal Hawaiian Shopping Center",
+      photo:"https://www.rockahulahawaii.com/wp-content/uploads/2.19.23-RAH-4-of-67-Edit.jpg",
+      photoCaption:"Rock-A-Hula / official",
+      gallery:"https://www.rockahulahawaii.com/jp/gallery",
       details:"ビュッフェ＆ショー（オリジナル席）・大人4名。バウチャーをスマホ表示または印刷。",
       map:"https://maps.google.com/?q=Royal+Hawaiian+Center+Honolulu"
     }
@@ -130,6 +145,14 @@
 
   function reservation(name){return (window.tripReservations||{})[name]||'—'}
   function fullInfoButton(key){return '<button type="button" class="btn" onclick="showTripFullInfo(\''+key.replace(/'/g,"\\'")+'\')">📄 Full info</button>'}
+  function heroPhotoHtml(d){
+    if(!d.photo)return '';
+    return '<figure style="margin:0 22px 18px;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;background:#fff">'+
+      '<img src="'+d.photo+'" alt="'+(d.photoCaption||d.title)+'" loading="lazy" decoding="async" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover">'+
+      '<figcaption style="padding:7px 10px;font-size:12px;color:#6d7472">'+(d.photoCaption||'')+
+      (d.gallery?' · <a href="'+d.gallery+'" target="_blank" rel="noopener" style="color:#1683c5">写真を見る</a>':'')+
+      '</figcaption></figure>';
+  }
 
   function flightHtml(d){
     return `
@@ -175,6 +198,7 @@
         <div style="font-size:18px">Confirmation <b>${reservation(d.booking)}</b></div>
       </div>
       <div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">${d.dateLabel}</div>
+      ${heroPhotoHtml(d)}
       <div style="padding:22px;font-size:18px;line-height:1.7">
         <div><b>Address</b><br>${d.address}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px">
@@ -196,6 +220,7 @@
         <div style="font-size:18px">Confirmation <b>${reservation(d.booking)}</b></div>
       </div>
       <div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">${d.dateLabel}</div>
+      ${heroPhotoHtml(d)}
       <div style="padding:22px;font-size:18px;line-height:1.7">
         <div><b>Time</b><br>${d.time}</div>
         <div style="margin-top:12px"><b>Location</b><br>${d.location}</div>
