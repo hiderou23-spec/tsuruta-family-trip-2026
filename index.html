@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261007-2314-detailux">
+<html lang="ja" data-build="20261007-2316-vxd">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -225,7 +225,7 @@ body{
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 23:14 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/07 23:16 JST</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
 <div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><span class="badge warn">! 要確認</span></div>
@@ -239,7 +239,7 @@ body{
 <div class="item" data-ts="2026-12-23T17:30:00+09:00"><div class="time">17:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">自宅を出発</div><div class="note">羽田へ。</div></div></div>
 <div class="item" data-ts="2026-12-23T18:30:00+09:00"><div class="time">18:30</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">羽田空港 Terminal 3 到着</div><div class="note">Delta DL198はTerminal 3から出発予定。</div><div class="actions"><a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Haneda+Airport+Terminal+3">📍 Maps</a></div></div></div>
 <div class="item" data-ts="2026-12-23T21:00:00+09:00"><div class="time">21:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Delta DL198 出発 <span class="badge ok">確定</span></div><details class="details"><summary>フライト詳細</summary><div class="detailbody">HND Terminal 3 21:00 → HNL Terminal 2 09:03（現地）/ 所要 7時間03分 / 家族本隊3名</div></details></div></div>
-<div class="item" data-ts="2026-12-23T08:10:00-08:00"><div class="time">08:10</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">咲喜さん AC1783 出発 <span class="badge ok">確定</span></div><div class="note">YVR → HNL / Air Canada Rouge</div></div></div>
+<div class="item" data-ts="2026-12-23T09:10:00-07:00"><div class="time">09:10</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">咲喜さん AC1783 出発 <span class="badge ok">確定</span></div><div class="note">YVR → HNL / Air Canada Rouge</div></div></div>
 <div class="item" data-ts="2026-12-23T09:03:00-10:00"><div class="time">09:03</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">家族本隊 Honolulu到着 <span class="badge ok">確定</span></div></div></div>
 <div class="item" data-ts="2026-12-23T12:45:00-10:00"><div class="time">12:45</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">咲喜さん Honolulu到着 <span class="badge ok">確定</span></div><div class="note">家族4人が合流。</div></div></div>
 <div class="item" data-ts="2026-12-23T15:00:00-10:00"><div class="time">15:00</div><div class="dotcol"><div class="dot"></div><div class="vline"></div></div><div><div class="title">Waikiki Shore by OUTRIGGER チェックイン <span class="badge ok">確定</span></div><div class="actions"><a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Waikiki+Shore+by+OUTRIGGER+2161+Kalia+Rd+Honolulu">📍 Maps</a></div></div></div>
@@ -344,9 +344,10 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 const modal=document.getElementById('modal'),inp=document.getElementById('pw'),err=document.getElementById('err');function close(){modal.classList.remove('show');inp.value='';err.textContent=''}document.getElementById('unlock').onclick=()=>{modal.classList.add('show');setTimeout(()=>inp.focus(),50)};document.getElementById('cancel').onclick=close;document.getElementById('submit').onclick=async()=>{try{const d=await dec(inp.value),box=document.getElementById('reservationBox');box.innerHTML='';Object.entries(d).forEach(([n,c])=>{const e=document.createElement('div');e.className='secret';e.innerHTML='<b></b><div class="code"></div><button class="btn">コピー</button>';e.querySelector('b').textContent=n;e.querySelector('.code').textContent=c;e.querySelector('button').onclick=()=>cp(c);box.appendChild(e)});document.getElementById('unlock').style.display='none';document.getElementById('lock').style.display='inline-block';close()}catch(e){err.textContent='パスワードが違うか、暗号データを読み取れません。'}};inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('submit').click()};document.getElementById('lock').onclick=()=>{document.getElementById('reservationBox').innerHTML='';document.getElementById('lock').style.display='none';document.getElementById('unlock').style.display='inline-block'}
 })();
 </script>
-<script src="app-v2.js?v=20261007-2314-detailux"></script>
-<script src="details-v2.js?v=20261007-2314-detailux"></script>
-<script src="tripit-list-v3.js?v=20261007-2314-detailux"></script>
-<script src="version-check.js?v=20261007-2314-detailux"></script>
-<script src="city-photos-v1.js?v=20261007-2314-detailux"></script>
+<script src="app-v2.js?v=20261007-2316-vxd"></script>
+<script src="details-v2.js?v=20261007-2316-vxd"></script>
+<script src="tripit-list-v3.js?v=20261007-2316-vxd"></script>
+<script src="version-check.js?v=20261007-2316-vxd"></script>
+<script src="city-photos-v1.js?v=20261007-2316-vxd"></script>
+<script src="vxd-polish-v1.js?v=20261007-2316-vxd"></script>
 </body></html>
