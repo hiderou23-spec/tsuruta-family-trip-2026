@@ -21,6 +21,39 @@
       <div id="tripDetailBody"></div>
     </div>`;
   document.body.appendChild(overlay);
+  const fullOverlay=document.createElement('div');
+  fullOverlay.id='tripFullInfoOverlay';
+  fullOverlay.style.cssText='position:fixed;inset:0;z-index:1100;background:#fff;display:none;overflow:auto';
+  fullOverlay.innerHTML=`
+    <div style="max-width:760px;margin:0 auto;min-height:100%;background:#fff">
+      <div style="position:sticky;top:0;z-index:3;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid #e5e5e5;padding:12px 16px;display:flex;align-items:center;gap:12px">
+        <button id="tripFullInfoBack" aria-label="戻る" style="width:44px;height:44px;border-radius:50%;border:0;background:#f1f2f2;font-size:28px;line-height:1;cursor:pointer">‹</button>
+        <div style="font-weight:700">Full info</div>
+      </div>
+      <div id="tripFullInfoBody"></div>
+    </div>`;
+  document.body.appendChild(fullOverlay);
+
+  function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+  function showFullInfo(key){
+    const x=(window.tripFullInfo||{})[key];
+    const body=document.getElementById('tripFullInfoBody');
+    if(!x){
+      body.innerHTML='<div style="padding:24px">Full infoを読み込めませんでした。ページを再読み込みしてください。</div>';
+    }else{
+      body.innerHTML=
+        '<div style="padding:24px 22px 12px"><h1 style="font-size:30px;margin:0 0 6px">'+esc(x.title)+'</h1><div style="color:#6b6f72;font-size:14px">Source: '+esc(x.source)+'</div></div>'+
+        '<div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">FULL RESERVATION INFO</div>'+
+        '<div style="padding:6px 22px 28px">'+
+        (x.sections||[]).map(s=>'<div style="padding:15px 0;border-bottom:1px solid #eee"><div style="font-size:13px;color:#777;font-weight:700;margin-bottom:4px">'+esc(s[0])+'</div><div style="font-size:17px;line-height:1.55">'+esc(s[1])+'</div></div>').join('')+
+        '<div style="margin-top:18px;font-size:12px;color:#777;line-height:1.5">元の予約メールから旅行に必要な情報を抽出して保存しています。個人Gmailへのアクセスは不要です。</div></div>';
+    }
+    fullOverlay.style.display='block';
+    fullOverlay.scrollTop=0;
+  }
+  document.getElementById('tripFullInfoBack').onclick=()=>{fullOverlay.style.display='none'};
+  window.showTripFullInfo=showFullInfo;
+
 
   const data={
     "Delta DL198":{
@@ -96,6 +129,7 @@
   };
 
   function reservation(name){return (window.tripReservations||{})[name]||'—'}
+  function fullInfoButton(key){return '<button type="button" class="btn" onclick="showTripFullInfo(\''+key.replace(/'/g,"\\'")+'\')">📄 Full info</button>'}
 
   function flightHtml(d){
     return `
@@ -129,6 +163,7 @@
         <div style="margin-top:12px"><b>Seats</b><br>${d.seats}</div>
         <div style="margin-top:12px"><b>Baggage</b><br>${d.baggage}</div>
         <div style="margin-top:12px"><b>Notes</b><br>${d.notes}</div>
+        <div style="margin-top:18px">${fullInfoButton(d.booking)}</div>
         
       </div>`;
   }
@@ -150,7 +185,7 @@
         <div style="margin-top:12px"><b>Guests</b><br>${d.guests}</div>
         <div style="margin-top:12px"><b>Cancellation</b><br>${d.cancel}</div>
         ${d.notes?'<div style="margin-top:12px"><b>Notes</b><br>'+d.notes+'</div>':''}
-        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a>${d.gmail?'<a href="'+d.gmail+'" target="_blank" class="btn">✉️ Gmailで元メールを開く</a>':''}</div>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a>${fullInfoButton(d.booking)}</div>
       </div>`;
   }
 
@@ -165,7 +200,7 @@
         <div><b>Time</b><br>${d.time}</div>
         <div style="margin-top:12px"><b>Location</b><br>${d.location}</div>
         <div style="margin-top:12px"><b>Details</b><br>${d.details}</div>
-        <div style="margin-top:20px"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a></div>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap"><a href="${d.map}" target="_blank" class="btn">📍 Google Maps</a>${fullInfoButton(d.booking)}</div>
       </div>`;
   }
 
