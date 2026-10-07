@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261008-0024-today">
+<html lang="ja" data-build="20261008-0042-hotelcontacts">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -225,7 +225,7 @@ body{
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/08 00:24 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/08 00:42 JST</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
 <div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><span class="badge warn">! 要確認</span></div>
@@ -344,12 +344,12 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 const modal=document.getElementById('modal'),inp=document.getElementById('pw'),err=document.getElementById('err');function close(){modal.classList.remove('show');inp.value='';err.textContent=''}document.getElementById('unlock').onclick=()=>{modal.classList.add('show');setTimeout(()=>inp.focus(),50)};document.getElementById('cancel').onclick=close;document.getElementById('submit').onclick=async()=>{try{const d=await dec(inp.value),box=document.getElementById('reservationBox');box.innerHTML='';Object.entries(d).forEach(([n,c])=>{const e=document.createElement('div');e.className='secret';e.innerHTML='<b></b><div class="code"></div><button class="btn">コピー</button>';e.querySelector('b').textContent=n;e.querySelector('.code').textContent=c;e.querySelector('button').onclick=()=>cp(c);box.appendChild(e)});document.getElementById('unlock').style.display='none';document.getElementById('lock').style.display='inline-block';close()}catch(e){err.textContent='パスワードが違うか、暗号データを読み取れません。'}};inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('submit').click()};document.getElementById('lock').onclick=()=>{document.getElementById('reservationBox').innerHTML='';document.getElementById('lock').style.display='none';document.getElementById('unlock').style.display='inline-block'}
 })();
 </script>
-<script src="app-v2.js?v=20261008-0024-today"></script>
-<script src="details-v2.js?v=20261008-0024-today"></script>
-<script src="tripit-list-v3.js?v=20261008-0024-today"></script>
-<script src="version-check.js?v=20261008-0024-today"></script>
-<script src="city-photos-v1.js?v=20261008-0024-today"></script>
-<script src="vxd-polish-v1.js?v=20261008-0024-today"></script>
-<script src="google-maps-links-v1.js?v=20261008-0024-today"></script>
-<script src="today-mode-v1.js?v=20261008-0024-today"></script>
+<script src="app-v2.js?v=20261008-0042-hotelcontacts"></script>
+<script src="details-v2.js?v=20261008-0042-hotelcontacts"></script>
+<script src="tripit-list-v3.js?v=20261008-0042-hotelcontacts"></script>
+<script src="version-check.js?v=20261008-0042-hotelcontacts"></script>
+<script src="city-photos-v1.js?v=20261008-0042-hotelcontacts"></script>
+<script src="vxd-polish-v1.js?v=20261008-0042-hotelcontacts"></script>
+<script src="google-maps-links-v1.js?v=20261008-0042-hotelcontacts"></script>
+<script src="today-mode-v1.js?v=20261008-0042-hotelcontacts"></script>
 </body></html>
