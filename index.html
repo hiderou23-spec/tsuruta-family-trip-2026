@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261008-0905-photofix">
+<html lang="ja" data-build="20261008-0920-todo">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -234,12 +234,21 @@ body{
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/08 01:05 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/08 09:20 JST</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
-<div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><span class="badge warn">! 要確認</span></div>
+<div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><button type="button" id="todoOpen" class="badge warn" style="border:0;cursor:pointer;font:inherit">! 要確認 <span id="todoCount"></span></button></div>
 </header>
 <div class="status" id="liveStatus">旅行開始前です。</div>
+<div id="todoOverlay" style="display:none;position:fixed;inset:0;z-index:1300;background:#fffaf6;overflow:auto">
+  <div style="max-width:760px;margin:0 auto;min-height:100%;background:linear-gradient(180deg,#fffaf6 0%,#f9fbff 65%,#fff 100%)">
+    <div style="position:sticky;top:0;z-index:2;background:rgba(255,250,246,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e9e2ed;padding:12px 16px;display:flex;align-items:center;gap:12px">
+      <button id="todoBack" aria-label="戻る" style="width:44px;height:44px;border-radius:50%;border:1px solid #e1dbea;background:#f5f1fb;color:#5f6d85;font-size:28px;line-height:1">‹</button>
+      <div><div style="font-weight:800;font-size:18px">旅行TODO</div><div style="font-size:12px;color:#7c8191">まだ確認・決定が必要な項目</div></div>
+    </div>
+    <div id="todoList" style="padding:18px 14px 32px"></div>
+  </div>
+</div>
 <div class="navwrap"><nav class="nav" id="dateNav">
 <a href="#d23" data-date="2026-12-23" data-tz="Pacific/Honolulu">12/23 水</a><a href="#d24" data-date="2026-12-24" data-tz="Pacific/Honolulu">12/24 木</a><a href="#d25" data-date="2026-12-25" data-tz="Pacific/Honolulu">12/25 金</a><a href="#d26" data-date="2026-12-26" data-tz="Pacific/Honolulu">12/26 土</a><a href="#d27" data-date="2026-12-27" data-tz="Pacific/Honolulu">12/27 日</a><a href="#d28" data-date="2026-12-28" data-tz="America/Vancouver">12/28 月</a><a href="#d29" data-date="2026-12-29" data-tz="America/Vancouver">12/29 火</a><a href="#d30" data-date="2026-12-30" data-tz="America/Vancouver">12/30 水</a><a href="#d31" data-date="2026-12-31" data-tz="Asia/Tokyo">12/31 木</a>
 </nav></div>
@@ -353,14 +362,59 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 const modal=document.getElementById('modal'),inp=document.getElementById('pw'),err=document.getElementById('err');function close(){modal.classList.remove('show');inp.value='';err.textContent=''}document.getElementById('unlock').onclick=()=>{modal.classList.add('show');setTimeout(()=>inp.focus(),50)};document.getElementById('cancel').onclick=close;document.getElementById('submit').onclick=async()=>{try{const d=await dec(inp.value),box=document.getElementById('reservationBox');box.innerHTML='';Object.entries(d).forEach(([n,c])=>{const e=document.createElement('div');e.className='secret';e.innerHTML='<b></b><div class="code"></div><button class="btn">コピー</button>';e.querySelector('b').textContent=n;e.querySelector('.code').textContent=c;e.querySelector('button').onclick=()=>cp(c);box.appendChild(e)});document.getElementById('unlock').style.display='none';document.getElementById('lock').style.display='inline-block';close()}catch(e){err.textContent='パスワードが違うか、暗号データを読み取れません。'}};inp.onkeydown=e=>{if(e.key==='Enter')document.getElementById('submit').click()};document.getElementById('lock').onclick=()=>{document.getElementById('reservationBox').innerHTML='';document.getElementById('lock').style.display='none';document.getElementById('unlock').style.display='inline-block'}
 })();
 </script>
-<script src="app-v2.js?v=20261008-0905-photofix"></script>
-<script src="details-v2.js?v=20261008-0905-photofix"></script>
-<script src="tripit-list-v3.js?v=20261008-0905-photofix"></script>
-<script src="version-check.js?v=20261008-0905-photofix"></script>
-<script src="city-photos-v1.js?v=20261008-0905-photofix"></script>
-<script src="vxd-polish-v1.js?v=20261008-0905-photofix"></script>
-<script src="google-maps-links-v1.js?v=20261008-0905-photofix"></script>
-<script src="today-mode-v1.js?v=20261008-0905-photofix"></script>
-<script src="family-profile-v1.js?v=20261008-0905-photofix"></script>
-<script src="ga4-family-v1.js?v=20261008-0905-photofix"></script>
+<script>
+(function(){
+  function clean(s){return (s||'').replace(/\s+/g,' ').trim()}
+  function sectionDate(el){return clean(el.closest('.section')?.querySelector('h2')?.textContent||'')}
+  function collect(){
+    const seen=new Set(), rows=[];
+    document.querySelectorAll('.item').forEach(item=>{
+      const title=clean(item.querySelector('.title')?.textContent||'');
+      const note=clean(item.querySelector('.note')?.textContent||'');
+      if(!title)return;
+      const isWarn=!!item.querySelector('.badge.warn') || /要確認|未確認|未予約|未定/.test(title+' '+note);
+      if(!isWarn)return;
+      const key=sectionDate(item)+'|'+title;
+      if(seen.has(key))return; seen.add(key);
+      rows.push({date:sectionDate(item),title,note,item});
+    });
+    document.querySelectorAll('.badge.warn').forEach(b=>{
+      if(b.id==='todoOpen')return;
+      const parent=b.closest('.item');
+      if(parent)return;
+      const title=clean(b.closest('.section')?.querySelector('h2')?.textContent||b.parentElement?.textContent||'要確認');
+      const key='misc|'+title;if(seen.has(key))return;seen.add(key);
+      rows.push({date:'',title,note:'',item:null});
+    });
+    // Known unresolved items that may not carry a warn badge in the timeline yet.
+    const known=[
+      {date:'12/28（月）Vancouver → Victoria',title:'Harbour Air：出発時刻の最終確認',note:'正確な便・時刻はまだ未確認'},
+      {date:'12/29（火）Victoria → Vancouver / UBC',title:'BC Ferries Connector：出発時刻の最終確認',note:'正確な便・時刻はまだ未確認'},
+      {date:'12/27（日）Honolulu → Vancouver',title:'Coast Coal Harbour：宿泊人数の確認',note:'予約メールは3 guests。家族4名利用予定ならホテルへ確認'}
+    ];
+    known.forEach(x=>{const key=x.date+'|'+x.title;if(!seen.has(key)){seen.add(key);rows.push({...x,item:null})}});
+    return rows;
+  }
+  function render(){
+    const rows=collect(), list=document.getElementById('todoList'), count=document.getElementById('todoCount');
+    if(count)count.textContent=rows.length?'('+rows.length+')':'';
+    if(!list)return;
+    list.innerHTML=rows.length?rows.map((r,i)=>'<div style="background:#fff;border:1px solid #e8e1eb;border-radius:16px;padding:14px 15px;margin-bottom:10px;box-shadow:0 5px 14px rgba(82,76,110,.05)"><div style="font-size:11px;color:#9a8eaa;font-weight:800;letter-spacing:.06em">'+(r.date||'TODO')+'</div><div style="font-weight:800;color:#273247;margin-top:3px">'+r.title+'</div>'+(r.note?'<div style="font-size:13px;color:#7b8293;margin-top:5px">'+r.note+'</div>':'')+'</div>').join(''):'<div style="padding:30px;text-align:center;color:#7b8293">現在、要確認の項目はありません。</div>';
+  }
+  const o=document.getElementById('todoOverlay');
+  document.getElementById('todoOpen')?.addEventListener('click',()=>{render();o.style.display='block';o.scrollTop=0;document.body.style.overflow='hidden';try{gtag('event','todo_open',{family_member_id:window.tripFamilyProfile?.id||'unknown'})}catch(_){}});
+  document.getElementById('todoBack')?.addEventListener('click',()=>{o.style.display='none';document.body.style.overflow=''});
+  setTimeout(render,900);
+})();
+</script>
+<script src="app-v2.js?v=20261008-0920-todo"></script>
+<script src="details-v2.js?v=20261008-0920-todo"></script>
+<script src="tripit-list-v3.js?v=20261008-0920-todo"></script>
+<script src="version-check.js?v=20261008-0920-todo"></script>
+<script src="city-photos-v1.js?v=20261008-0920-todo"></script>
+<script src="vxd-polish-v1.js?v=20261008-0920-todo"></script>
+<script src="google-maps-links-v1.js?v=20261008-0920-todo"></script>
+<script src="today-mode-v1.js?v=20261008-0920-todo"></script>
+<script src="family-profile-v1.js?v=20261008-0920-todo"></script>
+<script src="ga4-family-v1.js?v=20261008-0920-todo"></script>
 </body></html>
