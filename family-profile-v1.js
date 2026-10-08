@@ -2,7 +2,7 @@
 (function(){
   const KEY='tsuruta_family_profile_v1';
   const members=[
-    {label:'Henri',id:'family_01'},
+    {label:'パパ',id:'family_01'},
     {label:'Emi',id:'family_02'},
     {label:'Saki',id:'family_03'},
     {label:'Takeru',id:'family_04'}
@@ -66,6 +66,10 @@
 
   const current=read();
   if(current){
+    if(current.id==='family_01' && current.label!=='パパ'){
+      current.label='パパ';
+      localStorage.setItem(KEY,JSON.stringify(current));
+    }
     window.tripFamilyProfile={id:current.id};
     renderBadge();
     document.dispatchEvent(new CustomEvent('tripFamilyProfileReady',{detail:{id:current.id,source:'stored'}}));
