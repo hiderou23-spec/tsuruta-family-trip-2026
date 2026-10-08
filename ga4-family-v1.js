@@ -39,23 +39,38 @@
 
   document.addEventListener('click',e=>{
     const map=e.target.closest('a.gmap-link');
-    if(map)track('google_maps_open',{context:contextTitle(map)});
+    if(map){track('google_maps_open',{context:contextTitle(map)});window.tripUsage?.trackAction('google_maps_open')}
 
     const item=e.target.closest('.item[role="button"]');
     if(item && !e.target.closest('a,button,summary,details')){
-      track('trip_detail_open',{item_title:(item.querySelector('.title')?.textContent||'').trim().slice(0,100)});
+      const title=(item.querySelector('.title')?.textContent||'').trim().slice(0,100);
+      track('trip_detail_open',{item_title:title});
+      window.tripUsage?.trackAction('trip_detail_open');
+      window.tripUsage?.trackItem(title);
     }
 
     const btn=e.target.closest('button');
     if(btn && /予約メール詳細/.test(btn.textContent||'')){
-      track('reservation_detail_open',{context:contextTitle(btn)});
+      track('reservation_detail_open',{context:contextTitle(btn)});window.tripUsage?.trackAction('reservation_detail_open');
     }
 
     const today=e.target.closest('.today-btn');
     if(today)track('today_action',{action_label:(today.textContent||'').trim().slice(0,60)});
 
     const nav=e.target.closest('#dateNav a');
-    if(nav)track('date_nav_open',{date:nav.dataset.date||''});
+    if(nav){track('date_nav_open',{date:nav.dataset.date||''});window.tripUsage?.trackAction('date_nav_open')}
+
+    const bottom=e.target.closest('#tripBottomBar button');
+    if(bottom){
+      const tab=({tbSchedule:'schedule',tbTodo:'todo',tbFamily:'family',tbAccount:'account'})[bottom.id]||bottom.id;
+      track('bottom_nav_click',{tab});window.tripUsage?.trackAction('bottom_nav_'+tab);
+    }
+
+    const collab=e.target.closest('.fc-open');
+    if(collab){track('family_collab_open',{context:contextTitle(collab)});window.tripUsage?.trackAction('family_collab_open')}
+
+    const todo=e.target.closest('#todoOpen');
+    if(todo)window.tripUsage?.trackAction('todo_open');
 
     const phone=e.target.closest('a[href^="tel:"]');
     if(phone)track('hotel_phone_tap',{context:contextTitle(phone)});
