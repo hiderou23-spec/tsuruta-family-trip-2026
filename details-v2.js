@@ -254,9 +254,9 @@
     "West Coast Suites":{
       type:"hotel",title:"West Coast Suites at UBC",booking:"West Coast Suites",
       dateLabel:"DEC 29 – DEC 30",address:"5959 Student Union Blvd., Vancouver, BC V6T 1Z1",
-      photo:"https://bm-communications-2021.sites.olt.ubc.ca/files/2021/07/MR-placeholder-1-940x897.jpg",
-      photoCaption:"UBC Vancouver campus",
-      gallery:"https://www.google.com/travel/hotels/entity/ChgIhInK2Izw_4OSARoLL2cvMXY5Z3Y0aGgQAQ",
+      photo:"",
+      photoCaption:"West Coast Suites at UBC",
+      gallery:"https://suitesatubc.com/west-coast-suites-vancouver/",
       checkin:"4:00 PM",checkout:"11:00 AM",room:"Suite with Kitchen / King Bed & Queen Sofa Bed",
       guests:"家族4名",cancel:"到着前日16:00 PSTまでキャンセル無料、その後は初泊100%",
       phone:"+1 604 822 1000",email:"reservations@housing.ubc.ca",
@@ -276,7 +276,13 @@
   function reservation(name){return (window.tripReservations||{})[name]||'—'}
   function fullInfoButton(key){return '<button type="button" class="btn" onclick="showTripFullInfo(\''+key.replace(/'/g,"\\'")+'\')">📄 予約メール詳細</button>'}
   function heroPhotoHtml(d){
-    if(!d.photo)return '';
+    if(!d.photo){
+      if(!d.gallery)return '';
+      return '<div style="margin:14px 22px 20px;padding:16px 18px;border:1px solid #e8e1ee;border-radius:14px;background:#fff;box-shadow:0 6px 16px rgba(85,72,105,.07)">'+
+        '<div style="font-size:14px;color:#6d7472;margin-bottom:8px">写真は公式ページで確認できます。</div>'+
+        '<a href="'+d.gallery+'" target="_blank" rel="noopener" class="btn" style="text-decoration:none">📷 公式写真を見る</a>'+
+        '</div>';
+    }
     return '<figure style="margin:0 22px 18px;border-radius:16px;overflow:hidden;border:1px solid #e5e5e5;background:#fff">'+
       '<img src="'+d.photo+'" alt="'+(d.photoCaption||d.title)+'" loading="lazy" decoding="async" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="display:block;width:100%;aspect-ratio:16/9;object-fit:cover">'+
       '<div style="display:none;min-height:140px;align-items:center;justify-content:center;padding:20px;color:#737b8f;background:#f7f7fa;text-align:center">写真を表示できません。下の「写真を見る」から公式ページをご確認ください。</div>'+
