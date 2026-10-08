@@ -350,6 +350,14 @@
       official:"https://royalbcmuseum.bc.ca/",
       map:"https://www.google.com/maps/search/?api=1&query=Royal+BC+Museum+Victoria"
     },
+    "Hawaii Waikiki Gun Club":{
+      type:"spot",title:"Hawaii Waikīkī Gun Club",dateLabel:"SAT, DEC 26",location:"2142 Kalākaua Ave 2nd Floor, Honolulu",
+      highlight:"ワイキキ中心部で観光客向けに実弾射撃を体験できる屋内レンジ。Takeruの希望を旅程に入れやすい立地。",
+      time:"目安 約1時間前後＋移動。予約内容により変動。",reservation:"12歳以上。21歳未満は保護者同伴。Takeru（16歳）は利用可能。事前予約推奨。",
+      tips:"有効な身分証（パスポート等）を持参。飲酒後は利用不可。第一候補はこちら。代替は808 Gun Club（Kakaʻako）で、14〜18歳は料金を支払う成人の同伴が必要。",
+      official:"https://www.hawaiigunclub.com/homejpn",
+      map:"https://www.google.com/maps/search/?api=1&query=Hawaii+Waikiki+Gun+Club"
+    },
     "Rock-A-Hula":{
       type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",
       dateLabel:"FRI, DEC 25",time:"5:30 PM",location:"Royal Hawaiian Shopping Center",
@@ -511,6 +519,7 @@
     ['The Butchart Gardens','Butchart Gardens Christmas'],
     ['Inner Harbour・BC州議事堂周辺散策','Inner Harbour Victoria'],
     ['Royal BC Museum','Royal BC Museum'],
+    ['Hawaii Waikīkī Gun Club','Hawaii Waikiki Gun Club'],
     ['Rock-A-Hula','Rock-A-Hula']
   ];
   document.querySelectorAll('.item').forEach(item=>{
