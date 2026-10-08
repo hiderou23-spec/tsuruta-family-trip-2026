@@ -55,7 +55,9 @@
   function keyFor(item){const sec=item.closest('.section')?.id||'';const title=(item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim();return sec+'|'+title}
   function baseTitle(item){return (item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim()}
   function shouldConsult(title){
-    return /朝食$|昼食$|夕食$|Christmas Eve Dinner|ビーチ・観光|買い物・観光|自由行動|Victoria散策/.test(title);
+    const t=(title||'').replace(/\s+/g,' ').trim();
+    return /(?:^|\s)(朝食|昼食|夕食)$/.test(t)
+      || /Christmas Eve Dinner|ビーチ・観光|買い物・観光|自由行動|Victoria散策/.test(t);
   }
   function planFor(title){
     if(plans[title])return plans[title];
@@ -153,10 +155,10 @@
   }
 
   function planningItems(){
-    return [...document.querySelectorAll('.item[data-family-plan="1"]')].map(item=>({
+    return [...document.querySelectorAll('.item')].map(item=>({
       item,key:keyFor(item),title:baseTitle(item),
       date:(item.closest('.section')?.querySelector('h2')?.textContent||'').trim()
-    }));
+    })).filter(x=>shouldConsult(x.title));
   }
   function renderSummary(){
     const s=read(), members=['family_01','family_02','family_03','family_04'];
@@ -199,6 +201,7 @@
     if(!title || !shouldConsult(title)){
       item.removeAttribute('data-family-plan');
       t?.querySelector('.planning-hint')?.remove();
+      item.style.cursor='';
       return;
     }
     item.style.cursor='pointer';item.dataset.familyPlan='1';
