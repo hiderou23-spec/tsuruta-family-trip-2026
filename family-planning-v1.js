@@ -84,7 +84,7 @@
     .fp-admin{margin-top:10px;padding-top:10px;border-top:1px dashed #e4ddec}
     .fp-admin button{width:100%;border:0;border-radius:12px;padding:10px;background:linear-gradient(135deg,#82b9eb,#ad93de);color:#fff;font-weight:800}
     .planning-hint{font-size:10px;color:#8d83a0;margin-left:5px}
-    .fp-summary-btn{position:fixed;right:12px;bottom:54px;z-index:91;display:none;border:1px solid #dfd8e8;background:rgba(255,255,255,.94);backdrop-filter:blur(7px);box-shadow:0 4px 14px rgba(80,72,102,.08);border-radius:999px;padding:8px 11px;font-size:11px;font-weight:800;color:#5d6880}
+    .fp-summary-btn{position:fixed;right:12px;bottom:54px;z-index:91;display:none!important;border:1px solid #dfd8e8;background:rgba(255,255,255,.94);backdrop-filter:blur(7px);box-shadow:0 4px 14px rgba(80,72,102,.08);border-radius:999px;padding:8px 11px;font-size:11px;font-weight:800;color:#5d6880}
     .fp-summary-btn.show{display:block}
     #familySummaryOverlay{position:fixed;inset:0;z-index:1450;background:#fffaf6;display:none;overflow:auto}
     #familySummaryOverlay .fps-shell{max-width:760px;margin:0 auto;min-height:100%;background:linear-gradient(180deg,#fffaf6,#f9fbff 60%,#fff)}
@@ -290,5 +290,20 @@
     item.addEventListener('click',e=>{if(e.target.closest('a,button,summary,details'))return;open(item)});
   });
 
-  window.tripFamilyPlanning={open,read,renderSummary,renderHome};
+  function openHub(){
+    const uid=me();
+    if(!uid)return;
+    if(isAdmin()){
+      renderSummary();
+      summaryOverlay.style.display='block';
+      summaryOverlay.scrollTop=0;
+      document.body.style.overflow='hidden';
+      window.tripAnalytics?.track('family_summary_open',{source:'bottom_bar'});
+      return;
+    }
+    const pending=unansweredFor(uid);
+    if(pending.length){open(pending[0].item);return}
+    homeCard.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  window.tripFamilyPlanning={open,openHub,read,renderSummary,renderHome};
 })();
