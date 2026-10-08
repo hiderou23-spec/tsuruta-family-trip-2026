@@ -80,6 +80,12 @@
     .fp-admin{margin-top:10px;padding-top:10px;border-top:1px dashed #e4ddec}
     .fp-admin button{width:100%;border:0;border-radius:12px;padding:10px;background:linear-gradient(135deg,#82b9eb,#ad93de);color:#fff;font-weight:800}
     .planning-hint{font-size:10px;color:#8d83a0;margin-left:5px}
+    .fp-summary-btn{position:fixed;right:12px;bottom:54px;z-index:91;display:none;border:1px solid #dfd8e8;background:rgba(255,255,255,.94);backdrop-filter:blur(7px);box-shadow:0 4px 14px rgba(80,72,102,.08);border-radius:999px;padding:8px 11px;font-size:11px;font-weight:800;color:#5d6880}
+    .fp-summary-btn.show{display:block}
+    #familySummaryOverlay{position:fixed;inset:0;z-index:1450;background:#fffaf6;display:none;overflow:auto}
+    #familySummaryOverlay .fps-shell{max-width:760px;margin:0 auto;min-height:100%;background:linear-gradient(180deg,#fffaf6,#f9fbff 60%,#fff)}
+    .fps-row{background:#fff;border:1px solid #e8e1eb;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 5px 14px rgba(82,76,110,.05)}
+    .fps-member{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px solid #f0ebf3;font-size:13px}
   `;
   document.head.appendChild(style);
 
@@ -88,6 +94,16 @@
   overlay.innerHTML='<div class="fp-shell"><div class="fp-head"><button class="fp-back" aria-label="戻る">‹</button><div><div style="font-weight:800;font-size:18px">家族で決める</div><div id="fpSyncState" style="font-size:11px;color:#8b8295">この端末に保存中</div></div></div><div id="fpBody" style="padding:16px 14px 34px"></div></div>';
   document.body.appendChild(overlay);
   overlay.querySelector('.fp-back').onclick=()=>{overlay.style.display='none';document.body.style.overflow=''};
+
+  const summaryBtn=document.createElement('button');
+  summaryBtn.type='button';summaryBtn.className='fp-summary-btn';summaryBtn.textContent='👨‍👩‍👧‍👦 家族の希望一覧';
+  document.body.appendChild(summaryBtn);
+
+  const summaryOverlay=document.createElement('div');
+  summaryOverlay.id='familySummaryOverlay';
+  summaryOverlay.innerHTML='<div class="fps-shell"><div class="fp-head" style="position:sticky;top:0;z-index:3;background:rgba(255,250,246,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e9e2ed;padding:12px 16px;display:flex;align-items:center;gap:12px"><button id="fpsBack" class="fp-back" aria-label="戻る">‹</button><div><div style="font-weight:800;font-size:18px">家族の希望一覧</div><div style="font-size:11px;color:#8b8295">Henri 管理者ビュー</div></div></div><div id="fpsBody" style="padding:16px 14px 34px"></div></div>';
+  document.body.appendChild(summaryOverlay);
+  document.getElementById('fpsBack').onclick=()=>{summaryOverlay.style.display='none';document.body.style.overflow=''};
 
   let current=null;
   function render(){
@@ -122,6 +138,46 @@
     window.tripAnalytics?.track('family_plan_open',{plan_key:current.key,item_title:title});
   }
 
+  function planningItems(){
+    return [...document.querySelectorAll('.item[data-family-plan="1"]')].map(item=>({
+      item,key:keyFor(item),title:baseTitle(item),
+      date:(item.closest('.section')?.querySelector('h2')?.textContent||'').trim()
+    }));
+  }
+  function renderSummary(){
+    const s=read(), members=['family_01','family_02','family_03','family_04'];
+    const rows=planningItems();
+    const body=document.getElementById('fpsBody');
+    let voted=0,decided=0;
+    rows.forEach(r=>{const e=s[r.key]||{};if(Object.keys(e.votes||{}).length)voted++;if(e.decision)decided++;});
+    let html='<div class="fp-card"><div style="font-size:13px;color:#70798c">対象予定 <b>'+rows.length+'</b>件 ・ 回答あり <b>'+voted+'</b>件 ・ 決定済み <b>'+decided+'</b>件</div><div style="font-size:11px;color:#9a8eaa;margin-top:5px">現在はこのiPhone内の回答を表示。Firebase接続後は家族全員分を共有表示します。</div></div>';
+    rows.forEach(r=>{
+      const e=s[r.key]||{votes:{},decision:null}, p=planFor(r.title);
+      const decision=p.recs.find(x=>x.id===e.decision);
+      html+='<div class="fps-row" data-summary-key="'+esc(r.key)+'"><div style="font-size:10px;color:#9a8eaa;font-weight:800">'+esc(r.date)+'</div><div style="font-weight:800;color:#273247;margin:2px 0 8px">'+esc(r.title)+'</div>';
+      html+='<div style="font-size:12px;margin-bottom:8px;color:'+(decision?'#4776a8':'#a06c2f')+'">'+(decision?'✓ 決定：'+esc(decision.name):'未決定')+'</div>';
+      members.forEach(id=>{
+        const vv=e.votes?.[id];
+        const rr=vv?p.recs.find(x=>x.id===vv.choice):null;
+        const mark=vv?(vv.feel==='like'?'👍':vv.feel==='neutral'?'○':'△'):'—';
+        html+='<div class="fps-member"><b>'+esc(label(id))+'</b><span style="color:#70798c;text-align:right">'+mark+' '+esc(rr?.name||'未回答')+'</span></div>';
+      });
+      html+='<button type="button" data-open-summary="'+esc(r.key)+'" style="margin-top:10px;border:1px solid #ddd7e8;background:#fff;border-radius:10px;padding:7px 10px;font-weight:700;color:#526077">この予定を開く</button></div>';
+    });
+    body.innerHTML=html;
+    body.querySelectorAll('[data-open-summary]').forEach(b=>b.onclick=()=>{
+      const found=rows.find(x=>x.key===b.dataset.openSummary); if(!found)return;
+      summaryOverlay.style.display='none'; open(found.item);
+    });
+  }
+  function refreshAdmin(){
+    const admin=me()===ADMIN;
+    summaryBtn.classList.toggle('show',admin);
+  }
+  summaryBtn.onclick=()=>{renderSummary();summaryOverlay.style.display='block';summaryOverlay.scrollTop=0;document.body.style.overflow='hidden';window.tripAnalytics?.track('family_summary_open',{})};
+  document.addEventListener('tripFamilyProfileReady',refreshAdmin);
+  setTimeout(refreshAdmin,500);
+
   document.querySelectorAll('.item').forEach(item=>{
     if(item.querySelector('.badge.ok'))return;
     const title=baseTitle(item);
@@ -132,5 +188,5 @@
     item.addEventListener('click',e=>{if(e.target.closest('a,button,summary,details'))return;open(item)});
   });
 
-  window.tripFamilyPlanning={open,read};
+  window.tripFamilyPlanning={open,read,renderSummary};
 })();
