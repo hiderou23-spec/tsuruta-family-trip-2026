@@ -9,6 +9,7 @@
   };
   const PROFILE_KEY='tsuruta_family_profile_v1';
   let auth=null,db=null,authMod=null,fs=null,current=null;
+  let presenceTimer=null,presenceUnsub=null;
 
   const style=document.createElement('style');
   style.textContent=`
@@ -18,6 +19,7 @@
     .fa-box input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #d9d3e3;border-radius:11px;margin:6px 0 10px;font:inherit}
     .fa-primary{width:100%;border:0;border-radius:11px;padding:11px;background:linear-gradient(135deg,#82b9eb,#ad93de);color:#fff;font-weight:800}
     .fa-link{border:0;background:transparent;color:#687eab;font-weight:800;padding:8px}.fa-err{font-size:12px;color:#a34c4c;min-height:18px}
+    .fa-presence{margin-top:12px;background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:12px}.fa-presence-title{font-size:12px;font-weight:900;color:#495268;margin-bottom:7px}.fa-presence-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #f0ebf3}.fa-presence-row:first-of-type{border-top:0}.fa-dot{width:9px;height:9px;border-radius:50%;background:#c8c4cf}.fa-dot.on{background:#54a873;box-shadow:0 0 0 3px rgba(84,168,115,.12)}.fa-presence-name{font-size:12px;font-weight:850;color:#384155}.fa-presence-meta{margin-left:auto;font-size:10.5px;color:#8a8295;text-align:right}
   `;
   document.head.appendChild(style);
 
@@ -61,6 +63,48 @@
     }
     dispatch(p);
   }
+  function stopPresence(){
+    if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null}
+    if(presenceUnsub){presenceUnsub();presenceUnsub=null}
+  }
+  async function writePresence(){
+    const p=current;
+    if(!p?.authenticated||!db||!fs)return;
+    try{
+      await fs.setDoc(fs.doc(db,'family_presence',p.uid),{
+        uid:p.uid,memberId:p.memberId,label:p.label,role:p.role,
+        lastSeen:fs.serverTimestamp(),visible:document.visibilityState==='visible'
+      },{merge:true});
+    }catch(_){}
+  }
+  function startPresence(){
+    stopPresence();
+    if(!current?.authenticated)return;
+    writePresence();
+    presenceTimer=setInterval(writePresence,60000);
+  }
+  function fmtSeen(ts){
+    try{
+      const d=ts?.toDate?.(); if(!d)return'未取得';
+      const diff=Date.now()-d.getTime();
+      if(diff<120000)return'オンライン';
+      if(diff<3600000)return Math.max(2,Math.round(diff/60000))+'分前';
+      return new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(d);
+    }catch(_){return'未取得'}
+  }
+  function watchPresence(){
+    if(presenceUnsub){presenceUnsub();presenceUnsub=null}
+    if(current?.role!=='admin'||!db||!fs)return;
+    const host=document.getElementById('faPresenceRows'); if(!host)return;
+    presenceUnsub=fs.onSnapshot(fs.collection(db,'family_presence'),snap=>{
+      const by={}; snap.forEach(s=>{const d=s.data()||{};if(d.memberId)by[d.memberId]=d});
+      const members=[['family_01','パパ'],['family_02','Emi'],['family_03','Saki'],['family_04','Takeru']];
+      host.innerHTML=members.map(([id,label])=>{
+        const d=by[id]||{}; const online=d.lastSeen?.toDate&&Date.now()-d.lastSeen.toDate().getTime()<120000&&d.visible!==false;
+        return '<div class="fa-presence-row"><span class="fa-dot '+(online?'on':'')+'"></span><span class="fa-presence-name">'+label+'</span><span class="fa-presence-meta">'+fmtSeen(d.lastSeen)+'</span></div>';
+      }).join('');
+    },()=>{host.innerHTML='<div style="font-size:11px;color:#9a8290">Firestoreルール公開後に表示されます。</div>'});
+  }
   function render(){
     const on=current?.authenticated;
     document.getElementById('faClose').style.display=on?'inline-block':'none';
@@ -71,6 +115,7 @@
       a.innerHTML='<div style="background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:14px"><b>'+current.label+'</b><div style="font-size:12px;color:#7d8493;margin-top:4px">'+
         (current.role==='admin'?'管理者：最終決定・家族管理が可能':current.role==='viewer'?'閲覧のみ':'家族メンバー：投票・既読・コメントが可能')+
         '</div></div>'+
+        (current.role==='admin'?'<div class="fa-presence"><div class="fa-presence-title">家族の利用状況</div><div id="faPresenceRows"><div style="font-size:11px;color:#8a8295">確認中…</div></div></div>':'')+
         '<button id="faChangePw" class="fa-link" style="width:100%;margin-top:8px" type="button">パスワード変更</button>'+
         '<div id="faChangeArea" style="display:none;margin-top:6px">'+
           '<input id="faCurrentPw" type="password" autocomplete="current-password" placeholder="現在のパスワード">'+
@@ -81,6 +126,7 @@
         '</div>'+
         '<button id="faLogout" class="fa-link" style="width:100%;margin-top:8px" type="button">ログアウト</button>';
       document.getElementById('faLogout').onclick=async()=>{await authMod.signOut(auth);};
+      if(current.role==='admin')watchPresence();
       document.getElementById('faChangePw').onclick=()=>{const el=document.getElementById('faChangeArea');el.style.display=el.style.display==='none'?'block':'none';};
       document.getElementById('faChangeSubmit').onclick=async()=>{
         const msg=document.getElementById('faChangeErr');
@@ -126,6 +172,7 @@
       window.tripFamilyAuthApi={auth,db,authMod,fs,isAdmin:()=>window.tripFamilyAuth?.role==='admin',canWrite:()=>['admin','member'].includes(window.tripFamilyAuth?.role)};
       authMod.onAuthStateChanged(auth,async user=>{
         if(!user){
+          stopPresence();
           setProfile({authenticated:false,role:'guest'});render();
           setTimeout(()=>{ if(!window.tripFamilyAuth?.authenticated) modal.classList.add('show'); },900);
           return
@@ -138,6 +185,7 @@
           }else setProfile(p);
         }catch(e){setProfile({authenticated:false,role:'error'});}
         render();
+        if(window.tripFamilyAuth?.authenticated)startPresence();
       });
     }catch(e){console.warn('Family Auth unavailable',e);setProfile({authenticated:false,role:'unavailable'});}
   }
@@ -167,6 +215,8 @@
       err.textContent='再設定メールを送信できませんでした。メールアドレスを確認してください。';
     }
   };
+  document.addEventListener('visibilitychange',()=>{if(current?.authenticated)writePresence()});
+  window.addEventListener('focus',()=>{if(current?.authenticated)writePresence()});
   window.openTripFamilyAccount=()=>{modal.classList.add('show');render()};
   init();
 })();
