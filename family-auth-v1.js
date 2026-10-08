@@ -62,6 +62,7 @@
   }
   function render(){
     const on=current?.authenticated;
+    document.getElementById('faClose').style.display=on?'inline-block':'none';
     document.getElementById('faLogin').style.display=on?'none':'block';
     const a=document.getElementById('faAccount');
     a.style.display=on?'block':'none';
@@ -106,7 +107,7 @@
     }catch(e){console.warn('Family Auth unavailable',e);setProfile({authenticated:false,role:'unavailable'});}
   }
   badge.onclick=()=>{modal.classList.add('show');render()};
-  document.getElementById('faClose').onclick=()=>modal.classList.remove('show');
+  document.getElementById('faClose').onclick=()=>{if(current?.authenticated)modal.classList.remove('show')};
   document.getElementById('faSubmit').onclick=async()=>{
     const err=document.getElementById('faErr');err.textContent='確認しています…';
     try{
