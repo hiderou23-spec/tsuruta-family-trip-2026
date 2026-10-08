@@ -48,11 +48,13 @@
   function renderBadge(){
     const s=read();
     if(!s){badge.classList.remove('show');return}
-    badge.innerHTML='<span class="family-profile-dot"></span><span>'+s.label+'</span><span>変更</span>';
+    const logged=window.tripFamilyAuth?.authenticated;badge.innerHTML='<span class="family-profile-dot"></span><span>'+s.label+'</span><span>'+(logged?'アカウント':'変更')+'</span>';
     badge.classList.add('show');
   }
-  function open(){modal.classList.add('show')}
+  function open(){if(window.tripFamilyAuth?.authenticated){window.openTripFamilyAccount?.();return}modal.classList.add('show')}
   function close(){modal.classList.remove('show')}
+
+  document.addEventListener('tripFamilyAuthReady',e=>{const p=e.detail;if(p?.authenticated){localStorage.setItem(KEY,JSON.stringify({id:p.memberId,label:p.label}));window.tripFamilyProfile={id:p.memberId};renderBadge();close()}});
 
   modal.addEventListener('click',e=>{
     const b=e.target.closest('.family-profile-choice');
