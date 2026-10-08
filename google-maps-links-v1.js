@@ -31,7 +31,7 @@
     a.classList.add('gmap-link');
     const raw=(a.textContent||'').replace(/[📍🗺️]/g,'').replace(/\bMaps?\b/ig,'').trim();
     const prefix=raw ? '<span class="gmap-prefix">'+raw+'</span><span class="gmap-sep"> · </span>' : '';
-    a.innerHTML=prefix+icon+'<span class="gmap-label">Google Maps</span>';
+    a.innerHTML=prefix+icon;
     a.setAttribute('aria-label',(raw?raw+' - ':'')+'Google Mapsで開く');
     a.removeAttribute('target');
   }
@@ -58,10 +58,10 @@
 
   const style=document.createElement('style');
   style.textContent=
-    '.gmap-link{display:inline-flex!important;align-items:center!important;gap:6px!important;text-decoration:none!important}'+
-    '.gmap-icon{width:19px;height:19px;flex:0 0 19px;display:inline-block;vertical-align:middle}'+
-    '.gmap-label{font-weight:800;white-space:nowrap}.gmap-prefix{min-width:0}.gmap-sep{color:#a0a5b1}'+
-    '.btn.gmap-link{min-height:42px;padding:7px 10px!important}';
+    '.gmap-link{display:inline-flex!important;align-items:center!important;gap:4px!important;text-decoration:none!important}'+
+    '.gmap-icon{width:14px;height:14px;flex:0 0 14px;display:inline-block;vertical-align:middle}'+
+    '.gmap-prefix{min-width:0}.gmap-sep{color:#a0a5b1}'+
+    '.btn.gmap-link{min-height:36px;padding:6px 8px!important}';
   document.head.appendChild(style);
 
   decorateAll(document);
