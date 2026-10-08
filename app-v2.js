@@ -10,9 +10,9 @@
     <div style="width:min(430px,100%);background:#fff;border:1px solid #ddd;border-radius:20px;padding:22px;box-shadow:0 16px 40px rgba(0,0,0,.12)">
       <div style="font-size:12px;color:#65716e">Tsuruta Family Trip 2026</div>
       <h2 style="margin:6px 0 4px">家族用パスワード</h2>
-      <p style="font-size:13px;color:#65716e">予約情報を表示するため、家族共通パスワードを入力してください。</p>
+      <p style="font-size:13px;color:#65716e">初回のみ家族共通パスワードを入力してください。この端末では通常、次回から自動で開きます。</p>
       <input id="familyPw" type="password" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:11px;border:1px solid #bbb;border-radius:9px;font:inherit">
-      <label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px"><input id="rememberFamilyDevice" type="checkbox"> この端末で記憶する</label>
+      <label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px"><input id="rememberFamilyDevice" type="checkbox" checked> この端末で記憶する</label>
       <div id="familyErr" style="color:#a33;font-size:12px;min-height:18px"></div>
       <button id="familyUnlock" class="btn" style="width:100%;padding:10px">ロック解除</button>
     </div>`;
