@@ -44,6 +44,24 @@
   document.body.appendChild(modal);
   modal.querySelector('.fc-back').onclick=close;
 
+  function baseTitle(item){
+    return (item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim();
+  }
+  function shouldCollaborate(item){
+    const title=baseTitle(item);
+
+    // Special case: the two Honolulu arrival items need family rendezvous coordination.
+    if(/Honolulu到着/.test(title))return true;
+
+    // Meals / dining.
+    if(/朝食|昼食|夕食|Dinner|ビュッフェ|レストラン|食事/.test(title))return true;
+
+    // Sightseeing, activities, shopping destinations, and experiences.
+    if(/Diamond Head|Blowhole|Sandy Beach|Makapu|Kailua|Pali Lookout|Waikiki Beach|Ala Moana|Kualoa Ranch UTV|Rock-A-Hula|Gun Club|サンセット|Canada Place|Coal Harbour散策|Inner Harbour散歩|Butchart Gardens|Inner Harbour・BC州議事堂|UBCキャンパス|生活圏を案内/.test(title))return true;
+
+    return false;
+  }
+
   function itemKey(item){
     const sec=item.closest('.section')?.id||'';
     const title=(item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim();
@@ -103,6 +121,7 @@
     mini.innerHTML=members.map(m=>'<span class="fc-mini-avatar '+miniClass(responses[m.id]||{})+'" title="'+esc(m.label)+'">'+m.initial+'</span>').join('');
   }
   async function loadEntryStatus(item){
+    if(!shouldCollaborate(item))return;
     api=window.tripFamilyAuthApi;
     if(!api?.db||!api?.fs||!window.tripFamilyAuth?.authenticated)return;
     try{
@@ -118,7 +137,12 @@
   }
   function decorate(){
     document.querySelectorAll('.item').forEach(item=>{
-      if(item.querySelector('.fc-entry'))return;
+      const existing=item.querySelector('.fc-entry');
+      if(!shouldCollaborate(item)){
+        existing?.remove();
+        return;
+      }
+      if(existing)return;
       const t=item.querySelector('.title');if(!t)return;
       const box=document.createElement('div');box.className='fc-entry';
       box.innerHTML='<div class="fc-mini-family">'+members.map(m=>'<span class="fc-mini-avatar" title="'+esc(m.label)+'">'+m.initial+'</span>').join('')+'</div><button class="fc-open" type="button">家族メモ・参加状況 ›</button>';
