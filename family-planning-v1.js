@@ -94,6 +94,16 @@
     #familySummaryOverlay .fps-shell{max-width:760px;margin:0 auto;min-height:100%;background:linear-gradient(180deg,#fffaf6,#f9fbff 60%,#fff)}
     .fps-row{background:#fff;border:1px solid #e8e1eb;border-radius:16px;padding:14px;margin:10px 0;box-shadow:0 5px 14px rgba(82,76,110,.05)}
     .fps-member{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px solid #f0ebf3;font-size:13px}
+    .fp-home-card{margin:10px 0 12px;padding:14px;border:1px solid #e5deeb;border-radius:18px;background:linear-gradient(135deg,#f8fcff,#f8f4ff 58%,#fff9ef);box-shadow:0 7px 18px rgba(82,76,110,.06)}
+    .fp-home-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .fp-home-title{font-weight:800;color:#273247;font-size:16px}.fp-home-count{font-size:12px;color:#7f7891}
+    .fp-progress{height:7px;border-radius:999px;background:#ebe7f0;overflow:hidden;margin:10px 0}.fp-progress>span{display:block;height:100%;background:linear-gradient(90deg,#82b9eb,#ad93de);border-radius:inherit}
+    .fp-quick{background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:12px;margin-top:10px}.fp-quick-q{font-size:13px;font-weight:800;color:#35415a;margin-bottom:8px}
+    .fp-quick-options{display:grid;gap:7px}.fp-quick-options button{border:1px solid #ddd7e8;background:#fff;border-radius:11px;padding:9px 10px;text-align:left;color:#4e5b72;font-weight:700}
+    .fp-home-open{margin-top:10px;border:0;background:transparent;color:#617eb3;font-weight:800;padding:4px 0}
+    .fp-done{font-size:13px;color:#527b69;font-weight:800;padding:8px 0}
+    .fp-nudge{position:fixed;left:50%;bottom:78px;transform:translateX(-50%);z-index:1500;width:min(420px,calc(100% - 28px));background:#fff;border:1px solid #e5deeb;border-radius:16px;padding:13px 14px;box-shadow:0 14px 34px rgba(72,64,96,.16);display:none}
+    .fp-nudge.show{display:block}.fp-nudge b{color:#273247}.fp-nudge-actions{display:flex;gap:8px;margin-top:9px}.fp-nudge-actions button{border:1px solid #ddd7e8;background:#fff;border-radius:10px;padding:8px 10px;font-weight:700;color:#526077}.fp-nudge-actions .primary{background:linear-gradient(135deg,#82b9eb,#ad93de);color:#fff;border:0}
   `;
   document.head.appendChild(style);
 
@@ -112,6 +122,17 @@
   summaryOverlay.innerHTML='<div class="fps-shell"><div class="fp-head" style="position:sticky;top:0;z-index:3;background:rgba(255,250,246,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e9e2ed;padding:12px 16px;display:flex;align-items:center;gap:12px"><button id="fpsBack" class="fp-back" aria-label="戻る">‹</button><div><div style="font-weight:800;font-size:18px">家族の希望一覧</div><div style="font-size:11px;color:#8b8295">Henri 管理者ビュー</div></div></div><div id="fpsBody" style="padding:16px 14px 34px"></div></div>';
   document.body.appendChild(summaryOverlay);
   document.getElementById('fpsBack').onclick=()=>{summaryOverlay.style.display='none';document.body.style.overflow=''};
+
+  const homeCard=document.createElement('section');
+  homeCard.id='familyPlanningHome';
+  homeCard.className='fp-home-card';
+  const navwrap=document.querySelector('.navwrap');
+  if(navwrap)navwrap.insertAdjacentElement('afterend',homeCard);
+
+  const nudge=document.createElement('div');
+  nudge.className='fp-nudge';nudge.id='fpNudge';
+  nudge.innerHTML='<b id="fpNudgeText"></b><div class="fp-nudge-actions"><button type="button" id="fpNudgeLater">あとで</button><button type="button" class="primary" id="fpNudgeAnswer">答える</button></div>';
+  document.body.appendChild(nudge);
 
   let current=null;
   function render(){
@@ -160,6 +181,67 @@
       date:(item.closest('.section')?.querySelector('h2')?.textContent||'').trim()
     })).filter(x=>shouldConsult(x.title));
   }
+  function unansweredFor(uid){
+    if(!uid)return [];
+    const s=read();
+    return planningItems().filter(r=>!(s[r.key]?.votes||{})[uid]);
+  }
+  function answeredCount(uid){
+    const rows=planningItems(), s=read();
+    return rows.filter(r=>!!(s[r.key]?.votes||{})[uid]).length;
+  }
+  function quickVote(row,choice){
+    const uid=me();if(!uid)return;
+    const vote={choice,feel:'like',updated:Date.now()};
+    if(window.tripSharedPlanning?.saveVote)window.tripSharedPlanning.saveVote(row.key,uid,vote);
+    else{const s=read();const e=s[row.key]||{votes:{},decision:null};e.votes=e.votes||{};e.votes[uid]=vote;s[row.key]=e;save(s);}
+    window.tripAnalytics?.track('family_quick_answer',{plan_key:row.key,choice});
+    renderHome();
+  }
+  function renderHome(){
+    const uid=me(), rows=planningItems();
+    if(!uid||!rows.length){homeCard.style.display='none';return}
+    homeCard.style.display='block';
+    const s=read(), answered=answeredCount(uid), total=rows.length, pending=unansweredFor(uid);
+    const pct=Math.round((answered/Math.max(total,1))*100);
+    let admin='';
+    if(uid===ADMIN){
+      const members=['family_01','family_02','family_03','family_04'];
+      const totalSlots=total*members.length;
+      let allAnswered=0;
+      rows.forEach(r=>members.forEach(id=>{if((s[r.key]?.votes||{})[id])allAnswered++}));
+      admin='<div style="font-size:11px;color:#8a8295;margin-top:4px">家族全体 '+allAnswered+' / '+totalSlots+' 回答済み</div>';
+    }
+    let html='<div class="fp-home-top"><div><div class="fp-home-title">みんなに聞きたいこと</div><div class="fp-home-count">'+esc(label(uid))+'：'+answered+' / '+total+' 回答済み</div>'+admin+'</div><div style="font-size:22px">'+(pending.length?'💬':'✓')+'</div></div><div class="fp-progress"><span style="width:'+pct+'%"></span></div>';
+    if(pending.length){
+      const row=pending[0], p=planFor(row.title);
+      html+='<div class="fp-quick"><div style="font-size:10px;color:#9a8eaa;font-weight:800">'+esc(row.date)+'</div><div class="fp-quick-q">'+esc(p.question)+'</div><div class="fp-quick-options">'+p.recs.map(r=>'<button type="button" data-quick="'+esc(r.id)+'">'+esc(r.name)+'</button>').join('')+'</div></div><button type="button" class="fp-home-open">あと '+pending.length+' 件を見る ›</button>';
+    }else{
+      html+='<div class="fp-done">✓ 回答ありがとう。Henriがみんなの希望を見て決めます。</div>';
+      if(uid===ADMIN)html+='<button type="button" class="fp-home-open">家族の回答状況を見る ›</button>';
+    }
+    homeCard.innerHTML=html;
+    homeCard.querySelectorAll('[data-quick]').forEach(b=>{
+      b.onclick=()=>{const row=unansweredFor(uid)[0];if(row)quickVote(row,b.dataset.quick)};
+    });
+    homeCard.querySelector('.fp-home-open')?.addEventListener('click',()=>{
+      if(uid===ADMIN){renderSummary();summaryOverlay.style.display='block';summaryOverlay.scrollTop=0;document.body.style.overflow='hidden'}
+      else{const row=unansweredFor(uid)[0];if(row)open(row.item)}
+    });
+  }
+  function maybeNudge(){
+    const uid=me();if(!uid)return;
+    const pending=unansweredFor(uid);if(!pending.length)return;
+    const d=new Date();const day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    const k='trip_family_nudge_'+uid;
+    if(localStorage.getItem(k)===day)return;
+    localStorage.setItem(k,day);
+    document.getElementById('fpNudgeText').textContent='旅行の希望があと '+pending.length+' 件あります。30秒で答えられます。';
+    nudge.classList.add('show');
+  }
+  document.getElementById('fpNudgeLater').onclick=()=>nudge.classList.remove('show');
+  document.getElementById('fpNudgeAnswer').onclick=()=>{nudge.classList.remove('show');const row=unansweredFor(me())[0];if(row)open(row.item)};
+
   function renderSummary(){
     const s=read(), members=['family_01','family_02','family_03','family_04'];
     const rows=planningItems();
@@ -191,9 +273,9 @@
     summaryBtn.classList.toggle('show',admin);
   }
   summaryBtn.onclick=()=>{renderSummary();summaryOverlay.style.display='block';summaryOverlay.scrollTop=0;document.body.style.overflow='hidden';window.tripAnalytics?.track('family_summary_open',{})};
-  document.addEventListener('tripFamilyProfileReady',refreshAdmin);
-  document.addEventListener('tripSharedPlanningUpdated',()=>{if(current)render();if(summaryOverlay.style.display==='block')renderSummary();});
-  setTimeout(refreshAdmin,500);
+  document.addEventListener('tripFamilyProfileReady',()=>{refreshAdmin();renderHome();setTimeout(maybeNudge,700)});
+  document.addEventListener('tripSharedPlanningUpdated',()=>{if(current)render();if(summaryOverlay.style.display==='block')renderSummary();renderHome();});
+  setTimeout(()=>{refreshAdmin();renderHome();maybeNudge()},900);
 
   document.querySelectorAll('.item').forEach(item=>{
     const title=baseTitle(item);
@@ -209,5 +291,5 @@
     item.addEventListener('click',e=>{if(e.target.closest('a,button,summary,details'))return;open(item)});
   });
 
-  window.tripFamilyPlanning={open,read,renderSummary};
+  window.tripFamilyPlanning={open,read,renderSummary,renderHome};
 })();
