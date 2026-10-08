@@ -13,6 +13,15 @@ service cloud.firestore {
       allow write: if admin();
     }
 
+    match /family_presence/{uid} {
+      allow read: if admin();
+      allow create, update: if canWrite()
+        && uid == request.auth.uid
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.memberId == me().memberId;
+      allow delete: if admin() || (canWrite() && uid == request.auth.uid);
+    }
+
     match /family_planning/{planId} {
       allow read: if active();
       allow create, update, delete: if admin();
