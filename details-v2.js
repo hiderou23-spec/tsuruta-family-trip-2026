@@ -27,8 +27,15 @@
       border:1px solid #e1dbea !important;
       box-shadow:0 2px 7px rgba(76,68,104,.06);
     }
+    #tripDetailOverlay,#tripFullInfoOverlay{
+      scroll-padding-bottom:calc(104px + env(safe-area-inset-bottom));
+    }
     #tripDetailBody,#tripFullInfoBody{
-      padding-bottom:28px;
+      padding-bottom:calc(112px + env(safe-area-inset-bottom));
+    }
+    #tripDetailBody>div:last-child,
+    #tripFullInfoBody>div:last-child{
+      margin-bottom:12px;
     }
     #tripDetailBody>div:first-child,
     #tripFullInfoBody>div:first-child{
