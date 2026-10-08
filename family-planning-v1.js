@@ -41,7 +41,8 @@
     try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(_){return {}}
   }
   function save(s){localStorage.setItem(STORE,JSON.stringify(s));}
-  function me(){return window.tripFamilyProfile?.id||null}
+  function me(){return window.tripFamilyAuth?.authenticated?window.tripFamilyAuth.memberId:(window.tripFamilyProfile?.id||null)}
+  function isAdmin(){return window.tripFamilyAuth?.authenticated?window.tripFamilyAuth.role==='admin':isAdmin()}
   function label(id){return ({family_01:'パパ',family_02:'Emi',family_03:'Saki',family_04:'Takeru'})[id]||id}
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function keyFor(item){const sec=item.closest('.section')?.id||'';const title=(item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim();return sec+'|'+title}
@@ -137,12 +138,13 @@
     p.recs.forEach(r=>{
       const chosen=entry.decision===r.id;
       const voters=Object.entries(entry.votes||{}).filter(([,v])=>v.choice===r.id);
-      html+='<div class="fp-rec '+(chosen?'chosen':'')+'"><div style="font-weight:800;color:#273247">'+esc(r.name)+(chosen?' <span style="font-size:11px;color:#527bb2">✓ 決定</span>':'')+'</div><div style="font-size:13px;color:#7b8293;margin-top:3px">'+esc(r.why)+'</div><div class="fp-votes">'+(voters.length?voters.map(([id,v])=>esc(label(id))+' '+(v.feel==='like'?'👍':v.feel==='neutral'?'○':'△')).join(' · '):'まだ希望なし')+'</div><div class="fp-actions"><button data-vote="'+r.id+'" data-feel="like">👍 行きたい</button><button data-vote="'+r.id+'" data-feel="neutral">○ どちらでも</button><button data-vote="'+r.id+'" data-feel="other">△ 別案希望</button></div>'+(me()===ADMIN?'<div class="fp-admin"><button data-decide="'+r.id+'">パパとして「'+esc(r.name)+'」に決定</button></div>':'')+'</div>';
+      html+='<div class="fp-rec '+(chosen?'chosen':'')+'"><div style="font-weight:800;color:#273247">'+esc(r.name)+(chosen?' <span style="font-size:11px;color:#527bb2">✓ 決定</span>':'')+'</div><div style="font-size:13px;color:#7b8293;margin-top:3px">'+esc(r.why)+'</div><div class="fp-votes">'+(voters.length?voters.map(([id,v])=>esc(label(id))+' '+(v.feel==='like'?'👍':v.feel==='neutral'?'○':'△')).join(' · '):'まだ希望なし')+'</div><div class="fp-actions"><button data-vote="'+r.id+'" data-feel="like">👍 行きたい</button><button data-vote="'+r.id+'" data-feel="neutral">○ どちらでも</button><button data-vote="'+r.id+'" data-feel="other">△ 別案希望</button></div>'+(isAdmin()?'<div class="fp-admin"><button data-decide="'+r.id+'">パパとして「'+esc(r.name)+'」に決定</button></div>':'')+'</div>';
     });
-    if(me()!==ADMIN)html+='<div style="font-size:12px;color:#81788f;text-align:center;margin-top:14px">家族の希望を見て、最終決定はパパが行います。</div>';
+    if(!isAdmin())html+='<div style="font-size:12px;color:#81788f;text-align:center;margin-top:14px">家族の希望を見て、最終決定はパパが行います。</div>';
     body.innerHTML=html;
     body.querySelectorAll('[data-vote]').forEach(b=>b.onclick=()=>{
-      const uid=me(); if(!uid){alert('右下から利用者を選んでください。');return}
+      const uid=me(); if(!uid){alert('家族ログイン、または利用者選択をしてください。');return}
+      if(window.tripFamilyAuth?.authenticated && window.tripFamilyAuth.role==='viewer'){alert('このアカウントは閲覧のみです。');return}
       const vote={choice:b.dataset.vote,feel:b.dataset.feel,updated:Date.now()};
       if(window.tripSharedPlanning?.saveVote)window.tripSharedPlanning.saveVote(key,uid,vote);
       else{
@@ -153,7 +155,7 @@
       render();
     });
     body.querySelectorAll('[data-decide]').forEach(b=>b.onclick=()=>{
-      if(me()!==ADMIN)return;
+      if(!isAdmin())return;
       if(window.tripSharedPlanning?.saveDecision)window.tripSharedPlanning.saveDecision(key,b.dataset.decide);
       else{
         const s=read();const e=s[key]||{votes:{},decision:null};
@@ -263,11 +265,12 @@
     });
   }
   function refreshAdmin(){
-    const admin=me()===ADMIN;
+    const admin=isAdmin();
     summaryBtn.classList.toggle('show',admin);
   }
   summaryBtn.onclick=()=>{renderSummary();summaryOverlay.style.display='block';summaryOverlay.scrollTop=0;document.body.style.overflow='hidden';window.tripAnalytics?.track('family_summary_open',{})};
   document.addEventListener('tripFamilyProfileReady',()=>{refreshAdmin();renderHome();setTimeout(maybeNudge,700)});
+  document.addEventListener('tripFamilyAuthReady',()=>{refreshAdmin();renderHome();if(current)render()});
   document.addEventListener('tripSharedPlanningUpdated',()=>{if(current)render();if(summaryOverlay.style.display==='block')renderSummary();renderHome();});
   setTimeout(()=>{refreshAdmin();renderHome();maybeNudge()},900);
 
