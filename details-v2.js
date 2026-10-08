@@ -262,6 +262,70 @@
       phone:"+1 604 822 1000",email:"reservations@housing.ubc.ca",
       map:"https://www.google.com/maps/search/?api=1&query=West+Coast+Suites+UBC"
     },
+    "Diamond Head Lookout":{
+      type:"spot",title:"Diamond Head Lookout",dateLabel:"THU, DEC 24",location:"Diamond Head Road / South Shore",
+      highlight:"ワイキキと海岸線を見渡せる、ドライブ途中に寄りやすい展望ポイント。",
+      time:"約20〜30分",reservation:"Lookout立ち寄りだけなら不要。山頂トレイルへ入る場合は非居住者向け事前予約制度あり。",
+      tips:"今回は登山ではなく展望立ち寄り。翌日の予定もあるので短時間で十分。",
+      official:"https://dlnr.hawaii.gov/dsp/parks/oahu/diamond-head-state-monument/",
+      map:"https://www.google.com/maps/search/?api=1&query=Diamond+Head+Lookout+Honolulu"
+    },
+    "Halona Blowhole":{
+      type:"spot",title:"Halona Blowhole Lookout",dateLabel:"THU, DEC 24",location:"Kalanianaʻole Hwy / East Oʻahu",
+      highlight:"溶岩海岸と潮吹き穴を眺める東海岸ドライブの定番ストップ。",
+      time:"約15〜25分",reservation:"不要",
+      tips:"波の状況で見え方が変わる。展望エリアから安全に見る。Sandy Beachも近いのでセットで短時間立ち寄り。",
+      official:"https://www.honolulu.gov/parks/",
+      map:"https://www.google.com/maps/search/?api=1&query=Halona+Blowhole+Lookout"
+    },
+    "Makapuu Lookout":{
+      type:"spot",title:"Makapuʻu Lookout",dateLabel:"THU, DEC 24",location:"East Oʻahu",
+      highlight:"青い海と沖の島々を一望できる、24日のドライブで特におすすめの展望ポイント。",
+      time:"約20〜30分",reservation:"不要",
+      tips:"トレイルを歩く計画ではなくLookout中心。風が強いことがあるので帽子などに注意。",
+      official:"https://dlnr.hawaii.gov/dsp/",
+      map:"https://www.google.com/maps/search/?api=1&query=Makapuu+Lookout+Oahu"
+    },
+    "Kailua Beach":{
+      type:"spot",title:"Kailua Beach",dateLabel:"THU, DEC 24",location:"Kailua, Oʻahu",
+      highlight:"白砂と穏やかな海で、東海岸ドライブの昼休憩にちょうど良いビーチ。",
+      time:"昼食込み 約1.5〜2時間",reservation:"不要",
+      tips:"Kailuaで昼食＋ビーチ散歩を基本に。Lanikaiは住宅街の駐車が難しいため無理に車で入らない。",
+      official:"https://www.honolulu.gov/parks/",
+      map:"https://www.google.com/maps/search/?api=1&query=Kailua+Beach+Park+Hawaii"
+    },
+    "Nuuanu Pali Lookout":{
+      type:"spot",title:"Nuʻuanu Pali Lookout",dateLabel:"THU, DEC 24",location:"Nuʻuanu Pali State Wayside",
+      highlight:"コオラウ山脈とWindward側を一望でき、オアフ島の地形がよく分かる展望台。",
+      time:"約30〜45分",reservation:"予約不要。非居住者は駐車料金あり。",
+      tips:"KailuaからWaikikiへ戻る途中に組み込むと効率的。風が非常に強い日がある。",
+      official:"https://dlnr.hawaii.gov/dsp/parks/oahu/nuuanu-pali-state-wayside/",
+      map:"https://www.google.com/maps/search/?api=1&query=Nuuanu+Pali+Lookout"
+    },
+    "Kualoa Ranch UTV":{
+      type:"spot",title:"Kualoa Ranch UTV Raptor Tour",dateLabel:"FRI, DEC 25",location:"Kualoa Ranch",
+      highlight:"映画ロケ地として知られる渓谷や未舗装路を、自分でUTVを運転して巡る人気アクティビティ。",
+      time:"約2時間（安全説明・練習を含む）",reservation:"事前予約推奨。人気ツアーのためクリスマス週は早めに確保。",
+      tips:"運転者は21歳以上＋有効な運転免許証。1台につき最大2人まで運転交代可。汚れやすいので汚れてもよい服・靴、サングラス推奨。",
+      official:"https://www.kualoa.com/tours-and-activities/utv-raptor-tour",
+      map:"https://www.google.com/maps/search/?api=1&query=Kualoa+Ranch+Hawaii"
+    },
+    "Waikiki Beach":{
+      type:"spot",title:"Waikiki Beach",dateLabel:"SAT, DEC 26",location:"Waikīkī, Honolulu",
+      highlight:"旅行最終フルデーは予定を詰めず、ビーチ散歩・海・カフェでゆっくり過ごす。",
+      time:"約1〜1.5時間",reservation:"不要",
+      tips:"泳ぐ場合は当日の海況を確認。散歩だけでもDiamond Headを望む景色を楽しめる。",
+      official:"https://www.gohawaii.com/islands/oahu/things-to-do/beaches/waikiki-beach",
+      map:"https://www.google.com/maps/search/?api=1&query=Waikiki+Beach+Honolulu"
+    },
+    "Ala Moana Center":{
+      type:"spot",title:"Ala Moana Center",dateLabel:"SAT, DEC 26",location:"1450 Ala Moana Blvd, Honolulu",
+      highlight:"ハワイ最後の買い物と昼食をまとめて済ませやすい大型オープンエア・ショッピングセンター。",
+      time:"約2.5〜3時間",reservation:"不要",
+      tips:"350店超のショップ・レストランがあるため、買いたい物を先に決めておくと効率的。店舗ごとに営業時間は異なる。",
+      official:"https://www.alamoanacenter.com/en/",
+      map:"https://www.google.com/maps/search/?api=1&query=Ala+Moana+Center+Honolulu"
+    },
     "Rock-A-Hula":{
       type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",
       dateLabel:"FRI, DEC 25",time:"5:30 PM",location:"Royal Hawaiian Shopping Center",
@@ -354,6 +418,26 @@
       </div>`;
   }
 
+  function spotHtml(d){
+    return `
+      <div style="padding:24px 22px 10px">
+        <div style="font-size:11px;color:#9a8eaa;font-weight:800;letter-spacing:.12em">HIGHLIGHT</div>
+        <h1 style="font-size:32px;margin:4px 0 4px">${d.title}</h1>
+        <div style="font-size:16px;color:#70798c">${d.location}</div>
+      </div>
+      <div style="background:#f1f1f4;color:#666;font-weight:700;padding:8px 22px">${d.dateLabel}</div>
+      <div style="padding:22px;font-size:17px;line-height:1.7">
+        <div style="background:linear-gradient(135deg,#f4fbff,#f7f3ff);border:1px solid #e3deec;border-radius:16px;padding:15px"><b>見どころ</b><br>${d.highlight}</div>
+        <div style="margin-top:16px"><b>滞在目安</b><br>${d.time}</div>
+        <div style="margin-top:12px"><b>予約</b><br>${d.reservation}</div>
+        <div style="margin-top:12px"><b>今回のポイント</b><br>${d.tips}</div>
+        <div style="margin-top:20px;display:flex;gap:8px;flex-wrap:wrap">
+          <a href="${d.official}" target="_blank" rel="noopener" class="btn">ℹ 公式情報</a>
+          <a href="${d.map}" target="_blank" rel="noopener" class="btn">📍 Google Maps</a>
+        </div>
+      </div>`;
+  }
+
   function activityHtml(d){
     return `
       <div style="padding:24px 22px 10px">
@@ -373,7 +457,7 @@
   function openDetail(key){
     const d=data[key]; if(!d)return;
     const body=document.getElementById('tripDetailBody');
-    body.innerHTML=d.type==='flight'?flightHtml(d):d.type==='hotel'?hotelHtml(d):activityHtml(d);
+    body.innerHTML=d.type==='flight'?flightHtml(d):d.type==='hotel'?hotelHtml(d):d.type==='spot'?spotHtml(d):activityHtml(d);
     overlay.style.display='block';
     overlay.scrollTop=0;
     document.body.style.overflow='hidden';
@@ -392,6 +476,14 @@
     ['Coast Coal Harbour','Coast Coal Harbour Vancouver Hotel by APA'],
     ['Chateau Victoria','Chateau Victoria Hotel & Suites'],
     ['West Coast Suites','West Coast Suites'],
+    ['Diamond Head Lookout','Diamond Head Lookout'],
+    ['Halona Blowhole','Halona Blowhole'],
+    ['Makapuʻu Lookout','Makapuu Lookout'],
+    ['Kailua・昼食・ビーチ','Kailua Beach'],
+    ['Nuʻuanu Pali Lookout','Nuuanu Pali Lookout'],
+    ['Kualoa Ranch UTV Raptor Tour','Kualoa Ranch UTV'],
+    ['Waikiki Beach・散歩','Waikiki Beach'],
+    ['Ala Moana Center・昼食・買い物','Ala Moana Center'],
     ['Rock-A-Hula','Rock-A-Hula']
   ];
   document.querySelectorAll('.item').forEach(item=>{
