@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261008-2355-simple-hero">
+<html lang="ja" data-build="20261009-0005-update-stamp-bottom">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -82,6 +82,7 @@ body{
   color:#28344c !important;
   border:1px solid #ded8ec;
   box-shadow:0 8px 22px rgba(82,76,117,.09);
+  padding-bottom:42px !important;
 }
 .hero::before,.hero::after{content:none !important;display:none !important}
 .hero h1{
@@ -94,8 +95,8 @@ body{
 .update-stamp{
   position:absolute !important;
   right:18px !important;
-  top:16px !important;
-  bottom:auto !important;
+  top:auto !important;
+  bottom:12px !important;
   margin:0 !important;
   float:none !important;
   max-width:170px;
@@ -177,7 +178,7 @@ body{
 @media(max-width:640px){
   .hero{
     border-radius:18px !important;
-    padding:22px 14px 20px !important;
+    padding:22px 14px 42px !important;
   }
   .hero h1{
     margin:0 0 8px !important;
@@ -186,8 +187,8 @@ body{
   }
   .update-stamp{
     right:12px !important;
-    top:14px !important;
-    bottom:auto !important;
+    top:auto !important;
+    bottom:10px !important;
     max-width:150px !important;
     font-size:10.5px !important;
     line-height:1.35 !important;
@@ -199,7 +200,7 @@ body{
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/08 23:55 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/09 00:05 JST</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
 <div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><button type="button" id="todoOpen" class="badge warn" style="border:0;cursor:pointer;font:inherit">! 要確認 <span id="todoCount"></span></button></div>
@@ -393,20 +394,20 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 })();
 </script>
 
-<script src="details-v2.js?v=20261008-2355-simple-hero"></script>
-<script src="tripit-list-v3.js?v=20261008-2355-simple-hero"></script>
-<script src="version-check.js?v=20261008-2355-simple-hero"></script>
-<script src="city-photos-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="vxd-polish-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="google-maps-links-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="today-mode-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="family-auth-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="app-v2.js?v=20261008-2355-simple-hero"></script>
-<script src="family-profile-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="ga4-family-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="firebase-sync-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="details-v2.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="tripit-list-v3.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="version-check.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="city-photos-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="vxd-polish-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="google-maps-links-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="today-mode-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="family-auth-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="app-v2.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="family-profile-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="ga4-family-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="firebase-sync-v1.js?v=20261009-0005-update-stamp-bottom"></script>
 
-<script src="family-planning-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="family-collab-v1.js?v=20261008-2355-simple-hero"></script>
-<script src="bottom-bar-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="family-planning-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="family-collab-v1.js?v=20261009-0005-update-stamp-bottom"></script>
+<script src="bottom-bar-v1.js?v=20261009-0005-update-stamp-bottom"></script>
 </body></html>
