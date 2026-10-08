@@ -18,6 +18,14 @@
         {id:'easy',name:'Waikikiで気軽に',why:'翌日の移動に備えてゆったり締める。'}
       ]
     },
+    'Hawaii Waikīkī Gun Club':{
+      question:'Takeruの射撃体験、どうする？',
+      recs:[
+        {id:'waikiki_gun_club',name:'Waikīkī Gun Clubに行きたい',why:'ワイキキ中心部で移動が楽。16歳でも保護者同伴で利用可能。'},
+        {id:'808_gun_club',name:'808 Gun Clubも見て決めたい',why:'Kakaʻakoの候補。パッケージ内容を比べてから決める。'},
+        {id:'skip_shooting',name:'今回は見送る',why:'最終日をもっとゆっくり過ごしたい場合はこちら。'}
+      ]
+    },
     'Victoria / UBC 時間配分':{
       question:'Victoriaを少し短くして、12/29午後をUBCに使う案でどう？',
       recs:[
@@ -42,6 +50,7 @@
     const t=(title||'').replace(/\s+/g,' ').trim();
     return t==='Christmas Eve Dinner'
       || t==='ハワイ最後の夕食'
+      || t==='Hawaii Waikīkī Gun Club'
       || t==='Victoria / UBC 時間配分';
   }
   function planFor(title){
