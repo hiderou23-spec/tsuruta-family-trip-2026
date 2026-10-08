@@ -262,13 +262,13 @@
       phone:"+1 604 822 1000",email:"reservations@housing.ubc.ca",
       map:"https://www.google.com/maps/search/?api=1&query=West+Coast+Suites+UBC"
     },
-    "Diamond Head Lookout":{
-      type:"spot",title:"Diamond Head Lookout",dateLabel:"THU, DEC 24",location:"Diamond Head Road / South Shore",
-      highlight:"ワイキキと海岸線を見渡せる、ドライブ途中に寄りやすい展望ポイント。",
-      time:"約20〜30分",reservation:"Lookout立ち寄りだけなら不要。山頂トレイルへ入る場合は非居住者向け事前予約制度あり。",
-      tips:"今回は登山ではなく展望立ち寄り。翌日の予定もあるので短時間で十分。",
-      official:"https://dlnr.hawaii.gov/dsp/parks/oahu/diamond-head-state-monument/",
-      map:"https://www.google.com/maps/search/?api=1&query=Diamond+Head+Lookout+Honolulu"
+    "Diamond Head Summit Trail":{
+      type:"spot",title:"Diamond Head Summit Trail",dateLabel:"THU, DEC 24",location:"Diamond Head State Monument",
+      highlight:"火口内部から山頂へ登り、Waikikiと太平洋を一望するハワイ定番のショートハイク。",
+      time:"往復約1.6 miles（約2.6km）・1.5〜2時間",reservation:"非居住者は入場・駐車とも事前予約が必要。",
+      tips:"標高差約560 ft（約171m）、難易度Moderate。舗装路・未舗装路・階段・トンネルあり。水、帽子、歩きやすい靴を用意。",
+      official:"https://dlnr.hawaii.gov/dsp/hiking/Oahu/diamond-head-summit-trail/",
+      map:"https://www.google.com/maps/search/?api=1&query=Diamond+Head+State+Monument+Honolulu"
     },
     "Halona Blowhole":{
       type:"spot",title:"Halona Blowhole Lookout",dateLabel:"THU, DEC 24",location:"Kalanianaʻole Hwy / East Oʻahu",
@@ -325,6 +325,30 @@
       tips:"350店超のショップ・レストランがあるため、買いたい物を先に決めておくと効率的。店舗ごとに営業時間は異なる。",
       official:"https://www.alamoanacenter.com/en/",
       map:"https://www.google.com/maps/search/?api=1&query=Ala+Moana+Center+Honolulu"
+    },
+    "Butchart Gardens Christmas":{
+      type:"spot",title:"The Butchart Gardens – Magic of Christmas",dateLabel:"MON, DEC 28",location:"800 Benvenuto Ave, Brentwood Bay",
+      highlight:"庭園全体がChristmas Lightsで彩られ、Twelve Days of Christmasの展示やキャロル、Festive Brassを楽しめる冬の代表的イベント。",
+      time:"滞在目安2〜3時間。12/28は15:00〜21:00営業予定。",reservation:"Christmas seasonは時間指定券。2026/10/14発売開始で、事前予約を強く推奨。",
+      tips:"Downtown Victoriaから移動時間を見込む。防寒必須。夕食はGarden内またはDowntownに戻ってから。",
+      official:"https://butchartgardens.com/christmas/",
+      map:"https://www.google.com/maps/search/?api=1&query=The+Butchart+Gardens+Victoria+BC"
+    },
+    "Inner Harbour Victoria":{
+      type:"spot",title:"Victoria Inner Harbour",dateLabel:"TUE, DEC 29",location:"Downtown Victoria",
+      highlight:"州議事堂、Fairmont Empress、港の景観が集まるVictoriaの中心。短時間でも街らしさを感じやすい。",
+      time:"約30〜60分",reservation:"不要",
+      tips:"Chateau Victoriaから徒歩で回りやすい。BC Ferries Connectorの時刻に合わせて調整。",
+      official:"https://www.destinationgreatervictoria.com/",
+      map:"https://www.google.com/maps/search/?api=1&query=Inner+Harbour+Victoria+BC"
+    },
+    "Royal BC Museum":{
+      type:"spot",title:"Royal BC Museum",dateLabel:"TUE, DEC 29",location:"675 Belleville St, Victoria",
+      highlight:"British Columbiaの自然・人々・歴史をまとめて知れる博物館。Victoria滞在が短い家族旅行でも効率よく地域理解ができる。",
+      time:"今回は1〜1.5時間を目安",reservation:"当日の開館時間・チケットを事前確認。",
+      tips:"Inner Harbourと隣接。フェリー出発が早ければ省略し、港周辺散策を優先。",
+      official:"https://royalbcmuseum.bc.ca/",
+      map:"https://www.google.com/maps/search/?api=1&query=Royal+BC+Museum+Victoria"
     },
     "Rock-A-Hula":{
       type:"activity",title:"Rock-A-Hula",booking:"Rock-A-Hula / VELTRA",
@@ -476,7 +500,7 @@
     ['Coast Coal Harbour','Coast Coal Harbour Vancouver Hotel by APA'],
     ['Chateau Victoria','Chateau Victoria Hotel & Suites'],
     ['West Coast Suites','West Coast Suites'],
-    ['Diamond Head Lookout','Diamond Head Lookout'],
+    ['Diamond Head Summit Trail','Diamond Head Summit Trail'],
     ['Halona Blowhole','Halona Blowhole'],
     ['Makapuʻu Lookout','Makapuu Lookout'],
     ['Kailua・昼食・ビーチ','Kailua Beach'],
@@ -484,6 +508,9 @@
     ['Kualoa Ranch UTV Raptor Tour','Kualoa Ranch UTV'],
     ['Waikiki Beach・散歩','Waikiki Beach'],
     ['Ala Moana Center・昼食・買い物','Ala Moana Center'],
+    ['The Butchart Gardens','Butchart Gardens Christmas'],
+    ['Inner Harbour・BC州議事堂周辺散策','Inner Harbour Victoria'],
+    ['Royal BC Museum','Royal BC Museum'],
     ['Rock-A-Hula','Rock-A-Hula']
   ];
   document.querySelectorAll('.item').forEach(item=>{
