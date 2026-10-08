@@ -6,7 +6,7 @@
     {id:'family_04',label:'Takeru',initial:'T'}
   ];
   const labels=Object.fromEntries(members.map(x=>[x.id,x.label]));
-  let api=null,currentKey='',currentItem=null,unsubReads=null,unsubComments=null,currentResponses={};
+  let api=null,currentKey='',currentItem=null,unsubReads=null,unsubComments=null,currentResponses={},pendingCommentId='';
   const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const docId=k=>encodeURIComponent(k).replace(/%/g,'_');
 
@@ -26,6 +26,7 @@
    .fc-toggles{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.fc-toggle{border:1px solid #ddd7e8;background:#fff;border-radius:12px;padding:10px 8px;font:inherit;font-size:12px;font-weight:800;color:#5f687a}.fc-toggle.on{background:#edf6f0;border-color:#cfe5d7;color:#4d725d}
    .fc-save-state{font-size:11px;color:#8b8295;min-height:18px;margin-top:8px}.fc-comment{padding:10px 0;border-top:1px solid #f0ebf3}.fc-comment:first-child{border-top:0}.fc-comment-head{display:flex;justify-content:space-between;gap:10px}.fc-comment-name{font-weight:850}.fc-comment-time{font-size:10px;color:#a19aaa}
    .fc-input{display:flex;gap:7px;margin-top:10px}.fc-input input{flex:1;min-width:0;border:1px solid #ddd7e8;border-radius:11px;padding:10px;font:inherit}.fc-input button,.fc-read{border:0;border-radius:11px;padding:9px 11px;background:#eef4ff;color:#526b92;font-weight:800}.fc-read.done{background:#eaf5ee;color:#4f735e}
+   .fc-comment.reply{margin-left:18px;padding-left:10px;border-left:2px solid #e5ddf0}.fc-reply-note{font-size:10px;color:#9b91a4;margin-bottom:2px}.fc-quick{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.fc-quick button{border:1px solid #ddd7e8;background:#faf8fd;color:#625a76;border-radius:999px;padding:5px 8px;font:inherit;font-size:10.5px;font-weight:800}.fc-comment.flash{background:#fff6cf;border-radius:10px;padding-left:8px;padding-right:8px}
    @media(max-width:520px){.fc-options{grid-template-columns:repeat(3,minmax(0,1fr))}.fc-choice{font-size:11px;padding:9px 4px}.fc-toggles{grid-template-columns:1fr 1fr}}
   `;
   document.head.appendChild(style);
@@ -72,6 +73,12 @@
   function ownResponse(){const p=currentProfile();return p?.memberId?currentResponses[p.memberId]||{}:{}}
   function formatTime(ts){
     try{const d=ts?.toDate?.();return d?new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(d):''}catch(_){return''}
+  }
+  function quickReplies(title){
+    if(/朝食|昼食|夕食|Dinner|ビュッフェ|レストラン|食事/.test(title))return ['ここ行きたい！','どちらでもOK','別候補も見たい'];
+    if(/UBC|案内|生活圏/.test(title))return ['案内お願い！','ぜひ見たい','あとで相談しよう'];
+    if(/Honolulu到着/.test(title))return ['了解！','この合流でOK','時間を相談しよう'];
+    return ['行きたい！','時間あれば','あとで相談しよう'];
   }
   function responseTags(d){
     const tags=[];
@@ -162,6 +169,7 @@
     document.getElementById('fcSend').disabled=!isWritable();
     document.getElementById('fcText').disabled=!isWritable();
     modal.classList.add('show');document.body.style.overflow='hidden';
+    window.tripFamilyLine?.markItemRead(docId(currentKey));
     window.tripUsage?.trackItem(document.getElementById('fcTitle').textContent||'');
     window.tripAnalytics?.track('family_collab_open',{item_title:document.getElementById('fcTitle').textContent||''});
     if(!api?.db||!api?.fs){document.getElementById('fcComments').innerHTML='<div style="font-size:13px;color:#8b8295;margin-top:8px">家族ログイン後に利用できます。</div>';renderFamily();return}
@@ -175,8 +183,21 @@
     });
     const q=fs.query(fs.collection(base,'comments'),fs.orderBy('createdAt','asc'));
     unsubComments=fs.onSnapshot(q,snap=>{
-      let h='';snap.forEach(x=>{const d=x.data()||{};h+='<div class="fc-comment"><div class="fc-comment-head"><span class="fc-comment-name">'+esc(d.label||labels[d.memberId]||'家族')+'</span><span class="fc-comment-time">'+esc(formatTime(d.createdAt))+'</span></div><div style="font-size:13px;color:#5f687a;margin-top:3px">'+esc(d.text)+'</div></div>'});
-      document.getElementById('fcComments').innerHTML=h||'<div style="font-size:13px;color:#8b8295;margin-top:8px">まだコメントはありません。</div>';
+      let h='';const me=currentProfile();
+      snap.forEach(x=>{
+        const d=x.data()||{},mine=me?.uid===d.uid,title=document.getElementById('fcTitle').textContent||'';
+        const chips=!mine?'<div class="fc-quick">'+quickReplies(title).map(t=>'<button type="button" data-quick-reply="'+esc(t)+'" data-parent-comment="'+esc(x.id)+'">'+esc(t)+'</button>').join('')+'</div>':'';
+        h+='<div class="fc-comment '+(d.parentCommentId?'reply ':'')+'" data-comment-id="'+esc(x.id)+'">'+
+          (d.parentCommentId?'<div class="fc-reply-note">↳ 返信</div>':'')+
+          '<div class="fc-comment-head"><span class="fc-comment-name">'+esc(d.label||labels[d.memberId]||'家族')+'</span><span class="fc-comment-time">'+esc(formatTime(d.createdAt))+'</span></div>'+
+          '<div style="font-size:13px;color:#5f687a;margin-top:3px">'+esc(d.text)+'</div>'+chips+'</div>';
+      });
+      const host=document.getElementById('fcComments');
+      host.innerHTML=h||'<div style="font-size:13px;color:#8b8295;margin-top:8px">まだコメントはありません。</div>';
+      if(pendingCommentId){
+        const target=host.querySelector('[data-comment-id="'+CSS.escape(pendingCommentId)+'"]');
+        if(target){setTimeout(()=>{target.scrollIntoView({behavior:'smooth',block:'center'});target.classList.add('flash');setTimeout(()=>target.classList.remove('flash'),1800)},100);pendingCommentId=''}
+      }
     },()=>{});
   }
   async function saveOwn(patch){
@@ -203,19 +224,41 @@
   document.getElementById('fcRecommend').onclick=()=>saveOwn({recommend:!ownResponse().recommend,readAt:api.fs.serverTimestamp()});
   document.getElementById('fcReadBtn').onclick=()=>saveOwn({readAt:api.fs.serverTimestamp()});
 
-  document.getElementById('fcSend').onclick=async()=>{
-    const p=currentProfile(),text=document.getElementById('fcText').value.trim();
+  async function postComment(text,parentCommentId='',quickReply=false){
+    const p=currentProfile();text=String(text||'').trim();
     if(!isWritable()||!text)return;
-    const {db,fs}=api,base=fs.doc(db,'trip_items',docId(currentKey));
-    await fs.addDoc(fs.collection(base,'comments'),{uid:p.uid,memberId:p.memberId,label:p.label,text,createdAt:fs.serverTimestamp()});
-    document.getElementById('fcText').value='';
-    window.tripAnalytics?.track('family_comment_add',{item_title:document.getElementById('fcTitle').textContent||''});
-    window.tripUsage?.trackAction('family_comment_add');
+    const {db,fs}=api,itemId=docId(currentKey),base=fs.doc(db,'trip_items',itemId);
+    await fs.addDoc(fs.collection(base,'comments'),{
+      uid:p.uid,memberId:p.memberId,label:p.label,text,
+      itemKey:currentKey,itemTitle:document.getElementById('fcTitle').textContent||'',
+      parentCommentId:parentCommentId||null,quickReply:!!quickReply,
+      createdAt:fs.serverTimestamp()
+    });
+    window.tripAnalytics?.track(quickReply?'family_quick_reply':'family_comment_add',{item_title:document.getElementById('fcTitle').textContent||''});
+    window.tripUsage?.trackAction(quickReply?'family_quick_reply':'family_comment_add');
     await saveOwn({readAt:fs.serverTimestamp()});
+  }
+  document.getElementById('fcSend').onclick=async()=>{
+    const input=document.getElementById('fcText'),text=input.value.trim();
+    if(!text)return;
+    await postComment(text);
+    input.value='';
   };
+  document.getElementById('fcComments').addEventListener('click',async e=>{
+    const b=e.target.closest('[data-quick-reply]');if(!b)return;
+    b.disabled=true;
+    try{await postComment(b.dataset.quickReply,b.dataset.parentComment||'',true)}finally{b.disabled=false}
+  });
   document.getElementById('fcText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('fcSend').click()}});
 
   document.addEventListener('tripFamilyAuthReady',()=>{decorate();document.querySelectorAll('.item').forEach(loadEntryStatus)});
   setTimeout(decorate,800);
-  window.tripFamilyCollab={open,close};
+  function openByDocId(id,commentId=''){
+    const item=[...document.querySelectorAll('.item')].find(x=>shouldCollaborate(x)&&docId(itemKey(x))===id);
+    if(!item)return false;
+    pendingCommentId=commentId||'';
+    open(item);
+    return true;
+  }
+  window.tripFamilyCollab={open,close,openByDocId,itemKey,docId};
 })();
