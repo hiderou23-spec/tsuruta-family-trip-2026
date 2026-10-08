@@ -89,7 +89,11 @@
       auth=authMod.getAuth(app);db=fs.getFirestore(app);
       window.tripFamilyAuthApi={auth,db,authMod,fs,isAdmin:()=>window.tripFamilyAuth?.role==='admin',canWrite:()=>['admin','member'].includes(window.tripFamilyAuth?.role)};
       authMod.onAuthStateChanged(auth,async user=>{
-        if(!user){setProfile({authenticated:false,role:'guest'});render();return}
+        if(!user){
+          setProfile({authenticated:false,role:'guest'});render();
+          setTimeout(()=>{ if(!window.tripFamilyAuth?.authenticated) modal.classList.add('show'); },900);
+          return
+        }
         try{
           const p=await loadFamilyProfile(user);
           if(!p){
@@ -109,7 +113,7 @@
       await authMod.signInWithEmailAndPassword(auth,document.getElementById('faEmail').value.trim(),document.getElementById('faPassword').value);
       err.textContent='';modal.classList.remove('show');
     }catch(e){
-      err.textContent=e?.code==='auth/operation-not-allowed'?'FirebaseでEmail/Passwordログインを有効にしてください。':'ログインできません。メールアドレスとパスワードを確認してください。';
+      err.textContent=e?.code==='auth/operation-not-allowed'?'FirebaseでEmail/Passwordログインを有効にしてください。':e?.code==='auth/invalid-credential'?'メールアドレスまたはパスワードが違います。':'ログインできません。メールアドレスとパスワードを確認してください。';
     }
   };
   document.getElementById('faPassword').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('faSubmit').click()});
