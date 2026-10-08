@@ -305,5 +305,5 @@
     if(pending.length){open(pending[0].item);return}
     homeCard.scrollIntoView({behavior:'smooth',block:'center'});
   }
-  window.tripFamilyPlanning={open,openHub,read,renderSummary,renderHome};
+  window.tripFamilyPlanning={open,openHub,read,renderSummary,renderHome,count:()=>planningItems().length};
 })();
