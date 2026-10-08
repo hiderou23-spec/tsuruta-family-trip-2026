@@ -15,11 +15,12 @@
   style.textContent=`
     .fa-badge{display:none!important;position:fixed;left:12px;bottom:12px;z-index:120;border:1px solid #ddd7e8;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;color:#5e6a80;box-shadow:0 4px 14px rgba(80,72,102,.08)}
     .fa-badge.on{color:#477566}.fa-modal{position:fixed;inset:0;z-index:5200;background:rgba(39,50,71,.45);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}.fa-modal.show{display:flex}
-    .fa-box{width:min(430px,100%);background:#fffaf6;border:1px solid #e7dfeb;border-radius:20px;padding:20px;box-shadow:0 18px 50px rgba(70,62,95,.18)}
+    .fa-box{width:min(430px,100%);max-height:min(88vh,820px);overflow:auto;background:#fffaf6;border:1px solid #e7dfeb;border-radius:20px;padding:20px;box-shadow:0 18px 50px rgba(70,62,95,.18)}
     .fa-box input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #d9d3e3;border-radius:11px;margin:6px 0 10px;font:inherit}
     .fa-primary{width:100%;border:0;border-radius:11px;padding:11px;background:linear-gradient(135deg,#82b9eb,#ad93de);color:#fff;font-weight:800}
     .fa-link{border:0;background:transparent;color:#687eab;font-weight:800;padding:8px}.fa-err{font-size:12px;color:#a34c4c;min-height:18px}
     .fa-presence{margin-top:12px;background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:12px}.fa-presence-title{font-size:12px;font-weight:900;color:#495268;margin-bottom:7px}.fa-presence-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-top:1px solid #f0ebf3}.fa-presence-row:first-of-type{border-top:0}.fa-dot{width:9px;height:9px;border-radius:50%;background:#c8c4cf}.fa-dot.on{background:#54a873;box-shadow:0 0 0 3px rgba(84,168,115,.12)}.fa-presence-name{font-size:12px;font-weight:850;color:#384155}.fa-presence-meta{margin-left:auto;font-size:10.5px;color:#8a8295;text-align:right}
+    .fa-dash{margin-top:10px}.fa-dash-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.fa-stat{background:#fff;border:1px solid #e8e1eb;border-radius:13px;padding:10px}.fa-stat b{display:block;font-size:19px;color:#39435a}.fa-stat span{font-size:10.5px;color:#8a8295}.fa-dash-person{margin-top:8px;padding:10px;border:1px solid #ece6ef;border-radius:13px;background:#fff}.fa-dash-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.fa-dash-name{font-weight:900;color:#384155}.fa-dash-meta{font-size:10.5px;color:#8a8295}.fa-dash-line{font-size:11px;color:#667085;margin-top:5px}.fa-popular{margin-top:10px}.fa-pop-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:7px 0;border-top:1px solid #f0ebf3;font-size:11px}.fa-pop-row:first-child{border-top:0}
   `;
   document.head.appendChild(style);
 
@@ -63,6 +64,98 @@
     }
     dispatch(p);
   }
+  function tokyoDay(offsetDays=0){
+    const d=new Date(Date.now()+offsetDays*86400000);
+    const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(d);
+    const m={};p.forEach(x=>m[x.type]=x.value);return m.year+'-'+m.month+'-'+m.day;
+  }
+  function safeMetric(s){return String(s||'').toLowerCase().replace(/[^a-z0-9_]/g,'_').slice(0,50)}
+  function itemMetricId(title){return encodeURIComponent(String(title||'').slice(0,120)).replace(/%/g,'_')}
+  async function usageRootPatch(patch){
+    const p=current;if(!p?.authenticated||!db||!fs)return;
+    try{
+      await fs.setDoc(fs.doc(db,'family_usage',p.uid),{
+        uid:p.uid,memberId:p.memberId,label:p.label,lastActive:fs.serverTimestamp(),...patch
+      },{merge:true});
+    }catch(_){}
+  }
+  async function recordUsageSession(){
+    const p=current;if(!p?.authenticated||!db||!fs)return;
+    const key='trip_usage_session_'+p.uid;
+    if(sessionStorage.getItem(key)){usageRootPatch({});return}
+    sessionStorage.setItem(key,'1');
+    try{
+      await usageRootPatch({sessionsTotal:fs.increment(1)});
+      await fs.setDoc(fs.doc(db,'family_usage',p.uid,'days',tokyoDay()),{
+        uid:p.uid,memberId:p.memberId,label:p.label,day:tokyoDay(),
+        visits:fs.increment(1),lastVisit:fs.serverTimestamp()
+      },{merge:true});
+    }catch(_){}
+  }
+  async function trackUsageAction(name){
+    const key='count_'+safeMetric(name);
+    await usageRootPatch({[key]:fs.increment(1)});
+  }
+  async function trackUsageItem(title){
+    const p=current;if(!p?.authenticated||!db||!fs||!title)return;
+    try{
+      await fs.setDoc(fs.doc(db,'family_usage',p.uid,'items',itemMetricId(title)),{
+        uid:p.uid,memberId:p.memberId,label:p.label,title:String(title).slice(0,120),
+        views:fs.increment(1),lastViewed:fs.serverTimestamp()
+      },{merge:true});
+    }catch(_){}
+  }
+  window.tripUsage={trackAction:trackUsageAction,trackItem:trackUsageItem};
+
+  async function loadUsageDashboard(){
+    if(current?.role!=='admin'||!db||!fs)return;
+    const host=document.getElementById('faUsageDashboard'); if(!host)return;
+    host.innerHTML='<div style="font-size:11px;color:#8a8295">集計中…</div>';
+    try{
+      const usersSnap=await fs.getDocs(fs.collection(db,'family_users'));
+      const users=[];usersSnap.forEach(s=>{const d=s.data()||{};if(d.active!==false)users.push({uid:s.id,memberId:d.memberId,label:d.label||d.memberId})});
+      const votesSnap=await fs.getDocs(fs.collection(db,'family_votes'));
+      const voteSets={};votesSnap.forEach(s=>{const d=s.data()||{};if(d.memberId&&d.key){(voteSets[d.memberId]||(voteSets[d.memberId]=new Set())).add(d.key)}});
+      const totalPlans=window.tripFamilyPlanning?.count?.()||4;
+      const days=[0,-1,-2,-3,-4,-5,-6].map(tokyoDay);
+      let todayUsers=0,weekVisits=0,totalComments=0;
+      const popular={};
+      const rows=[];
+      for(const u of users){
+        const rootSnap=await fs.getDoc(fs.doc(db,'family_usage',u.uid));
+        const rd=rootSnap.exists()?rootSnap.data()||{}:{};
+        let uv=0,today=0;
+        for(const day of days){
+          const ds=await fs.getDoc(fs.doc(db,'family_usage',u.uid,'days',day));
+          const n=ds.exists()?Number(ds.data()?.visits||0):0;uv+=n;if(day===days[0])today=n;
+        }
+        if(today>0)todayUsers++;
+        weekVisits+=uv;
+        totalComments+=Number(rd.count_family_comment_add||0);
+        const items=await fs.getDocs(fs.collection(db,'family_usage',u.uid,'items'));
+        items.forEach(s=>{const d=s.data()||{};if(d.title)popular[d.title]=(popular[d.title]||0)+Number(d.views||0)});
+        const last=rd.lastActive?.toDate?.();
+        const lastText=last?new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(last):'—';
+        const answered=voteSets[u.memberId]?.size||0;
+        const rate=Math.round((answered/Math.max(totalPlans,1))*100);
+        rows.push({label:u.label,lastText,week:uv,answered,rate,comments:Number(rd.count_family_comment_add||0)});
+      }
+      const tops=Object.entries(popular).sort((a,b)=>b[1]-a[1]).slice(0,5);
+      host.innerHTML=
+        '<div class="fa-dash-grid">'+
+          '<div class="fa-stat"><b>'+todayUsers+' / '+users.length+'</b><span>今日利用</span></div>'+
+          '<div class="fa-stat"><b>'+weekVisits+'</b><span>直近7日セッション</span></div>'+
+          '<div class="fa-stat"><b>'+totalComments+'</b><span>コメント追加</span></div>'+
+          '<div class="fa-stat"><b>'+totalPlans+'</b><span>相談テーマ数</span></div>'+
+        '</div>'+
+        rows.map(r=>'<div class="fa-dash-person"><div class="fa-dash-head"><span class="fa-dash-name">'+r.label+'</span><span class="fa-dash-meta">最終 '+r.lastText+'</span></div><div class="fa-dash-line">7日 '+r.week+'回 ・ 相談 '+r.answered+'/'+totalPlans+'（'+r.rate+'%）・ コメント '+r.comments+'</div></div>').join('')+
+        '<div class="fa-popular"><div class="fa-presence-title">よく見られている予定</div>'+(tops.length?tops.map(([t,n])=>'<div class="fa-pop-row"><span>'+t+'</span><b>'+n+'回</b></div>').join(''):'<div style="font-size:11px;color:#8a8295">これから閲覧データを蓄積します。</div>')+'</div>'+
+        '<div style="font-size:10px;color:#9a92a1;margin-top:9px">セッション数・閲覧数はこの機能導入後から集計します。</div>';
+    }catch(e){
+      console.warn(e);host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できません。Firestoreルールを最新版に公開してください。</div>';
+    }
+  }
+
   function stopPresence(){
     if(presenceTimer){clearInterval(presenceTimer);presenceTimer=null}
     if(presenceUnsub){presenceUnsub();presenceUnsub=null}
@@ -115,7 +208,7 @@
       a.innerHTML='<div style="background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:14px"><b>'+current.label+'</b><div style="font-size:12px;color:#7d8493;margin-top:4px">'+
         (current.role==='admin'?'管理者：最終決定・家族管理が可能':current.role==='viewer'?'閲覧のみ':'家族メンバー：投票・既読・コメントが可能')+
         '</div></div>'+
-        (current.role==='admin'?'<div class="fa-presence"><div class="fa-presence-title">家族の利用状況</div><div id="faPresenceRows"><div style="font-size:11px;color:#8a8295">確認中…</div></div></div>':'')+
+        (current.role==='admin'?'<div class="fa-presence"><div class="fa-presence-title">現在の利用状況</div><div id="faPresenceRows"><div style="font-size:11px;color:#8a8295">確認中…</div></div></div><button id="faUsageBtn" class="fa-link" style="width:100%;margin-top:8px" type="button">利用状況ダッシュボード</button><div id="faUsageWrap" class="fa-dash" style="display:none"><div id="faUsageDashboard"></div></div>':'')+
         '<button id="faChangePw" class="fa-link" style="width:100%;margin-top:8px" type="button">パスワード変更</button>'+
         '<div id="faChangeArea" style="display:none;margin-top:6px">'+
           '<input id="faCurrentPw" type="password" autocomplete="current-password" placeholder="現在のパスワード">'+
@@ -126,7 +219,15 @@
         '</div>'+
         '<button id="faLogout" class="fa-link" style="width:100%;margin-top:8px" type="button">ログアウト</button>';
       document.getElementById('faLogout').onclick=async()=>{await authMod.signOut(auth);};
-      if(current.role==='admin')watchPresence();
+      if(current.role==='admin'){
+        watchPresence();
+        document.getElementById('faUsageBtn').onclick=async()=>{
+          const w=document.getElementById('faUsageWrap');
+          const opening=w.style.display==='none';
+          w.style.display=opening?'block':'none';
+          if(opening){window.tripAnalytics?.track('admin_dashboard_open',{});await loadUsageDashboard()}
+        };
+      }
       document.getElementById('faChangePw').onclick=()=>{const el=document.getElementById('faChangeArea');el.style.display=el.style.display==='none'?'block':'none';};
       document.getElementById('faChangeSubmit').onclick=async()=>{
         const msg=document.getElementById('faChangeErr');
@@ -185,7 +286,7 @@
           }else setProfile(p);
         }catch(e){setProfile({authenticated:false,role:'error'});}
         render();
-        if(window.tripFamilyAuth?.authenticated)startPresence();
+        if(window.tripFamilyAuth?.authenticated){startPresence();recordUsageSession();}
       });
     }catch(e){console.warn('Family Auth unavailable',e);setProfile({authenticated:false,role:'unavailable'});}
   }
@@ -218,5 +319,6 @@
   document.addEventListener('visibilitychange',()=>{if(current?.authenticated)writePresence()});
   window.addEventListener('focus',()=>{if(current?.authenticated)writePresence()});
   window.openTripFamilyAccount=()=>{modal.classList.add('show');render()};
+  window.openTripUsageDashboard=()=>{modal.classList.add('show');render();setTimeout(()=>document.getElementById('faUsageBtn')?.click(),50)};
   init();
 })();
