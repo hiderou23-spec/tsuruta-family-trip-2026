@@ -12,7 +12,7 @@
   const style=document.createElement('style');
   style.textContent=`
     body{padding-bottom:calc(84px + env(safe-area-inset-bottom))}
-    #familyPlanOverlay,#familySummaryOverlay,#todoOverlay{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
+    #familyPlanOverlay,#familySummaryOverlay,#todoOverlay,.fc-modal{padding-bottom:calc(78px + env(safe-area-inset-bottom))!important}
     .trip-bottom{position:fixed;left:0;right:0;bottom:0;z-index:2000;background:rgba(255,255,255,.965);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid #e5e0e9;padding:6px max(8px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));box-shadow:0 -7px 22px rgba(56,54,72,.07)}
     .trip-bottom-inner{max-width:760px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
     .trip-bottom button{appearance:none;border:0;background:transparent;min-height:56px;border-radius:13px;color:#7a8090;font:inherit;padding:5px 2px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;transition:background .16s ease,color .16s ease,transform .12s ease}
@@ -70,8 +70,9 @@
     const familyPlan=document.getElementById('familyPlanOverlay');
     const familySummary=document.getElementById('familySummaryOverlay');
     const todo=document.getElementById('todoOverlay');
+    const collab=document.querySelector('.fc-modal.show');
     if(account){setActive('account');return}
-    if(isVisible(familyPlan)||isVisible(familySummary)){setActive('family');return}
+    if(collab||isVisible(familyPlan)||isVisible(familySummary)){setActive('family');return}
     if(isVisible(todo)){setActive('todo');return}
     setActive('schedule');
   }
@@ -79,10 +80,12 @@
     const todo=document.getElementById('todoOverlay');
     const familyPlan=document.getElementById('familyPlanOverlay');
     const familySummary=document.getElementById('familySummaryOverlay');
+    const collab=document.querySelector('.fc-modal.show');
     if(except!=='todo'&&todo)todo.style.display='none';
     if(except!=='family'){
       if(familyPlan)familyPlan.style.display='none';
       if(familySummary)familySummary.style.display='none';
+      if(collab)collab.classList.remove('show');
     }
     if(except!=='account'){
       const account=document.querySelector('.fa-modal.show');
@@ -143,7 +146,8 @@
     document.getElementById('todoOverlay'),
     document.getElementById('familyPlanOverlay'),
     document.getElementById('familySummaryOverlay'),
-    document.querySelector('.fa-modal')
+    document.querySelector('.fa-modal'),
+    document.querySelector('.fc-modal')
   ].filter(Boolean);
   const mo=new MutationObserver(()=>setTimeout(syncActive,0));
   watchTargets.forEach(el=>mo.observe(el,{attributes:true,attributeFilter:['style','class']}));
@@ -152,6 +156,7 @@
   document.querySelector('#familyPlanOverlay .fp-back')?.addEventListener('click',()=>setTimeout(syncActive,0));
   document.getElementById('fpsBack')?.addEventListener('click',()=>setTimeout(syncActive,0));
   document.getElementById('faClose')?.addEventListener('click',()=>setTimeout(syncActive,0));
+  document.querySelector('.fc-modal .fc-back')?.addEventListener('click',()=>setTimeout(syncActive,0));
 
   setInterval(updateScheduleLabel,60000);
 })();
