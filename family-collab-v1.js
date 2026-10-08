@@ -162,6 +162,8 @@
     document.getElementById('fcSend').disabled=!isWritable();
     document.getElementById('fcText').disabled=!isWritable();
     modal.classList.add('show');document.body.style.overflow='hidden';
+    window.tripUsage?.trackItem(document.getElementById('fcTitle').textContent||'');
+    window.tripAnalytics?.track('family_collab_open',{item_title:document.getElementById('fcTitle').textContent||''});
     if(!api?.db||!api?.fs){document.getElementById('fcComments').innerHTML='<div style="font-size:13px;color:#8b8295;margin-top:8px">家族ログイン後に利用できます。</div>';renderFamily();return}
     subscribe();
   }
@@ -186,6 +188,11 @@
         uid:p.uid,memberId:p.memberId,label:p.label,...patch,updatedAt:fs.serverTimestamp()
       },{merge:true});
       state.textContent='保存しました';
+      const title=document.getElementById('fcTitle').textContent||'';
+      if(Object.prototype.hasOwnProperty.call(patch,'interest')){window.tripAnalytics?.track('family_interest_set',{item_title:title,value:patch.interest});window.tripUsage?.trackAction('family_interest_set')}
+      if(Object.prototype.hasOwnProperty.call(patch,'attendance')){window.tripAnalytics?.track('family_attendance_set',{item_title:title,value:patch.attendance});window.tripUsage?.trackAction('family_attendance_set')}
+      if(Object.prototype.hasOwnProperty.call(patch,'canGuide')){window.tripAnalytics?.track('family_guide_set',{item_title:title,value:patch.canGuide?'yes':'no'});window.tripUsage?.trackAction('family_guide_set')}
+      if(Object.prototype.hasOwnProperty.call(patch,'recommend')){window.tripAnalytics?.track('family_recommend_set',{item_title:title,value:patch.recommend?'yes':'no'});window.tripUsage?.trackAction('family_recommend_set')}
       setTimeout(()=>{if(state.textContent==='保存しました')state.textContent=''},1200);
     }catch(e){state.textContent='保存できませんでした';console.warn(e)}
   }
@@ -202,6 +209,8 @@
     const {db,fs}=api,base=fs.doc(db,'trip_items',docId(currentKey));
     await fs.addDoc(fs.collection(base,'comments'),{uid:p.uid,memberId:p.memberId,label:p.label,text,createdAt:fs.serverTimestamp()});
     document.getElementById('fcText').value='';
+    window.tripAnalytics?.track('family_comment_add',{item_title:document.getElementById('fcTitle').textContent||''});
+    window.tripUsage?.trackAction('family_comment_add');
     await saveOwn({readAt:fs.serverTimestamp()});
   };
   document.getElementById('fcText').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('fcSend').click()}});
