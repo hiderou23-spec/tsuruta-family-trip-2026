@@ -44,7 +44,10 @@
     }
   };
 
-  function read(){try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(_){return {}}}
+  function read(){
+    if(window.tripSharedPlanning?.read)return window.tripSharedPlanning.read();
+    try{return JSON.parse(localStorage.getItem(STORE)||'{}')}catch(_){return {}}
+  }
   function save(s){localStorage.setItem(STORE,JSON.stringify(s));}
   function me(){return window.tripFamilyProfile?.id||null}
   function label(id){return ({family_01:'Henri',family_02:'Emi',family_03:'Saki',family_04:'Takeru'})[id]||id}
@@ -120,14 +123,21 @@
     body.innerHTML=html;
     body.querySelectorAll('[data-vote]').forEach(b=>b.onclick=()=>{
       const uid=me(); if(!uid){alert('右下から利用者を選んでください。');return}
-      const s=read(); const e=s[key]||{votes:{},decision:null};
-      e.votes=e.votes||{};e.votes[uid]={choice:b.dataset.vote,feel:b.dataset.feel,updated:Date.now()};s[key]=e;save(s);
+      const vote={choice:b.dataset.vote,feel:b.dataset.feel,updated:Date.now()};
+      if(window.tripSharedPlanning?.saveVote)window.tripSharedPlanning.saveVote(key,uid,vote);
+      else{
+        const s=read(); const e=s[key]||{votes:{},decision:null};
+        e.votes=e.votes||{};e.votes[uid]=vote;s[key]=e;save(s);
+      }
       window.tripAnalytics?.track('family_preference_set',{plan_key:key,choice:b.dataset.vote,feel:b.dataset.feel});
       render();
     });
     body.querySelectorAll('[data-decide]').forEach(b=>b.onclick=()=>{
       if(me()!==ADMIN)return;
-      const s=read(); const e=s[key]||{votes:{},decision:null};e.decision=b.dataset.decide;e.decidedBy=ADMIN;e.decidedAt=Date.now();s[key]=e;save(s);
+      if(window.tripSharedPlanning?.saveDecision)window.tripSharedPlanning.saveDecision(key,b.dataset.decide);
+      else{
+        const s=read(); const e=s[key]||{votes:{},decision:null};e.decision=b.dataset.decide;e.decidedBy=ADMIN;e.decidedAt=Date.now();s[key]=e;save(s);
+      }
       window.tripAnalytics?.track('family_plan_decided',{plan_key:key,choice:b.dataset.decide});
       render();
     });
@@ -150,7 +160,7 @@
     const body=document.getElementById('fpsBody');
     let voted=0,decided=0;
     rows.forEach(r=>{const e=s[r.key]||{};if(Object.keys(e.votes||{}).length)voted++;if(e.decision)decided++;});
-    let html='<div class="fp-card"><div style="font-size:13px;color:#70798c">対象予定 <b>'+rows.length+'</b>件 ・ 回答あり <b>'+voted+'</b>件 ・ 決定済み <b>'+decided+'</b>件</div><div style="font-size:11px;color:#9a8eaa;margin-top:5px">現在はこのiPhone内の回答を表示。Firebase接続後は家族全員分を共有表示します。</div></div>';
+    let html='<div class="fp-card"><div style="font-size:13px;color:#70798c">対象予定 <b>'+rows.length+'</b>件 ・ 回答あり <b>'+voted+'</b>件 ・ 決定済み <b>'+decided+'</b>件</div><div class="fp-sync-note" style="font-size:11px;color:#9a8eaa;margin-top:5px">Firebase接続後は家族全員分を共有表示します。</div></div>';
     rows.forEach(r=>{
       const e=s[r.key]||{votes:{},decision:null}, p=planFor(r.title);
       const decision=p.recs.find(x=>x.id===e.decision);
@@ -176,6 +186,7 @@
   }
   summaryBtn.onclick=()=>{renderSummary();summaryOverlay.style.display='block';summaryOverlay.scrollTop=0;document.body.style.overflow='hidden';window.tripAnalytics?.track('family_summary_open',{})};
   document.addEventListener('tripFamilyProfileReady',refreshAdmin);
+  document.addEventListener('tripSharedPlanningUpdated',()=>{if(current)render();if(summaryOverlay.style.display==='block')renderSummary();});
   setTimeout(refreshAdmin,500);
 
   document.querySelectorAll('.item').forEach(item=>{
