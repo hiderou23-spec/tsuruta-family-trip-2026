@@ -119,6 +119,7 @@
 
   buttons.family.onclick=()=>{
     closeNavigationOverlays('family');
+    if(window.tripFamilyLine?.openLatestUnread?.()){setActive('family');return}
     if(window.tripFamilyPlanning?.openHub)window.tripFamilyPlanning.openHub();
     else document.getElementById('familyPlanningHome')?.scrollIntoView({behavior:'smooth',block:'center'});
     setActive('family');
