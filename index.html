@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261008-2340-collab-scope">
+<html lang="ja" data-build="20261008-2355-simple-hero">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -78,37 +78,14 @@ body{
 .hero{
   position:relative;
   overflow:hidden;
-  background:
-    radial-gradient(circle at 88% 18%,rgba(255,255,255,.75) 0 8%,transparent 9%),
-    linear-gradient(135deg,#cfeeff 0%,#e4e5ff 43%,#f2dff5 72%,#ffe9d6 100%) !important;
+  background:linear-gradient(135deg,#dcefff 0%,#e9e8ff 48%,#f6e8f4 100%) !important;
   color:#28344c !important;
   border:1px solid #ded8ec;
-  box-shadow:0 12px 28px rgba(82,76,117,.13);
+  box-shadow:0 8px 22px rgba(82,76,117,.09);
 }
-.hero::before{
-  content:"";
-  position:absolute;
-  left:22px;
-  top:16px;
-  width:92px;
-  height:22px;
-  transform:rotate(-5deg);
-  background:rgba(255,232,163,.82);
-  border:1px solid rgba(223,190,116,.28);
-  box-shadow:0 2px 5px rgba(80,70,50,.08);
-  z-index:1;
-}
-.hero::after{
-  content:"✈︎  ♡  ✦";
-  position:absolute;
-  right:20px;
-  bottom:24px;
-  color:rgba(118,101,164,.55);
-  font-size:18px;
-  letter-spacing:7px;
-}
+.hero::before,.hero::after{content:none !important;display:none !important}
 .hero h1{
-  margin:46px 0 6px !important;
+  margin:0 0 6px !important;
   font-weight:800;
   letter-spacing:-.025em;
   text-shadow:0 1px 0 rgba(255,255,255,.75);
@@ -117,8 +94,8 @@ body{
 .update-stamp{
   position:absolute !important;
   right:18px !important;
-  bottom:58px !important;
-  top:auto !important;
+  top:16px !important;
+  bottom:auto !important;
   margin:0 !important;
   float:none !important;
   max-width:170px;
@@ -200,29 +177,17 @@ body{
 @media(max-width:640px){
   .hero{
     border-radius:18px !important;
-    padding:22px 14px 54px !important;
+    padding:22px 14px 20px !important;
   }
   .hero h1{
-    margin:46px 0 8px !important;
+    margin:0 0 8px !important;
     font-size:28px !important;
     line-height:1.15 !important;
   }
-  .hero::before{
-    left:18px !important;
-    top:14px !important;
-    width:72px !important;
-    height:18px !important;
-    transform:rotate(-4deg) !important;
-  }
-  .hero::after{
-    right:12px !important;
-    bottom:18px !important;
-    font-size:15px !important;
-    letter-spacing:5px !important;
-  }
   .update-stamp{
     right:12px !important;
-    bottom:46px !important;
+    top:14px !important;
+    bottom:auto !important;
     max-width:150px !important;
     font-size:10.5px !important;
     line-height:1.35 !important;
@@ -234,7 +199,7 @@ body{
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/08 23:40 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/08 23:55 JST</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
 <div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><button type="button" id="todoOpen" class="badge warn" style="border:0;cursor:pointer;font:inherit">! 要確認 <span id="todoCount"></span></button></div>
@@ -428,20 +393,20 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 })();
 </script>
 
-<script src="details-v2.js?v=20261008-2340-collab-scope"></script>
-<script src="tripit-list-v3.js?v=20261008-2340-collab-scope"></script>
-<script src="version-check.js?v=20261008-2340-collab-scope"></script>
-<script src="city-photos-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="vxd-polish-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="google-maps-links-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="today-mode-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="family-auth-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="app-v2.js?v=20261008-2340-collab-scope"></script>
-<script src="family-profile-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="ga4-family-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="firebase-sync-v1.js?v=20261008-2340-collab-scope"></script>
+<script src="details-v2.js?v=20261008-2355-simple-hero"></script>
+<script src="tripit-list-v3.js?v=20261008-2355-simple-hero"></script>
+<script src="version-check.js?v=20261008-2355-simple-hero"></script>
+<script src="city-photos-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="vxd-polish-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="google-maps-links-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="today-mode-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="family-auth-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="app-v2.js?v=20261008-2355-simple-hero"></script>
+<script src="family-profile-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="ga4-family-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="firebase-sync-v1.js?v=20261008-2355-simple-hero"></script>
 
-<script src="family-planning-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="family-collab-v1.js?v=20261008-2340-collab-scope"></script>
-<script src="bottom-bar-v1.js?v=20261008-2340-collab-scope"></script>
+<script src="family-planning-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="family-collab-v1.js?v=20261008-2355-simple-hero"></script>
+<script src="bottom-bar-v1.js?v=20261008-2355-simple-hero"></script>
 </body></html>
