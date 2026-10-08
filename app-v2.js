@@ -1,28 +1,10 @@
-
 (async function(){
   const app=document.querySelector('.wrap');
   if(!app) return;
-
-  // Build lock screen
-  const gate=document.createElement('div');
-  gate.id='familyGate';
-  gate.innerHTML=`
-    <div style="width:min(430px,100%);background:#fff;border:1px solid #ddd;border-radius:20px;padding:22px;box-shadow:0 16px 40px rgba(0,0,0,.12)">
-      <div style="font-size:12px;color:#65716e">Tsuruta Family Trip 2026</div>
-      <h2 style="margin:6px 0 4px">家族用パスワード</h2>
-      <p style="font-size:13px;color:#65716e">初回のみ家族共通パスワードを入力してください。この端末では通常、次回から自動で開きます。</p>
-      <input id="familyPw" type="password" autocomplete="current-password" style="width:100%;box-sizing:border-box;padding:11px;border:1px solid #bbb;border-radius:9px;font:inherit">
-      <label style="display:flex;gap:8px;align-items:center;margin:12px 0;font-size:13px"><input id="rememberFamilyDevice" type="checkbox" checked> この端末で記憶する</label>
-      <div id="familyErr" style="color:#a33;font-size:12px;min-height:18px"></div>
-      <button id="familyUnlock" class="btn" style="width:100%;padding:10px">ロック解除</button>
-    </div>`;
-  Object.assign(gate.style,{position:'fixed',inset:'0',zIndex:'999',background:'#f6f3ed',display:'flex',alignItems:'center',justifyContent:'center',padding:'20px'});
-  document.body.appendChild(gate);
   app.style.display='none';
 
   const te=new TextEncoder(),td=new TextDecoder();
   function b64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const x=atob(s),a=new Uint8Array(x.length);for(let i=0;i<x.length;i++)a[i]=x.charCodeAt(i);return a}
-  function enc64(a){let s='';new Uint8Array(a).forEach(x=>s+=String.fromCharCode(x));return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
 
   let cfg,resData,fullData;
   async function loadData(){
@@ -32,25 +14,30 @@
   async function loadFullData(){
     if(!fullData) fullData=await fetch('full-info.enc.json?ts='+Date.now(),{cache:'no-store'}).then(r=>r.json());
   }
-  async function privateFromPassword(pw){
+  async function privateFromLegacyPassword(pw){
     await loadData();
+    if(!cfg?.encryptedPrivateKey) throw new Error('legacy-key-unavailable');
     const base=await crypto.subtle.importKey('raw',te.encode(pw),'PBKDF2',false,['deriveKey']);
-    const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64u(cfg.encryptedPrivateKey.salt),iterations:cfg.encryptedPrivateKey.iter,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+    const k=await crypto.subtle.deriveKey(
+      {name:'PBKDF2',salt:b64u(cfg.encryptedPrivateKey.salt),iterations:cfg.encryptedPrivateKey.iter,hash:'SHA-256'},
+      base,{name:'AES-GCM',length:256},false,['decrypt']
+    );
     const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(cfg.encryptedPrivateKey.iv)},k,b64u(cfg.encryptedPrivateKey.ct));
     return JSON.parse(td.decode(pt));
   }
-  async function importPrivate(jwk){return crypto.subtle.importKey('jwk',jwk,{name:'RSA-OAEP',hash:'SHA-256'},false,['decrypt'])}
+  async function importPrivate(jwk){
+    return crypto.subtle.importKey('jwk',jwk,{name:'RSA-OAEP',hash:'SHA-256'},false,['decrypt']);
+  }
   async function decryptReservations(pk){
     await loadData();
     const out={};
-    for(const [name,ct] of Object.entries(resData.items)){
+    for(const [name,ct] of Object.entries(resData.items||{})){
       const pt=await crypto.subtle.decrypt({name:'RSA-OAEP'},pk,b64u(ct));
       out[name]=td.decode(pt);
     }
     window.tripReservations=out;
     document.dispatchEvent(new CustomEvent('tripReservationsReady',{detail:out}));
   }
-
   async function decryptFullInfo(pk){
     const out={};
     try{
@@ -68,57 +55,125 @@
     document.dispatchEvent(new CustomEvent('tripFullInfoReady',{detail:out}));
   }
 
-  function openDb(){return new Promise((resolve,reject)=>{const q=indexedDB.open('trip-vault',1);q.onupgradeneeded=()=>{if(!q.result.objectStoreNames.contains('keys'))q.result.createObjectStore('keys')};q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)})}
-  async function dbGet(k){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction('keys','readonly'),r=tx.objectStore('keys').get(k);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error)})}
-  async function dbPut(k,v){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction('keys','readwrite');tx.objectStore('keys').put(v,k);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)})}
-  async function dbDel(k){const db=await openDb();return new Promise((resolve,reject)=>{const tx=db.transaction('keys','readwrite');tx.objectStore('keys').delete(k);tx.oncomplete=()=>resolve();tx.onerror=()=>reject(tx.error)})}
+  const gate=document.createElement('div');
+  gate.id='vaultMigrationGate';
+  gate.style.cssText='position:fixed;inset:0;z-index:5100;background:#f6f3ed;display:none;align-items:center;justify-content:center;padding:20px';
+  gate.innerHTML='<div style="width:min(430px,100%);background:#fff;border:1px solid #ddd;border-radius:20px;padding:22px;box-shadow:0 16px 40px rgba(0,0,0,.12)">'+
+    '<div style="font-size:12px;color:#65716e">Tsuruta Family Trip 2026</div>'+
+    '<h2 id="vaultGateTitle" style="margin:6px 0 4px">暗号鍵の初回移行</h2>'+
+    '<p id="vaultGateNote" style="font-size:13px;color:#65716e;line-height:1.55">パパのアカウントで一度だけ、これまでの家族共通パスワードを入力してください。4人の家族アカウントへ暗号鍵を登録します。以後、このパスワード入力は不要です。</p>'+
+    '<div id="vaultPwArea"><input id="legacyFamilyPw" type="password" autocomplete="current-password" placeholder="これまでの家族共通パスワード" style="width:100%;box-sizing:border-box;padding:11px;border:1px solid #bbb;border-radius:9px;font:inherit">'+
+    '<div id="vaultErr" style="color:#a33;font-size:12px;min-height:18px;margin-top:8px"></div>'+
+    '<button id="vaultMigrate" class="btn" style="width:100%;padding:10px">一度だけ移行する</button></div>'+
+    '<button id="vaultLogout" type="button" style="width:100%;margin-top:10px;border:0;background:transparent;color:#687eab;font-weight:800;padding:8px">ログアウト</button>'+
+    '</div>';
+  document.body.appendChild(gate);
 
-  async function rememberPrivate(jwk){
-    let dk=await dbGet('deviceKey');
-    if(!dk){dk=await crypto.subtle.generateKey({name:'AES-GCM',length:256},false,['encrypt','decrypt']);await dbPut('deviceKey',dk)}
-    const iv=crypto.getRandomValues(new Uint8Array(12));
-    const ct=await crypto.subtle.encrypt({name:'AES-GCM',iv},dk,te.encode(JSON.stringify(jwk)));
-    localStorage.setItem('tripWrappedPrivate',JSON.stringify({iv:enc64(iv),ct:enc64(ct)}));
+  function showGate(mode,msg){
+    gate.style.display='flex';
+    const title=document.getElementById('vaultGateTitle');
+    const note=document.getElementById('vaultGateNote');
+    const area=document.getElementById('vaultPwArea');
+    if(mode==='admin'){
+      title.textContent='暗号鍵の初回移行';
+      note.textContent='パパのアカウントで一度だけ、これまでの家族共通パスワードを入力してください。4人の家族アカウントへ暗号鍵を登録します。以後、このパスワード入力は不要です。';
+      area.style.display='block';
+    }else{
+      title.textContent='初期設定待ち';
+      note.textContent=msg||'パパのアカウントで暗号鍵の初回移行を完了すると、このアカウントでも予約情報を開けます。';
+      area.style.display='none';
+    }
   }
-  async function autoPrivate(){
-    const saved=localStorage.getItem('tripWrappedPrivate'); if(!saved)return null;
-    const dk=await dbGet('deviceKey'); if(!dk)return null;
-    const o=JSON.parse(saved);
-    const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(o.iv)},dk,b64u(o.ct));
-    return JSON.parse(td.decode(pt));
+  function hideGate(){gate.style.display='none'}
+
+  async function getOwnVaultJwk(){
+    const api=window.tripFamilyAuthApi,auth=window.tripFamilyAuth;
+    if(!api||!auth?.authenticated) return null;
+    const ref=api.fs.doc(api.db,'family_users',auth.uid);
+    const snap=await api.fs.getDoc(ref);
+    if(!snap.exists()) return null;
+    return snap.data()?.vaultPrivateJwk||null;
   }
+
+  async function provisionFamilyVault(jwk){
+    const api=window.tripFamilyAuthApi;
+    const q=await api.fs.getDocs(api.fs.collection(api.db,'family_users'));
+    const writes=[];
+    q.forEach(s=>{
+      const d=s.data()||{};
+      if(d.active===false) return;
+      writes.push(api.fs.updateDoc(api.fs.doc(api.db,'family_users',s.id),{
+        vaultPrivateJwk:jwk,
+        vaultVersion:1,
+        vaultProvisionedAt:api.fs.serverTimestamp()
+      }));
+    });
+    await Promise.all(writes);
+  }
+
   async function unlockWith(jwk){
     const pk=await importPrivate(jwk);
     await decryptReservations(pk);
-    gate.style.display='none'; app.style.display='block';
+    app.style.display='block';
+    hideGate();
     decryptFullInfo(pk);
   }
 
-  document.getElementById('familyUnlock').onclick=async()=>{
-    const err=document.getElementById('familyErr');
-    err.textContent='確認しています…';
+  let handling=false;
+  async function handleAuth(profile){
+    if(handling) return;
+    handling=true;
     try{
-      const jwk=await privateFromPassword(document.getElementById('familyPw').value);
-      if(document.getElementById('rememberFamilyDevice').checked) await rememberPrivate(jwk);
-      await unlockWith(jwk);
-      document.getElementById('familyPw').value='';
-      err.textContent='';
-    }catch(e){err.textContent='パスワードが違うか、鍵を復号できません。'}
-  };
-  document.getElementById('familyPw').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('familyUnlock').click()});
-
-  // Expose forget function to a button injected by details-v2.js
-  window.forgetTripDevice=async function(){
-    localStorage.removeItem('tripWrappedPrivate');
-    try{await dbDel('deviceKey')}catch(_){}
-    alert('この端末の自動解除情報を削除しました。次回はパスワード入力が必要です。');
-  };
-
-  try{
-    const jwk=await autoPrivate();
-    if(jwk) await unlockWith(jwk);
-  }catch(e){
-    localStorage.removeItem('tripWrappedPrivate');
-    try{await dbDel('deviceKey')}catch(_){}
+      if(!profile?.authenticated){
+        app.style.display='none';
+        hideGate();
+        return;
+      }
+      const jwk=await getOwnVaultJwk();
+      if(jwk){
+        await unlockWith(jwk);
+        return;
+      }
+      app.style.display='none';
+      if(profile.role==='admin') showGate('admin');
+      else showGate('wait');
+    }catch(e){
+      app.style.display='none';
+      showGate('wait','暗号鍵を読み込めませんでした。パパの初期設定完了後にもう一度ログインしてください。');
+      console.warn('Family vault unavailable',e);
+    }finally{
+      handling=false;
+    }
   }
+
+  document.getElementById('vaultMigrate').onclick=async()=>{
+    const err=document.getElementById('vaultErr');
+    err.textContent='移行しています…';
+    try{
+      const jwk=await privateFromLegacyPassword(document.getElementById('legacyFamilyPw').value);
+      await provisionFamilyVault(jwk);
+      document.getElementById('legacyFamilyPw').value='';
+      err.textContent='';
+      await unlockWith(jwk);
+      alert('移行が完了しました。今後は家族ログインだけで予約情報を開けます。');
+    }catch(e){
+      console.warn(e);
+      err.textContent='移行できませんでした。これまでの家族共通パスワードを確認してください。';
+    }
+  };
+  document.getElementById('legacyFamilyPw').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('vaultMigrate').click()});
+  document.getElementById('vaultLogout').onclick=async()=>{
+    try{await window.tripFamilyAuthApi?.authMod?.signOut(window.tripFamilyAuthApi.auth)}catch(_){}
+  };
+
+  document.addEventListener('tripFamilyAuthReady',e=>handleAuth(e.detail));
+
+  // family-auth may already have completed before this script attached.
+  if(window.tripFamilyAuth) handleAuth(window.tripFamilyAuth);
+
+  // Backward-compatible hook used by older UI: now logs out rather than deleting a device key.
+  window.forgetTripDevice=async function(){
+    try{await window.tripFamilyAuthApi?.authMod?.signOut(window.tripFamilyAuthApi.auth)}catch(_){}
+    alert('家族アカウントからログアウトしました。');
+  };
 })();
