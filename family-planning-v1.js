@@ -54,8 +54,8 @@
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function keyFor(item){const sec=item.closest('.section')?.id||'';const title=(item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim();return sec+'|'+title}
   function baseTitle(item){return (item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim()}
-  function isFixedTravel(title){
-    return /Delta DL198|AC1783|AC1782|ZIPAIR ZG21|Waikiki Shore|Coast Coal Harbour|Chateau Victoria|West Coast Suites|チェックイン|チェックアウト/.test(title);
+  function shouldConsult(title){
+    return /朝食$|昼食$|夕食$|Christmas Eve Dinner|ビーチ・観光|買い物・観光|自由行動|Victoria散策/.test(title);
   }
   function planFor(title){
     if(plans[title])return plans[title];
@@ -194,11 +194,14 @@
   setTimeout(refreshAdmin,500);
 
   document.querySelectorAll('.item').forEach(item=>{
-    if(item.querySelector('.badge.ok'))return;
     const title=baseTitle(item);
-    if(!title || isFixedTravel(title) || /自宅を出発|空港.*到着|入国・荷物|帰宅|荷造り|ホテルへ戻って準備/.test(title))return;
-    item.style.cursor='pointer';item.dataset.familyPlan='1';
     const t=item.querySelector('.title');
+    if(!title || !shouldConsult(title)){
+      item.removeAttribute('data-family-plan');
+      t?.querySelector('.planning-hint')?.remove();
+      return;
+    }
+    item.style.cursor='pointer';item.dataset.familyPlan='1';
     if(t&&!t.querySelector('.planning-hint'))t.insertAdjacentHTML('beforeend','<span class="planning-hint"> 家族で相談 ›</span>');
     item.addEventListener('click',e=>{if(e.target.closest('a,button,summary,details'))return;open(item)});
   });
