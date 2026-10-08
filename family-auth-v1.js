@@ -36,6 +36,7 @@
       <input id="faPassword" type="password" autocomplete="current-password" placeholder="パスワード">
       <div id="faErr" class="fa-err"></div>
       <button id="faSubmit" class="fa-primary" type="button">ログイン</button>
+      <button id="faForgot" class="fa-link" style="width:100%;margin-top:6px" type="button">パスワードを忘れた</button>
     </div>
     <div id="faAccount" style="display:none"></div>
     <div style="display:flex;justify-content:center;margin-top:8px"><button id="faClose" class="fa-link" type="button">閉じる</button></div>
@@ -69,8 +70,42 @@
     if(on){
       a.innerHTML='<div style="background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:14px"><b>'+current.label+'</b><div style="font-size:12px;color:#7d8493;margin-top:4px">'+
         (current.role==='admin'?'管理者：最終決定・家族管理が可能':current.role==='viewer'?'閲覧のみ':'家族メンバー：投票・既読・コメントが可能')+
-        '</div></div><button id="faLogout" class="fa-link" style="width:100%;margin-top:8px" type="button">ログアウト</button>';
+        '</div></div>'+
+        '<button id="faChangePw" class="fa-link" style="width:100%;margin-top:8px" type="button">パスワード変更</button>'+
+        '<div id="faChangeArea" style="display:none;margin-top:6px">'+
+          '<input id="faCurrentPw" type="password" autocomplete="current-password" placeholder="現在のパスワード">'+
+          '<input id="faNewPw" type="password" autocomplete="new-password" placeholder="新しいパスワード（12文字以上推奨）">'+
+          '<input id="faNewPw2" type="password" autocomplete="new-password" placeholder="新しいパスワードをもう一度">'+
+          '<div id="faChangeErr" class="fa-err"></div>'+
+          '<button id="faChangeSubmit" class="fa-primary" type="button">変更する</button>'+
+        '</div>'+
+        '<button id="faLogout" class="fa-link" style="width:100%;margin-top:8px" type="button">ログアウト</button>';
       document.getElementById('faLogout').onclick=async()=>{await authMod.signOut(auth);};
+      document.getElementById('faChangePw').onclick=()=>{const el=document.getElementById('faChangeArea');el.style.display=el.style.display==='none'?'block':'none';};
+      document.getElementById('faChangeSubmit').onclick=async()=>{
+        const msg=document.getElementById('faChangeErr');
+        const cur=document.getElementById('faCurrentPw').value;
+        const n1=document.getElementById('faNewPw').value;
+        const n2=document.getElementById('faNewPw2').value;
+        if(!cur){msg.textContent='現在のパスワードを入力してください。';return}
+        if(n1.length<8){msg.textContent='新しいパスワードは8文字以上にしてください。';return}
+        if(n1!==n2){msg.textContent='新しいパスワードが一致しません。';return}
+        msg.textContent='変更しています…';
+        try{
+          const user=auth.currentUser;
+          const cred=authMod.EmailAuthProvider.credential(user.email,cur);
+          await authMod.reauthenticateWithCredential(user,cred);
+          await authMod.updatePassword(user,n1);
+          document.getElementById('faCurrentPw').value='';
+          document.getElementById('faNewPw').value='';
+          document.getElementById('faNewPw2').value='';
+          msg.style.color='#477566';
+          msg.textContent='パスワードを変更しました。';
+        }catch(e){
+          msg.style.color='#a34c4c';
+          msg.textContent=e?.code==='auth/invalid-credential'?'現在のパスワードが違います。':e?.code==='auth/weak-password'?'新しいパスワードが弱すぎます。':'変更できませんでした。もう一度お試しください。';
+        }
+      };
     }
   }
   async function loadFamilyProfile(user){
@@ -118,6 +153,20 @@
     }
   };
   document.getElementById('faPassword').addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('faSubmit').click()});
+  document.getElementById('faForgot').onclick=async()=>{
+    const email=document.getElementById('faEmail').value.trim();
+    const err=document.getElementById('faErr');
+    if(!email){err.textContent='まずメールアドレスを入力してください。';return}
+    err.textContent='再設定メールを送信しています…';
+    try{
+      await authMod.sendPasswordResetEmail(auth,email);
+      err.style.color='#477566';
+      err.textContent='パスワード再設定メールを送信しました。メールを確認してください。';
+    }catch(e){
+      err.style.color='#a34c4c';
+      err.textContent='再設定メールを送信できませんでした。メールアドレスを確認してください。';
+    }
+  };
   window.openTripFamilyAccount=()=>{modal.classList.add('show');render()};
   init();
 })();
