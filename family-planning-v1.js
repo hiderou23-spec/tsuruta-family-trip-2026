@@ -136,7 +136,7 @@
       if(me()!==ADMIN)return;
       if(window.tripSharedPlanning?.saveDecision)window.tripSharedPlanning.saveDecision(key,b.dataset.decide);
       else{
-        const s=read(); const e=s[key]||{votes:{},decision:null};e.decision=b.dataset.decide;e.decidedBy=ADMIN;e.decidedAt=Date.now();s[key]=e;save(s);
+        if(window.tripSharedPlanning?.saveDecision)window.tripSharedPlanning.saveDecision(key,b.dataset.decide);else{const s=read();const e=s[key]||{votes:{},decision:null};e.decision=b.dataset.decide;e.decidedBy=ADMIN;e.decidedAt=Date.now();s[key]=e;save(s);}
       }
       window.tripAnalytics?.track('family_plan_decided',{plan_key:key,choice:b.dataset.decide});
       render();
