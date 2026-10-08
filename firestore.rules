@@ -10,7 +10,31 @@ service cloud.firestore {
 
     match /family_users/{uid} {
       allow read: if active();
-      allow write: if admin();
+      allow create, delete: if admin();
+      allow update: if admin()
+        || (active() && uid == request.auth.uid
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(['lineNotifications']));
+    }
+
+    match /line_link_codes/{code} {
+      allow create: if canWrite()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.memberId == me().memberId;
+      allow read, delete: if canWrite()
+        && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+
+    match /family_notifications/{uid} {
+      allow read, write: if false;
+
+      match /items/{notificationId} {
+        allow read: if active() && uid == request.auth.uid;
+        allow update: if active() && uid == request.auth.uid
+          && request.resource.data.diff(resource.data).changedKeys().hasOnly(['read','readAt']);
+        allow delete: if admin() || (active() && uid == request.auth.uid);
+        allow create: if false;
+      }
     }
 
     match /family_presence/{uid} {
