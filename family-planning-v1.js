@@ -5,41 +5,25 @@
     'Christmas Eve Dinner':{
       question:'クリスマスイブの夕食、どれが良い？',
       recs:[
-        {id:'waikiki_view',name:'ワイキキで景色の良いディナー',why:'移動が少なく、イブらしい雰囲気を作りやすい。'},
-        {id:'hawaiian',name:'ハワイ料理を楽しむ',why:'家族旅行らしさを優先。早めの予約向き。'},
-        {id:'casual',name:'カジュアルにして夜散歩',why:'食事を軽めにし、ワイキキ散策の時間を取れる。'}
+        {id:'waikiki_view',name:'景色の良い特別ディナー',why:'12/24らしい特別感を優先。早めの予約向き。'},
+        {id:'hawaiian',name:'ハワイ料理を楽しむ',why:'旅行らしさと家族での楽しさを優先。'},
+        {id:'casual',name:'カジュアル＋夜散歩',why:'食事を軽めにしてワイキキの夜を楽しむ。'}
       ]
     },
-    'ビーチ・観光':{
-      question:'12/24午前、どんな過ごし方が良い？',
+    'ハワイ最後の夕食':{
+      question:'ハワイ最後の夜、どんな夕食にする？',
       recs:[
-        {id:'diamond',name:'Diamond Head＋Waikiki',why:'初めてでも満足度が高く、午前に動きやすい。'},
-        {id:'beach',name:'Waikiki Beachをゆっくり',why:'到着翌日なので無理をせず時差調整しやすい。'},
-        {id:'kcc',name:'街歩き＋カフェ',why:'体力を使いすぎず家族で話しながら過ごせる。'}
+        {id:'local',name:'ハワイらしい料理',why:'最後にローカルフードを楽しむ。'},
+        {id:'favorite',name:'家族の好きなものを優先',why:'旅行終盤なので全員が食べたいものを選ぶ。'},
+        {id:'easy',name:'Waikikiで気軽に',why:'翌日の移動に備えてゆったり締める。'}
       ]
     },
-    '買い物・観光':{
-      question:'12/24午後は何を優先する？',
+    'Victoria / UBC 時間配分':{
+      question:'Victoriaを少し短くして、12/29午後をUBCに使う案でどう？',
       recs:[
-        {id:'ala_moana',name:'Ala Moanaで買い物',why:'買い物をまとめやすく、家族それぞれ自由時間も作れる。'},
-        {id:'waikiki_walk',name:'Waikiki周辺を散策',why:'移動負担が少なく、イブの街の雰囲気を楽しめる。'},
-        {id:'rest',name:'ホテル休憩＋夕食準備',why:'夜のディナーを中心にして疲れを残しにくい。'}
-      ]
-    },
-    '終日自由行動':{
-      question:'12/26の1日、何をしたい？',
-      recs:[
-        {id:'north_shore',name:'North Shore方面へ',why:'ホノルルとは違う景色を楽しめる1日観光。'},
-        {id:'east_oahu',name:'東海岸ドライブ・観光',why:'海岸景観を楽しみながら比較的まとまりやすい。'},
-        {id:'waikiki_free',name:'Waikikiで完全自由行動',why:'旅行後半に備えて各自の希望を優先できる。'}
-      ]
-    },
-    '夕食':{
-      question:'この日の夕食、どの方向が良い？',
-      recs:[
-        {id:'local',name:'現地らしい料理',why:'その土地ならではの食事を優先。'},
-        {id:'nearby',name:'ホテル近くで便利に',why:'移動を減らして翌日の予定に備える。'},
-        {id:'family_choice',name:'当日、家族投票で決める',why:'その日の体調や気分を反映しやすい。'}
+        {id:'ubc_priority',name:'この案で進めたい',why:'VictoriaはInner Harbour＋Butchart Gardensに絞り、午後は咲喜の寮・キャンパス・生活圏を見る。'},
+        {id:'victoria_priority',name:'Victoriaをもう少し見たい',why:'Victoria滞在を長くして、UBCの時間を短くする。'},
+        {id:'neutral',name:'どちらでもよい',why:'家族全体の希望に合わせる。'}
       ]
     }
   };
@@ -56,8 +40,9 @@
   function baseTitle(item){return (item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim()}
   function shouldConsult(title){
     const t=(title||'').replace(/\s+/g,' ').trim();
-    return /(?:^|\s)(朝食|昼食|夕食)$/.test(t)
-      || /Christmas Eve Dinner|ビーチ・観光|買い物・観光|自由行動|Victoria散策/.test(t);
+    return t==='Christmas Eve Dinner'
+      || t==='ハワイ最後の夕食'
+      || t==='Victoria / UBC 時間配分';
   }
   function planFor(title){
     if(plans[title])return plans[title];
