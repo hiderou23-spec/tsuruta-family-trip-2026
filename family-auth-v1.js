@@ -12,7 +12,7 @@
 
   const style=document.createElement('style');
   style.textContent=`
-    .fa-badge{position:fixed;left:12px;bottom:12px;z-index:120;border:1px solid #ddd7e8;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;color:#5e6a80;box-shadow:0 4px 14px rgba(80,72,102,.08)}
+    .fa-badge{display:none!important;position:fixed;left:12px;bottom:12px;z-index:120;border:1px solid #ddd7e8;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;color:#5e6a80;box-shadow:0 4px 14px rgba(80,72,102,.08)}
     .fa-badge.on{color:#477566}.fa-modal{position:fixed;inset:0;z-index:5200;background:rgba(39,50,71,.45);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}.fa-modal.show{display:flex}
     .fa-box{width:min(430px,100%);background:#fffaf6;border:1px solid #e7dfeb;border-radius:20px;padding:20px;box-shadow:0 18px 50px rgba(70,62,95,.18)}
     .fa-box input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #d9d3e3;border-radius:11px;margin:6px 0 10px;font:inherit}
@@ -36,7 +36,7 @@
       <input id="faPassword" type="password" autocomplete="current-password" placeholder="パスワード">
       <div id="faErr" class="fa-err"></div>
       <button id="faSubmit" class="fa-primary" type="button">ログイン</button>
-      <button id="faForgot" class="fa-link" style="width:100%;margin-top:6px" type="button">パスワードを忘れた</button>
+      <button id="faForgot" class="fa-link" style="width:100%;margin-top:6px;text-decoration:underline;text-underline-offset:3px" type="button">パスワードを忘れた方はこちら</button>
     </div>
     <div id="faAccount" style="display:none"></div>
     <div style="display:flex;justify-content:center;margin-top:8px"><button id="faClose" class="fa-link" type="button">閉じる</button></div>
