@@ -50,7 +50,7 @@
   }
   function save(s){localStorage.setItem(STORE,JSON.stringify(s));}
   function me(){return window.tripFamilyProfile?.id||null}
-  function label(id){return ({family_01:'Henri',family_02:'Emi',family_03:'Saki',family_04:'Takeru'})[id]||id}
+  function label(id){return ({family_01:'パパ',family_02:'Emi',family_03:'Saki',family_04:'Takeru'})[id]||id}
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function keyFor(item){const sec=item.closest('.section')?.id||'';const title=(item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim();return sec+'|'+title}
   function baseTitle(item){return (item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim()}
@@ -119,7 +119,7 @@
 
   const summaryOverlay=document.createElement('div');
   summaryOverlay.id='familySummaryOverlay';
-  summaryOverlay.innerHTML='<div class="fps-shell"><div class="fp-head" style="position:sticky;top:0;z-index:3;background:rgba(255,250,246,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e9e2ed;padding:12px 16px;display:flex;align-items:center;gap:12px"><button id="fpsBack" class="fp-back" aria-label="戻る">‹</button><div><div style="font-weight:800;font-size:18px">家族の希望一覧</div><div style="font-size:11px;color:#8b8295">Henri 管理者ビュー</div></div></div><div id="fpsBody" style="padding:16px 14px 34px"></div></div>';
+  summaryOverlay.innerHTML='<div class="fps-shell"><div class="fp-head" style="position:sticky;top:0;z-index:3;background:rgba(255,250,246,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e9e2ed;padding:12px 16px;display:flex;align-items:center;gap:12px"><button id="fpsBack" class="fp-back" aria-label="戻る">‹</button><div><div style="font-weight:800;font-size:18px">家族の希望一覧</div><div style="font-size:11px;color:#8b8295">パパ 管理者ビュー</div></div></div><div id="fpsBody" style="padding:16px 14px 34px"></div></div>';
   document.body.appendChild(summaryOverlay);
   document.getElementById('fpsBack').onclick=()=>{summaryOverlay.style.display='none';document.body.style.overflow=''};
 
@@ -143,9 +143,9 @@
     p.recs.forEach(r=>{
       const chosen=entry.decision===r.id;
       const voters=Object.entries(entry.votes||{}).filter(([,v])=>v.choice===r.id);
-      html+='<div class="fp-rec '+(chosen?'chosen':'')+'"><div style="font-weight:800;color:#273247">'+esc(r.name)+(chosen?' <span style="font-size:11px;color:#527bb2">✓ 決定</span>':'')+'</div><div style="font-size:13px;color:#7b8293;margin-top:3px">'+esc(r.why)+'</div><div class="fp-votes">'+(voters.length?voters.map(([id,v])=>esc(label(id))+' '+(v.feel==='like'?'👍':v.feel==='neutral'?'○':'△')).join(' · '):'まだ希望なし')+'</div><div class="fp-actions"><button data-vote="'+r.id+'" data-feel="like">👍 行きたい</button><button data-vote="'+r.id+'" data-feel="neutral">○ どちらでも</button><button data-vote="'+r.id+'" data-feel="other">△ 別案希望</button></div>'+(me()===ADMIN?'<div class="fp-admin"><button data-decide="'+r.id+'">Henriとして「'+esc(r.name)+'」に決定</button></div>':'')+'</div>';
+      html+='<div class="fp-rec '+(chosen?'chosen':'')+'"><div style="font-weight:800;color:#273247">'+esc(r.name)+(chosen?' <span style="font-size:11px;color:#527bb2">✓ 決定</span>':'')+'</div><div style="font-size:13px;color:#7b8293;margin-top:3px">'+esc(r.why)+'</div><div class="fp-votes">'+(voters.length?voters.map(([id,v])=>esc(label(id))+' '+(v.feel==='like'?'👍':v.feel==='neutral'?'○':'△')).join(' · '):'まだ希望なし')+'</div><div class="fp-actions"><button data-vote="'+r.id+'" data-feel="like">👍 行きたい</button><button data-vote="'+r.id+'" data-feel="neutral">○ どちらでも</button><button data-vote="'+r.id+'" data-feel="other">△ 別案希望</button></div>'+(me()===ADMIN?'<div class="fp-admin"><button data-decide="'+r.id+'">パパとして「'+esc(r.name)+'」に決定</button></div>':'')+'</div>';
     });
-    if(me()!==ADMIN)html+='<div style="font-size:12px;color:#81788f;text-align:center;margin-top:14px">家族の希望を見て、最終決定はHenriが行います。</div>';
+    if(me()!==ADMIN)html+='<div style="font-size:12px;color:#81788f;text-align:center;margin-top:14px">家族の希望を見て、最終決定はパパが行います。</div>';
     body.innerHTML=html;
     body.querySelectorAll('[data-vote]').forEach(b=>b.onclick=()=>{
       const uid=me(); if(!uid){alert('右下から利用者を選んでください。');return}
@@ -217,7 +217,7 @@
       const row=pending[0], p=planFor(row.title);
       html+='<div class="fp-quick"><div style="font-size:10px;color:#9a8eaa;font-weight:800">'+esc(row.date)+'</div><div class="fp-quick-q">'+esc(p.question)+'</div><div class="fp-quick-options">'+p.recs.map(r=>'<button type="button" data-quick="'+esc(r.id)+'">'+esc(r.name)+'</button>').join('')+'</div></div><button type="button" class="fp-home-open">あと '+pending.length+' 件を見る ›</button>';
     }else{
-      html+='<div class="fp-done">✓ 回答ありがとう。Henriがみんなの希望を見て決めます。</div>';
+      html+='<div class="fp-done">✓ 回答ありがとう。パパがみんなの希望を見て決めます。</div>';
       if(uid===ADMIN)html+='<button type="button" class="fp-home-open">家族の回答状況を見る ›</button>';
     }
     homeCard.innerHTML=html;
