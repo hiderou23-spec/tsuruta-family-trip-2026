@@ -21,9 +21,9 @@
     'Hawaii Waikīkī Gun Club':{
       question:'Takeruの射撃体験、どうする？',
       recs:[
-        {id:'waikiki_gun_club',name:'Waikīkī Gun Clubに行きたい',why:'ワイキキ中心部で移動が楽。16歳でも保護者同伴で利用可能。'},
-        {id:'808_gun_club',name:'808 Gun Clubも見て決めたい',why:'Kakaʻakoの候補。パッケージ内容を比べてから決める。'},
-        {id:'skip_shooting',name:'今回は見送る',why:'最終日をもっとゆっくり過ごしたい場合はこちら。'}
+        {id:'waikiki_gun_club',name:'Waikīkī Gun Club',why:'ワイキキ中心部で移動が最も楽。',detail:'12歳以上。21歳未満は保護者同伴。Kalākaua Ave沿いの屋内レンジで、.22LR〜.50AEまで幅広い銃種、安全装備一式あり。ワイキキ最長クラスの屋内レンジをうたっており、今回の旅程では移動負担が小さいのが最大の利点。',fit:'今回向き：★★★★★',url:'https://www.hawaiigunclub.com/homejpn',map:'https://www.google.com/maps/search/?api=1&query=Hawaii+Waikiki+Gun+Club'},
+        {id:'808_gun_club',name:'808 Gun Club',why:'銃種・料金・弾数を比較して選びやすい。',detail:'14歳以上。14〜18歳は料金を支払う成人の同伴が必要。Kakaʻakoの屋内4レーン。初心者向けPackage Aは30分・$110〜で、Glock 17、.22ライフル、リボルバーなど4丁・46発。上位パッケージではAR-15、AK-47、ショットガン等も選べる。Ala Moanaからの動線が良い。',fit:'比較しやすさ：★★★★★',url:'https://808gunclub.com/shooting-packages/',map:'https://www.google.com/maps/search/?api=1&query=808+Gun+Club+Honolulu'},
+        {id:'skip_shooting',name:'今回は見送る',why:'最終日をもっとゆっくり過ごす。',detail:'12/26はWaikiki Beach、Ala Moana、サンセット、最後の夕食があるため、射撃を入れなくても十分に楽しめる。疲れ具合や家族全体の希望を優先したい場合はこちら。',fit:'ゆったり度：★★★★★'}
       ]
     },
     'Victoria / UBC 時間配分':{
@@ -77,6 +77,7 @@
     .fp-card{background:#fff;border:1px solid #e8e1eb;border-radius:16px;padding:15px;margin:10px 0;box-shadow:0 5px 14px rgba(82,76,110,.05)}
     .fp-rec{border:1px solid #e6dfeb;border-radius:14px;padding:12px;margin:9px 0;background:#fff}
     .fp-rec.chosen{box-shadow:inset 0 0 0 2px #8eb1df;background:#f7fbff}
+    .fp-more{margin-top:9px;border-top:1px dashed #e5deeb;padding-top:8px}.fp-more summary{cursor:pointer;color:#617eb3;font-size:12px;font-weight:800;list-style:none}.fp-more summary::-webkit-details-marker{display:none}.fp-more-box{font-size:12.5px;line-height:1.6;color:#667085;margin-top:7px}.fp-more-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.fp-more-links a{border:1px solid #ddd7e8;background:#fff;border-radius:9px;padding:6px 8px;text-decoration:none;color:#526077;font-weight:800;font-size:11px}
     .fp-votes{font-size:12px;color:#7b8293;margin-top:8px}
     .fp-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
     .fp-actions button{border:1px solid #ddd7e8;background:#fff;border-radius:10px;padding:8px 10px;font-weight:700;color:#526077}
@@ -138,7 +139,8 @@
     p.recs.forEach(r=>{
       const chosen=entry.decision===r.id;
       const voters=Object.entries(entry.votes||{}).filter(([,v])=>v.choice===r.id);
-      html+='<div class="fp-rec '+(chosen?'chosen':'')+'"><div style="font-weight:800;color:#273247">'+esc(r.name)+(chosen?' <span style="font-size:11px;color:#527bb2">✓ 決定</span>':'')+'</div><div style="font-size:13px;color:#7b8293;margin-top:3px">'+esc(r.why)+'</div><div class="fp-votes">'+(voters.length?voters.map(([id,v])=>esc(label(id))+' '+(v.feel==='like'?'👍':v.feel==='neutral'?'○':'△')).join(' · '):'まだ希望なし')+'</div><div class="fp-actions"><button data-vote="'+r.id+'" data-feel="like">👍 行きたい</button><button data-vote="'+r.id+'" data-feel="neutral">○ どちらでも</button><button data-vote="'+r.id+'" data-feel="other">△ 別案希望</button></div>'+(isAdmin()?'<div class="fp-admin"><button data-decide="'+r.id+'">パパとして「'+esc(r.name)+'」に決定</button></div>':'')+'</div>';
+      const more=r.detail?'<details class="fp-more"><summary>特徴・条件を見る ›</summary><div class="fp-more-box">'+esc(r.detail)+(r.fit?'<div style="font-weight:800;color:#526077;margin-top:5px">'+esc(r.fit)+'</div>':'')+(r.url||r.map?'<div class="fp-more-links">'+(r.url?'<a href="'+r.url+'" target="_blank" rel="noopener">公式サイト</a>':'')+(r.map?'<a href="'+r.map+'" target="_blank" rel="noopener">Map</a>':'')+'</div>':'')+'</div></details>':'';
+      html+='<div class="fp-rec '+(chosen?'chosen':'')+'"><div style="font-weight:800;color:#273247">'+esc(r.name)+(chosen?' <span style="font-size:11px;color:#527bb2">✓ 決定</span>':'')+'</div><div style="font-size:13px;color:#7b8293;margin-top:3px">'+esc(r.why)+'</div>'+more+'<div class="fp-votes">'+(voters.length?voters.map(([id,v])=>esc(label(id))+' '+(v.feel==='like'?'👍':v.feel==='neutral'?'○':'△')).join(' · '):'まだ希望なし')+'</div><div class="fp-actions"><button data-vote="'+r.id+'" data-feel="like">👍 行きたい</button><button data-vote="'+r.id+'" data-feel="neutral">○ どちらでも</button><button data-vote="'+r.id+'" data-feel="other">△ 別案希望</button></div>'+(isAdmin()?'<div class="fp-admin"><button data-decide="'+r.id+'">パパとして「'+esc(r.name)+'」に決定</button></div>':'')+'</div>';
     });
     if(!isAdmin())html+='<div style="font-size:12px;color:#81788f;text-align:center;margin-top:14px">家族の希望を見て、最終決定はパパが行います。</div>';
     body.innerHTML=html;
