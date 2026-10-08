@@ -42,7 +42,7 @@
   }
   function save(s){localStorage.setItem(STORE,JSON.stringify(s));}
   function me(){return window.tripFamilyAuth?.authenticated?window.tripFamilyAuth.memberId:(window.tripFamilyProfile?.id||null)}
-  function isAdmin(){return window.tripFamilyAuth?.authenticated?window.tripFamilyAuth.role==='admin':isAdmin()}
+  function isAdmin(){return window.tripFamilyAuth?.authenticated?window.tripFamilyAuth.role==='admin':me()===ADMIN}
   function label(id){return ({family_01:'パパ',family_02:'Emi',family_03:'Saki',family_04:'Takeru'})[id]||id}
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
   function keyFor(item){const sec=item.closest('.section')?.id||'';const title=(item.querySelector('.title')?.childNodes[0]?.textContent||item.querySelector('.title')?.textContent||'').trim();return sec+'|'+title}
