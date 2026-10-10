@@ -100,6 +100,26 @@
       title:'家族で相談・回答できる機能を追加',
       detail:'Christmas Eve Dinner、ハワイ最後の夕食、射撃、Victoria / UBCの時間配分などを家族で相談できる仕組みを追加しました。'
     }
+    ,{
+      at:'2026/10/07',
+      title:'旅行サイトを開設・公開',
+      detail:'家族の年末旅行の予定を一か所で確認するため、GitHub Pagesの旅行専用サイトを開設しました。'
+    },
+    {
+      at:'2026/10/07',
+      title:'旅行全体のタイムラインを作成',
+      detail:'東京・ホノルル・バンクーバー・ビクトリア・UBCを巡る旅行日程を、日付ごとに追える一覧として整理しました。'
+    },
+    {
+      at:'2026/10/07',
+      title:'予約・移動・観光の詳細表示を整備',
+      detail:'フライト、宿泊、観光、食事などを区別し、予定を選ぶと予約情報や時刻、注意事項を確認できる構成にしました。'
+    },
+    {
+      at:'2026/10/07',
+      title:'更新確認の仕組みを導入',
+      detail:'更新日時・ビルド情報と最新版の確認機能を整備し、家族が古い画面を見続けないようにする基盤を作りました。'
+    }
   ];
 
   function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
@@ -110,7 +130,14 @@
   if(!open||!overlay||!back||!list)return;
 
   function render(){
-    list.innerHTML=entries.map((e,i)=>'<div style="background:#fff;border:1px solid #e8e1eb;border-radius:16px;padding:14px 15px;margin-bottom:10px;box-shadow:0 5px 14px rgba(82,76,110,.05)"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div style="font-weight:800;color:#273247">'+esc(e.title)+'</div>'+(i===0?'<span style="font-size:10px;font-weight:800;background:#e7f3ff;color:#5276a3;padding:3px 7px;border-radius:999px">最新</span>':'')+'</div><div style="font-size:11px;color:#9a8eaa;margin-top:3px">'+esc(e.at)+'</div><div style="font-size:13px;color:#6f788c;margin-top:7px;line-height:1.6">'+esc(e.detail)+'</div></div>').join('');
+    const groups=new Map();
+    entries.slice().sort((a,b)=>b.at.localeCompare(a.at)).forEach(e=>{
+      const day=e.at.slice(0,10);
+      if(!groups.has(day))groups.set(day,[]);
+      groups.get(day).push(e);
+    });
+    list.innerHTML='<div style="font-weight:800;font-size:17px;margin:4px 0 12px">開発のあゆみ</div><div style="font-size:12px;color:#7b8293;margin-bottom:14px">2026年10月7日のサイト開設から現在まで。日付をタップすると詳細を確認できます。</div>'+
+      Array.from(groups,([day,items],idx)=>'<details '+(idx===0?'open':'')+' style="background:#fff;border:1px solid #e8e1eb;border-radius:16px;margin-bottom:12px;overflow:hidden"><summary style="cursor:pointer;padding:16px;font-weight:800;color:#273247;list-style-position:inside">'+esc(day)+' <span style="font-size:12px;color:#7b8293;font-weight:500">（'+items.length+'件）</span></summary><div style="padding:0 14px 14px">'+items.map((e,i)=>'<div style="border-top:1px solid #eee8f1;padding:12px 2px"><div style="font-weight:750;color:#273247">'+esc(e.title)+'</div><div style="font-size:11px;color:#9a8eaa;margin-top:3px">'+esc(e.at)+'</div><div style="font-size:13px;color:#6f788c;margin-top:7px;line-height:1.6">'+esc(e.detail)+'</div></div>').join('')+'</div></details>').join('');
   }
   open.addEventListener('click',()=>{
     render();overlay.style.display='block';overlay.scrollTop=0;
