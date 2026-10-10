@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>家族旅行・コメントに返信</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#293449;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",sans-serif}.wrap{max-width:540px;margin:auto;padding:16px}.top{font-weight:800;font-size:18px;padding:12px 0 22px}.quote{background:#fff;border-radius:16px;padding:18px;box-shadow:0 3px 18px #2030500d}.by{font-size:13px;color:#6b778b;font-weight:700;margin-bottom:12px}.quoted{border-left:4px solid #b9c8dc;padding:5px 0 5px 13px;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.7}.entry{margin-top:18px;background:#fff;border-radius:16px;padding:16px}textarea{width:100%;min-height:130px;border:1px solid #dce2ec;border-radius:10px;padding:12px;font:inherit;resize:vertical}button{width:100%;margin-top:14px;background:#2675cf;color:white;border:0;border-radius:12px;padding:15px;font-weight:800;font-size:16px}button:disabled{background:#a6b7ca}.status{margin-top:12px;font-size:13px;line-height:1.6;color:#66768b}.error{color:#ac4141}.success{color:#257e55}</style>
+</head><body><main class="wrap"><div class="top">コメントに返信</div><section class="quote"><div class="by" id="author">コメントを読み込み中…</div><div class="quoted" id="quote"></div></section><section class="entry"><label for="reply" class="by">返信メッセージ</label><textarea id="reply" maxlength="300" placeholder="返信を入力…"></textarea><button id="send" disabled>返信を送信</button><div class="status" id="status">LINEで本人確認しています…</div></section></main>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script type="module">
+import {initializeApp} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js';
+import {getFunctions,httpsCallable} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-functions.js';
+import {getFirestore,doc,getDoc} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
+const CONFIG={apiKey:"AIzaSyD0uKs2_O_--BwWg7a5PJWRIwOLaPe6Puk",authDomain:"tsuruta-family-trip-2026.firebaseapp.com",projectId:"tsuruta-family-trip-2026",appId:"1:687129835506:web:778b20db9500c92a9b1d6b"};
+const app=initializeApp(CONFIG),db=getFirestore(app),fn=getFunctions(app,'asia-northeast1');
+const params=new URLSearchParams(location.search),itemId=params.get('item'),commentId=params.get('comment');
+const status=document.getElementById('status'),send=document.getElementById('send'),reply=document.getElementById('reply');
+let token=null,ready=false;
+function report(t,err=false){status.textContent=t;status.className='status'+(err?' error':'')}
+function refresh(){send.disabled=!ready||!reply.value.trim()}
+reply.addEventListener('input',refresh);
+async function start(){
+  if(!/^[A-Za-z0-9_-]{1,200}$/.test(itemId||'')||!/^[A-Za-z0-9_-]{1,200}$/.test(commentId||'')){report('返信先のURLが正しくありません',true);return}
+  try{
+    const snap=await getDoc(doc(db,'trip_items',itemId,'comments',commentId));
+    if(snap.exists()){const d=snap.data();document.getElementById('author').textContent=(d.label||'家族')+'のコメント';document.getElementById('quote').textContent=d.text||''}
+    else{report('元のコメントが見つかりません',true);return}
+  }catch(e){report('コメントを読み込めません。ログインが必要な場合は旅行サイトを開いてください。',true);return}
+  try{
+    const config=await fetch('./liff-config.json',{cache:'no-store'}).then(r=>r.json());
+    if(!config.liffId){report('LIFFの初期設定がまだ完了していません。管理者によるLINE Developers設定が必要です。',true);return}
+    await liff.init({liffId:config.liffId});
+    if(!liff.isLoggedIn()){liff.login({redirectUri:location.href});return}
+    token=liff.getAccessToken();
+    if(!token)throw Error('LINEのアクセストークンを取得できません');
+    ready=true;refresh();report('LINEアカウントを確認しました。返信を入力してください。');
+  }catch(e){report('LINE認証に失敗しました：'+(e.message||String(e)),true)}
+}
+send.addEventListener('click',async()=>{
+  if(!ready||!reply.value.trim())return;
+  send.disabled=true;report('送信しています…');
+  try{
+    await httpsCallable(fn,'submitLineReply')({lineAccessToken:token,itemId,commentId,text:reply.value.trim()});
+    reply.disabled=true;send.textContent='送信しました';status.textContent='旅行サイトに返信を保存しました。画面を閉じてLINEに戻れます。';status.className='status success';
+  }catch(e){report('送信できませんでした：'+(e.message||String(e)),true);refresh()}
+});
+start();
+</script></body></html>
