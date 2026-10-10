@@ -92,7 +92,6 @@ exports.notifyFamilyComment=onDocumentCreated({
           return true;
         });
       }
-      const reminderText='📱 LINE個別通知が未設定の方へ\nコメント・返信の個別通知を受け取るには、初回のみこちらから設定してください。\n'+SITE_URL+'?guide=line';
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'template',
@@ -103,10 +102,11 @@ exports.notifyFamilyComment=onDocumentCreated({
             text:clip((d.label||'家族')+'：'+(d.text||''),160),
             actions:[
               {type:'postback',label:'返信する',data:'reply:'+itemId,displayText:'返信する'},
-              {type:'uri',label:'コメントを見る',uri:url}
+              {type:'uri',label:'コメントを見る',uri:url},
+              ...(showLinkReminder?[{type:'uri',label:'LINE通知を設定',uri:SITE_URL+'?guide=line'}]:[])
             ]
           }
-        },...(showLinkReminder?[{type:'text',text:reminderText}]:[])]},LINE_CHANNEL_ACCESS_TOKEN.value());
+        }]},LINE_CHANNEL_ACCESS_TOKEN.value());
         await delivery.update({status:'sent',sentAt:FieldValue.serverTimestamp()});
       }catch(err){
         await delivery.update({status:'failed',error:clip(err.message,300)});
