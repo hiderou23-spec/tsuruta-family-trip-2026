@@ -74,7 +74,7 @@ exports.notifyFamilyComment=onDocumentCreated({
     });
     if(reserved){
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
-      const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url,4900);
+      const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url+'\n\nこの予定へ返信：\n返信 '+itemId+' メッセージ',4900);
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{type:'text',text:message}]},LINE_CHANNEL_ACCESS_TOKEN.value());
         await delivery.update({status:'sent',sentAt:FieldValue.serverTimestamp()});
@@ -131,14 +131,15 @@ exports.lineWebhook=onRequest({
       const eventId=String(e.webhookEventId||e.message.id||'').replace(/[^A-Za-z0-9_-]/g,'');
       if(!eventId)continue;
       const itemRef=db.doc('trip_items/'+itemId);
-      const itemSnap=await itemRef.get();
-      if(!itemSnap.exists){await replyLine(e.replyToken,'指定された予定が見つかりません。',token);continue}
+      const commentSnap=await itemRef.collection('comments').limit(1).get();
+      if(commentSnap.empty){await replyLine(e.replyToken,'指定された予定のコメントが見つかりません。サイトから対象の予定を確認してください。',token);continue}
+      const itemData=commentSnap.docs[0].data()||{};
       const ref=itemRef.collection('comments').doc('line_'+eventId);
       const data=member.data();
       await db.runTransaction(async tx=>{
         if((await tx.get(ref)).exists)return;
         tx.create(ref,{uid:member.id,memberId:data.memberId||'',label:data.label||'家族',
-          text:body,itemTitle:itemSnap.data()?.title||itemId,itemKey:itemSnap.data()?.itemKey||'',parentCommentId:null,quickReply:false,
+          text:body,itemTitle:itemData.itemTitle||itemId,itemKey:itemData.itemKey||'',parentCommentId:null,quickReply:false,
           origin:'line',lineEventId:eventId,createdAt:FieldValue.serverTimestamp()});
       });
       await replyLine(e.replyToken,'旅行サイトにコメントを反映しました。',token);
