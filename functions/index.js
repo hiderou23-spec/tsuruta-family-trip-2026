@@ -2,7 +2,7 @@ const crypto=require('crypto');
 const {initializeApp}=require('firebase-admin/app');
 const {getFirestore,FieldValue}=require('firebase-admin/firestore');
 const {onDocumentCreated}=require('firebase-functions/v2/firestore');
-const {onRequest}=require('firebase-functions/v2/https');
+const {onRequest,onCall,HttpsError}=require('firebase-functions/v2/https');
 const {defineSecret}=require('firebase-functions/params');
 
 initializeApp();
@@ -105,7 +105,43 @@ exports.lineWebhook=onRequest({
   const token=LINE_CHANNEL_ACCESS_TOKEN.value();
   const events=Array.isArray(req.body?.events)?req.body.events:[];
   for(const e of events){
-    const userId=e.source?.userId;if(!userId)continue;
+    const userId=e.source?.userId;
+    if(e.source?.type==='group'&&e.source.groupId){
+      const groupId=e.source.groupId;
+      if(e.type==='join'){
+        await db.doc('line_settings/pending_group').set({groupId,joinedAt:FieldValue.serverTimestamp()});
+        await replyLine(e.replyToken,'旅行サイトBotが参加しました。管理者による有効化後に通知を開始します。',token);
+        continue;
+      }
+      if(e.type==='leave'){
+        const ref=db.doc('line_settings/group'),current=(await ref.get()).data();
+        if(current?.groupId===groupId)await ref.set({enabled:false},{merge:true});
+        continue;
+      }
+      const settings=(await db.doc('line_settings/group').get()).data()||{};
+      if(!settings.enabled||settings.groupId!==groupId||e.type!=='message'||e.message?.type!=='text')continue;
+      const m=String(e.message.text||'').trim().match(/^返信\\s+([^\\s]+)\\s+([\\s\\S]{1,300})$/);
+      if(!m)continue;
+      if(!userId){await replyLine(e.replyToken,'先に個別トークでアカウント連携を行ってください。',token);continue}
+      const users=await db.collection('family_users').where('lineUserId','==',userId).limit(2).get();
+      const member=users.docs.find(x=>x.data().active!==false&&['member','admin'].includes(x.data().role));
+      if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8桁の連携コードを送信してください。',token);continue}
+      const itemId=m[1],body=m[2].trim();
+      if(!/^[A-Za-z0-9_%.-]{1,200}$/.test(itemId))continue;
+      const eventId=String(e.webhookEventId||e.message.id||'').replace(/[^A-Za-z0-9_-]/g,'');
+      if(!eventId)continue;
+      const ref=db.doc('trip_items/'+itemId+'/comments/line_'+eventId);
+      const data=member.data();
+      await db.runTransaction(async tx=>{
+        if((await tx.get(ref)).exists)return;
+        tx.create(ref,{uid:member.id,memberId:data.memberId||'',label:data.label||'家族',
+          text:body,itemTitle:itemId,itemKey:'',parentCommentId:null,quickReply:false,
+          origin:'line',lineEventId:eventId,createdAt:FieldValue.serverTimestamp()});
+      });
+      await replyLine(e.replyToken,'旅行サイトにコメントを反映しました。',token);
+      continue;
+    }
+    if(!userId)continue;
     if(e.type==='follow'){
       await replyLine(e.replyToken,'旅行サイトの「アカウント → LINE通知」で連携コードを発行し、その8桁コードをこのトークに送ってください。',token);
       continue;
@@ -140,4 +176,21 @@ exports.lineWebhook=onRequest({
     await replyLine(e.replyToken,(d.label||'家族')+'としてLINE通知を連携しました。家族コメントが入るとここに通知します。\n解除する場合は「解除」と送ってください。',token);
   }
   res.status(200).send('ok');
+});
+
+exports.activateLineGroup=onCall({region:'asia-northeast1'},async request=>{
+  if(!request.auth)throw new HttpsError('unauthenticated','ログインが必要です');
+  const user=(await db.doc('family_users/'+request.auth.uid).get()).data();
+  if(!user||user.active===false||user.role!=='admin')throw new HttpsError('permission-denied','管理者のみ操作できます');
+  const pending=(await db.doc('line_settings/pending_group').get()).data();
+  if(!pending?.groupId)throw new HttpsError('failed-precondition','Botをグループに招待してください');
+  await db.doc('line_settings/group').set({groupId:pending.groupId,enabled:true,activatedBy:request.auth.uid,updatedAt:FieldValue.serverTimestamp()});
+  return {enabled:true};
+});
+exports.disableLineGroup=onCall({region:'asia-northeast1'},async request=>{
+  if(!request.auth)throw new HttpsError('unauthenticated','ログインが必要です');
+  const user=(await db.doc('family_users/'+request.auth.uid).get()).data();
+  if(!user||user.active===false||user.role!=='admin')throw new HttpsError('permission-denied','管理者のみ操作できます');
+  await db.doc('line_settings/group').set({enabled:false,updatedAt:FieldValue.serverTimestamp()},{merge:true});
+  return {enabled:false};
 });
