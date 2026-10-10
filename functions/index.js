@@ -78,7 +78,6 @@ exports.notifyFamilyComment=onDocumentCreated({
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       const author=clip(d.label||'家族',40);
       const quote=clip(d.text||'コメントが投稿されました',650);
-      const replyUrl='https://liff.line.me/2011962049-s5buQT2a?item='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'flex',
@@ -94,7 +93,7 @@ exports.notifyFamilyComment=onDocumentCreated({
               ]},
               {type:'box',layout:'horizontal',spacing:'sm',contents:[
                 {type:'button',style:'link',height:'sm',flex:1,action:{type:'uri',label:'旅行サイトを見る',uri:url}},
-                {type:'button',style:'link',height:'sm',flex:1,action:{type:'uri',label:'返信する',uri:replyUrl}}
+                {type:'button',style:'link',height:'sm',flex:1,action:{type:'postback',label:'返信する',data:'reply:'+itemId+':'+commentId,inputOption:'openKeyboard'}}
               ]}
             ]}
           }
@@ -151,7 +150,7 @@ exports.lineWebhook=onRequest({
       };
       const draftRef=userId?db.doc('line_reply_drafts/'+crypto.createHash('sha256').update(groupId+':'+userId).digest('hex')):null;
       if(e.type==='postback'){
-        const match=String(e.postback?.data||'').match(/^reply:([A-Za-z0-9_-]{1,200})$/);
+        const match=String(e.postback?.data||'').match(/^reply:([A-Za-z0-9_-]{1,200})(?::([A-Za-z0-9_-]{1,200}))?$/);
         if(!match)continue;
         const member=await linked();
         if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8文字の連携コードを送信してください。',token);continue}
@@ -159,8 +158,11 @@ exports.lineWebhook=onRequest({
         if((await itemRef.collection('comments').limit(1).get()).empty){
           await replyLine(e.replyToken,'対象の予定が見つかりません。',token);continue;
         }
-        await draftRef.set({itemId:match[1],groupId,userId,expiresAt:Date.now()+10*60*1000,createdAt:FieldValue.serverTimestamp()});
-        // LINE opens the composer with a prefilled reply command; no extra Bot message.
+        const original=match[2]?await itemRef.collection('comments').doc(match[2]).get():null;
+        if(match[2]&&!original.exists){await replyLine(e.replyToken,'元のコメントが見つかりません。',token);continue}
+        const source=original?.data()||{};
+        await draftRef.set({itemId:match[1],commentId:match[2]||null,groupId,userId,expiresAt:Date.now()+10*60*1000,createdAt:FieldValue.serverTimestamp()});
+        await replyLine(e.replyToken,(match[2]?'↩ '+clip(source.label||'家族',30)+'のコメント：\\n「'+clip(source.text||'',180)+'」\\n':'')+'このまま返信を入力して送信してください（10分以内）。取り消す場合は「キャンセル」。',token);
         continue;
       }
       if(e.type!=='message'||e.message?.type!=='text')continue;
@@ -198,7 +200,7 @@ exports.lineWebhook=onRequest({
       await db.runTransaction(async tx=>{
         if((await tx.get(ref)).exists)return;
         tx.create(ref,{uid:member.id,memberId:data.memberId||'',label:data.label||'家族',
-          text:body,itemTitle:itemData.itemTitle||itemId,itemKey:itemData.itemKey||'',parentCommentId:null,quickReply:false,
+          text:body,itemTitle:itemData.itemTitle||itemId,itemKey:itemData.itemKey||'',parentCommentId:draft?.commentId||null,quickReply:!!draft?.commentId,
           origin:'line',lineEventId:eventId,createdAt:FieldValue.serverTimestamp()});
       });
       if(draft&&draftRef)await draftRef.delete();
