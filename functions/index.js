@@ -78,7 +78,7 @@ exports.notifyFamilyComment=onDocumentCreated({
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       const author=clip(d.label||'家族',40);
       const quote=clip(d.text||'コメントが投稿されました',650);
-      const replyCommand='返信 '+itemId+' ';
+      const replyUrl=SITE_URL+'line-reply.html?item='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'flex',
@@ -86,6 +86,7 @@ exports.notifyFamilyComment=onDocumentCreated({
           contents:{
             type:'bubble',size:'mega',
             body:{type:'box',layout:'vertical',spacing:'md',paddingAll:'14px',contents:[
+              {type:'text',text:clip(d.itemTitle||'家族旅行',80),size:'md',weight:'bold',color:'#242424',wrap:true},
               {type:'text',text:author+' のコメント',size:'xs',color:'#777777',weight:'bold'},
               {type:'box',layout:'horizontal',spacing:'sm',contents:[
                 {type:'box',layout:'vertical',width:'3px',backgroundColor:'#B9C8DC',contents:[{type:'filler'}]},
@@ -93,7 +94,7 @@ exports.notifyFamilyComment=onDocumentCreated({
               ]},
               {type:'box',layout:'horizontal',spacing:'sm',contents:[
                 {type:'button',style:'link',height:'sm',flex:1,action:{type:'uri',label:'旅行サイトを見る',uri:url}},
-                {type:'button',style:'link',height:'sm',flex:1,action:{type:'postback',label:'返信する',data:'reply:'+itemId,inputOption:'openKeyboard',fillInText:replyCommand}}
+                {type:'button',style:'link',height:'sm',flex:1,action:{type:'uri',label:'返信する',uri:replyUrl}}
               ]}
             ]}
           }
@@ -256,4 +257,31 @@ exports.disableLineGroup=onCall({region:'asia-northeast1'},async request=>{
   if(!user||user.active===false||user.role!=='admin')throw new HttpsError('permission-denied','管理者のみ操作できます');
   await db.doc('line_settings/group').set({enabled:false,updatedAt:FieldValue.serverTimestamp()},{merge:true});
   return {enabled:false};
+});
+
+// Verified LINE access tokens are required; no client-supplied user ID is trusted.
+exports.submitLineReply=onCall({region:'asia-northeast1',maxInstances:3},async request=>{
+  const input=request.data||{};
+  const token=String(input.lineAccessToken||'');
+  const itemId=String(input.itemId||'');
+  const commentId=String(input.commentId||'');
+  const body=String(input.text||'').trim();
+  if(!token||token.length>4096||!(/^[A-Za-z0-9_-]{1,200}$/.test(itemId))||!(/^[A-Za-z0-9_-]{1,200}$/.test(commentId))||!body||body.length>300)
+    throw new HttpsError('invalid-argument','返信内容または対象が正しくありません');
+  const response=await fetch('https://api.line.me/v2/profile',{headers:{Authorization:'Bearer '+token}});
+  if(!response.ok)throw new HttpsError('unauthenticated','LINEの認証を確認できませんでした');
+  const profile=await response.json();
+  if(!profile.userId)throw new HttpsError('unauthenticated','LINEのユーザーを確認できませんでした');
+  const matches=await db.collection('family_users').where('lineUserId','==',profile.userId).limit(3).get();
+  const member=matches.docs.find(doc=>doc.data().active!==false&&['member','admin'].includes(doc.data().role));
+  if(!member)throw new HttpsError('permission-denied','家族アカウントとLINEを連携してください');
+  const parent=await db.doc('trip_items/'+itemId+'/comments/'+commentId).get();
+  if(!parent.exists)throw new HttpsError('not-found','元のコメントが見つかりません');
+  const parentData=parent.data()||{};
+  const newRef=db.collection('trip_items').doc(itemId).collection('comments').doc();
+  const data=member.data();
+  await newRef.create({uid:member.id,memberId:data.memberId||'',label:data.label||'家族',text:body,
+    itemTitle:parentData.itemTitle||'家族旅行',itemKey:parentData.itemKey||'',
+    parentCommentId:commentId,quickReply:true,origin:'line',createdAt:FieldValue.serverTimestamp()});
+  return {ok:true,commentId:newRef.id};
 });
