@@ -47,6 +47,7 @@ exports.notifyFamilyComment=onDocumentCreated({
   const d=snap.data()||{},itemId=event.params.itemId,commentId=event.params.commentId;
   const users=await db.collection('family_users').get();
   const batch=db.batch(),targets=[];
+  let hasUnlinkedRecipient=false;
   const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
   users.forEach(u=>{
     const x=u.data()||{};
@@ -60,6 +61,7 @@ exports.notifyFamilyComment=onDocumentCreated({
       url,read:false,createdAt:FieldValue.serverTimestamp()
     });
     if(x.lineUserId&&x.lineNotifications!==false)targets.push(x.lineUserId);
+    if(!x.lineUserId)hasUnlinkedRecipient=true;
   });
   await batch.commit();
   // Group notifications are opt-in and are never echoed for LINE-originated comments.
@@ -75,6 +77,20 @@ exports.notifyFamilyComment=onDocumentCreated({
     if(reserved){
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url,4900);
+      // A single shared reminder per Tokyo calendar day, only when an active recipient is unlinked.
+      // Reserving it transactionally prevents simultaneous comments from spamming the group.
+      const day=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+      const reminderRef=db.doc('line_link_reminders/'+day);
+      let showLinkReminder=false;
+      if(hasUnlinkedRecipient){
+        showLinkReminder=await db.runTransaction(async tx=>{
+          const prior=await tx.get(reminderRef);
+          if(prior.exists)return false;
+          tx.create(reminderRef,{day,createdAt:FieldValue.serverTimestamp(),commentId,itemId});
+          return true;
+        });
+      }
+      const reminderText='📱 LINE個別通知が未設定の方へ\\nコメント・返信の個別通知を受け取るには、初回のみこちらから設定してください。\\n'+SITE_URL+'?guide=line';
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'template',
@@ -88,7 +104,7 @@ exports.notifyFamilyComment=onDocumentCreated({
               {type:'uri',label:'コメントを見る',uri:url}
             ]
           }
-        }]},LINE_CHANNEL_ACCESS_TOKEN.value());
+        },...(showLinkReminder?[{type:'text',text:reminderText}]:[])]},LINE_CHANNEL_ACCESS_TOKEN.value());
         await delivery.update({status:'sent',sentAt:FieldValue.serverTimestamp()});
       }catch(err){
         await delivery.update({status:'failed',error:clip(err.message,300)});
