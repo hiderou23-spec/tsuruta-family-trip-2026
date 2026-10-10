@@ -4,6 +4,7 @@ const {getFirestore,FieldValue}=require('firebase-admin/firestore');
 const {onDocumentCreated}=require('firebase-functions/v2/firestore');
 const {onRequest,onCall,HttpsError}=require('firebase-functions/v2/https');
 const {defineSecret}=require('firebase-functions/params');
+const {openInExternalBrowser}=require('./line-links');
 
 initializeApp();
 const db=getFirestore();
@@ -28,7 +29,7 @@ async function pushComment(userId,data,token){
         type:'buttons',
         text:clip(data.sourceLabel+'：'+text,160),
         title:clip(data.itemTitle||'家族旅行',40),
-        actions:[{type:'uri',label:'コメントを見る',uri:url}]
+        actions:[{type:'uri',label:'コメントを見る',uri:openInExternalBrowser(url)}]
       }
     }]
   },token);
@@ -92,7 +93,7 @@ exports.notifyFamilyComment=onDocumentCreated({
                 {type:'text',text:quote,size:'md',color:'#242424',wrap:true,flex:1}
               ]},
               {type:'box',layout:'horizontal',spacing:'sm',contents:[
-                {type:'button',style:'link',height:'sm',flex:1,action:{type:'uri',label:'旅行サイトを見る',uri:url}},
+                {type:'button',style:'link',height:'sm',flex:1,action:{type:'uri',label:'旅行サイトを見る',uri:openInExternalBrowser(url)}},
                 {type:'button',style:'link',height:'sm',flex:1,action:{type:'postback',label:'返信する',data:'reply:'+itemId+':'+commentId,inputOption:'openKeyboard'}}
               ]}
             ]}
