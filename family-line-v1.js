@@ -1,8 +1,8 @@
 (function(){
-  let unsub=null,unread=[];
+  let unsub=null,unread=[];\n  let linkCodeState=null;
   const style=document.createElement('style');
   style.textContent=`
-    .fl-card{margin-top:10px;background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:12px}
+    .fl-step{margin-top:12px;padding:11px;border:1px solid #e9e3ed;border-radius:12px;background:#fff}\n    .fl-step-title{font-size:12px;font-weight:850;color:#39435a}\n    .fl-step-note{font-size:11px;color:#737d90;margin-top:5px;line-height:1.6}\n    .fl-card{margin-top:10px;background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:12px}
     .fl-title{font-size:12px;font-weight:900;color:#39435a}.fl-sub{font-size:11px;color:#81899a;margin-top:3px;line-height:1.5}
     .fl-btn{margin-top:9px;width:100%;border:1px solid #dcd6e6;background:#f8f5fc;color:#5e5574;border-radius:11px;padding:9px;font:inherit;font-size:12px;font-weight:850}
     .fl-code{font-size:24px;font-weight:900;letter-spacing:.14em;text-align:center;margin:9px 0;color:#4f4666}
@@ -67,8 +67,11 @@
       const snap=await a.fs.getDoc(a.fs.doc(a.db,'family_users',p.uid)),d=snap.data()||{},linked=!!d.lineUserId,enabled=d.lineNotifications!==false;
       card.innerHTML='<div class="fl-title">LINE通知</div>'+
         '<div class="fl-sub">'+(linked?(enabled?'連携済み・コメント通知ON':'連携済み・通知OFF'):'未連携。コメント通知をLINEで受け取れます。')+'</div>'+
-        (linked?'<button class="fl-btn" id="flToggle">'+(enabled?'LINE通知をOFF':'LINE通知をON')+'</button>':'<button class="fl-btn" id="flLink">連携コードを発行</button>')+
-        '<div id="flHelp" class="fl-sub"></div>'+(p.role==='admin'?'<div class="fl-sub" style="margin-top:12px">家族LINEグループ通知（管理者）</div><button class="fl-btn" id="flGroupEnable">グループ通知を有効化</button><button class="fl-btn" id="flGroupDisable">グループ通知を停止</button><div id="flGroupState" class="fl-sub"></div>':'');
+        (linked?'<div class="fl-status fl-status-success">✓ 個人LINE連携が完了しています。</div><button class="fl-btn" id="flToggle">'+(enabled?'LINE通知をOFF':'LINE通知をON')+'</button>':
+        '<div class="fl-step"><div class="fl-step-title">STEP 1　旅行サイトにログイン</div><div class="fl-step-note">✓ ログイン済みです。</div></div>'+
+        '<div class="fl-step"><div class="fl-step-title">STEP 2　連携コードを発行</div><div class="fl-step-note">下のボタンで8桁のコードを発行します。コードは10分間有効です。</div><button type="button" class="fl-btn" id="flLink">連携コードを発行</button><div id="flHelp" class="fl-sub" aria-live="polite"></div></div>'+
+        '<div class="fl-step"><div class="fl-step-title">STEP 3　LINE Botの個別トークを開く</div><div class="fl-step-note">家族LINEグループのメンバー一覧から旅行サイトBotを選び、友だち追加（未追加の場合）して「トーク」を開いてください。<b>家族グループにはコードを送らないでください。</b></div></div>'+
+        '<div class="fl-step"><div class="fl-step-title">STEP 4　コードを送信して完了</div><div class="fl-step-note">コピーした8桁のコードだけをBotとの個別トークに送信してください。連携完了の返信が届いたら、この画面に戻って確認します。</div><button type="button" class="fl-btn" id="flCheckLink">連携状態を確認</button><div id="flCheckStatus" class="fl-sub" aria-live="polite"></div></div>')+(p.role==='admin'?'<div class="fl-sub" style="margin-top:12px">家族LINEグループ通知（管理者）</div><button class="fl-btn" id="flGroupEnable">グループ通知を有効化</button><button class="fl-btn" id="flGroupDisable">グループ通知を停止</button><div id="flGroupState" class="fl-sub"></div>':'');
       if(p.role==='admin'){
         const setGroup=async enabled=>{
           const out=document.getElementById('flGroupState');out.textContent='処理中…';
@@ -101,7 +104,7 @@
             await a.fs.setDoc(a.fs.doc(a.db,'line_link_codes',c),{
               uid:p.uid,memberId:p.memberId,label:p.label,createdAt:a.fs.serverTimestamp(),expiresAt:a.fs.Timestamp.fromDate(expires)
             });
-            help.innerHTML='<div class="fl-status fl-status-success" role="status">連携コードを発行しました（10分間有効）</div><div class="fl-code">'+c+'</div><button type="button" class="fl-btn" id="flCopyCode">コードをコピー</button><div class="fl-sub">LINE公式アカウントとの個別トークに、この8桁コードだけを送信してください。</div>';
+            linkCodeState={code:c,expiresAt:expires.getTime()};\n            help.innerHTML='<div class="fl-status fl-status-success" role="status">連携コードを発行しました（10分間有効）</div><div class="fl-code">'+c+'</div><button type="button" class="fl-btn" id="flCopyCode">コードをコピー</button><div class="fl-sub">LINE公式アカウントとの個別トークに、この8桁コードだけを送信してください。</div>';
             document.getElementById('flCopyCode').onclick=async()=>{
               try{await navigator.clipboard.writeText(c);document.getElementById('flCopyCode').textContent='コピーしました ✓'}
               catch(_){document.getElementById('flCopyCode').textContent='コピーできませんでした。コードを手動で選択してください。'}
