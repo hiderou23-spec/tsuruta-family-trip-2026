@@ -66,7 +66,7 @@
         const setGroup=async enabled=>{
           const out=document.getElementById('flGroupState');out.textContent='処理中…';
           try{
-            const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js');
+            const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/12.4.0/firebase-functions.js');
             const fn=getFunctions(a.auth.app,'asia-northeast1');
             await httpsCallable(fn,enabled?'activateLineGroup':'disableLineGroup')({});
             out.textContent=enabled?'グループ通知を有効化しました':'グループ通知を停止しました';
