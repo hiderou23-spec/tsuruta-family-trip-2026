@@ -74,7 +74,7 @@ exports.notifyFamilyComment=onDocumentCreated({
     });
     if(reserved){
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
-      const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url+'\n\nこの予定へ返信：\n返信 '+itemId+' メッセージ',4900);
+      const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url,4900);
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'template',
@@ -84,7 +84,7 @@ exports.notifyFamilyComment=onDocumentCreated({
             title:clip(d.itemTitle||'家族旅行',40),
             text:clip((d.label||'家族')+'：'+(d.text||''),160),
             actions:[
-              {type:'uri',label:'返信する',uri:url},
+              {type:'postback',label:'返信する',data:'reply:'+itemId,displayText:'返信する'},
               {type:'uri',label:'コメントを見る',uri:url}
             ]
           }
@@ -132,12 +132,50 @@ exports.lineWebhook=onRequest({
         continue;
       }
       const settings=(await db.doc('line_settings/group').get()).data()||{};
-      if(!settings.enabled||settings.groupId!==groupId||e.type!=='message'||e.message?.type!=='text')continue;
+      if(!settings.enabled||settings.groupId!==groupId)continue;
+      const linked=async()=>{
+        if(!userId)return null;
+        const users=await db.collection('family_users').where('lineUserId','==',userId).limit(2).get();
+        const member=users.docs.find(x=>x.data().active!==false&&['member','admin'].includes(x.data().role));
+        return member||null;
+      };
+      const draftRef=userId?db.doc('line_reply_drafts/'+crypto.createHash('sha256').update(groupId+':'+userId).digest('hex')):null;
+      if(e.type==='postback'){
+        const match=String(e.postback?.data||'').match(/^reply:([A-Za-z0-9_-]{1,200})$/);
+        if(!match)continue;
+        const member=await linked();
+        if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8文字の連携コードを送信してください。',token);continue}
+        const itemRef=db.doc('trip_items/'+match[1]);
+        if((await itemRef.collection('comments').limit(1).get()).empty){
+          await replyLine(e.replyToken,'対象の予定が見つかりません。',token);continue;
+        }
+        await draftRef.set({itemId:match[1],groupId,userId,expiresAt:Date.now()+10*60*1000,createdAt:FieldValue.serverTimestamp()});
+        await replyLine(e.replyToken,'返信したい文章だけを、このLINEグループに送信してください（10分以内）。取り消す場合は「キャンセル」と送ってください。',token);
+        continue;
+      }
+      if(e.type!=='message'||e.message?.type!=='text')continue;
+      const rawText=String(e.message.text||'').trim();
+      let m=rawText.match(/^返信\s+([^\s]+)\s+([\s\S]{1,300})$/);
+      let draft=null;
+      if(!m&&draftRef){
+        const snap=await draftRef.get();
+        if(snap.exists){
+          draft=snap.data();
+          if(draft.groupId===groupId&&draft.expiresAt>Date.now()){
+            if(rawText==='キャンセル'){
+              await draftRef.delete();
+              await replyLine(e.replyToken,'返信を取り消しました。',token);
+              continue;
+            }
+            if(rawText&&rawText.length<=300)m=[rawText,draft.itemId,rawText];
+          }else await draftRef.delete();
+        }
+      }
+      if(!m)continue;
       const m=String(e.message.text||'').trim().match(/^返信\s+([^\s]+)\s+([\s\S]{1,300})$/);
       if(!m)continue;
       if(!userId){await replyLine(e.replyToken,'先に個別トークでアカウント連携を行ってください。',token);continue}
-      const users=await db.collection('family_users').where('lineUserId','==',userId).limit(2).get();
-      const member=users.docs.find(x=>x.data().active!==false&&['member','admin'].includes(x.data().role));
+      const member=await linked();
       if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8文字の連携コードを送信してください。',token);continue}
       const itemId=m[1],body=m[2].trim();
       if(!/^[A-Za-z0-9_-]{1,200}$/.test(itemId))continue;
@@ -155,6 +193,7 @@ exports.lineWebhook=onRequest({
           text:body,itemTitle:itemData.itemTitle||itemId,itemKey:itemData.itemKey||'',parentCommentId:null,quickReply:false,
           origin:'line',lineEventId:eventId,createdAt:FieldValue.serverTimestamp()});
       });
+      if(draft&&draftRef)await draftRef.delete();
       await replyLine(e.replyToken,'旅行サイトにコメントを反映しました。',token);
       continue;
     }
