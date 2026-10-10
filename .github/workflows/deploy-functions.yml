@@ -36,6 +36,6 @@ jobs:
       - name: Install Firebase CLI
         run: npm install --global firebase-tools
       - name: Install Functions dependencies
-        run: npm ci --prefix functions
+        run: npm install --prefix functions --no-audit --no-fund
       - name: Deploy Functions
         run: firebase deploy --only functions --project tsuruta-family-trip-2026 --non-interactive
