@@ -62,6 +62,31 @@ exports.notifyFamilyComment=onDocumentCreated({
     if(x.lineUserId&&x.lineNotifications!==false)targets.push(x.lineUserId);
   });
   await batch.commit();
+  // Group notifications are opt-in and are never echoed for LINE-originated comments.
+  const group=(await db.doc('line_settings/group').get()).data()||{};
+  if(group.enabled&&group.groupId&&d.origin!=='line'){
+    const delivery=db.doc('line_delivery/'+itemId+'__'+commentId);
+    const reserved=await db.runTransaction(async tx=>{
+      const old=await tx.get(delivery);
+      if(old.exists)return false;
+      tx.create(delivery,{status:'reserved',createdAt:FieldValue.serverTimestamp()});
+      return true;
+    });
+    if(reserved){
+      const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
+      const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url,4900);
+      try{
+        await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{type:'text',text:message}]},LINE_CHANNEL_ACCESS_TOKEN.value());
+        await delivery.update({status:'sent',sentAt:FieldValue.serverTimestamp()});
+      }catch(err){
+        await delivery.update({status:'failed',error:clip(err.message,300)});
+        throw err;
+      }
+    }
+    return;
+  }
+  if(d.origin==='line')return;
+  if(group.enabled)return; // Do not also send personal notifications while group mode is enabled.
   const token=LINE_CHANNEL_ACCESS_TOKEN.value();
   await Promise.allSettled(targets.map(userId=>pushComment(userId,{
     sourceLabel:d.label||'家族',itemTitle:d.itemTitle||'家族旅行',text:d.text||'',itemId,commentId
