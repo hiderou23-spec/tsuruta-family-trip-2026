@@ -9,7 +9,17 @@ import {getFunctions,httpsCallable} from 'https://www.gstatic.com/firebasejs/12.
 import {getFirestore,doc,getDoc} from 'https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js';
 const CONFIG={apiKey:"AIzaSyD0uKs2_O_--BwWg7a5PJWRIwOLaPe6Puk",authDomain:"tsuruta-family-trip-2026.firebaseapp.com",projectId:"tsuruta-family-trip-2026",appId:"1:687129835506:web:778b20db9500c92a9b1d6b"};
 const app=initializeApp(CONFIG),db=getFirestore(app),fn=getFunctions(app,'asia-northeast1');
-const params=new URLSearchParams(location.search),itemId=params.get('item'),commentId=params.get('comment');
+function replyParams(){
+  const outer=new URLSearchParams(location.search);
+  if(outer.has('item')&&outer.has('comment'))return outer;
+  const state=outer.get('liff.state');
+  if(state){
+    const nested=new URL(state,'https://liff.line.me/');
+    if(nested.searchParams.has('item')&&nested.searchParams.has('comment'))return nested.searchParams;
+  }
+  return outer;
+}
+const params=replyParams(),itemId=params.get('item'),commentId=params.get('comment');
 const status=document.getElementById('status'),send=document.getElementById('send'),reply=document.getElementById('reply');
 let token=null,ready=false;
 function report(t,err=false){status.textContent=t;status.className='status'+(err?' error':'')}
