@@ -63,10 +63,11 @@
     const account=document.querySelector('.fa-modal.show');
     const familyPlan=document.getElementById('familyPlanOverlay');
     const familySummary=document.getElementById('familySummaryOverlay');
+    const familyHub=document.getElementById('familyHubOverlay');
     const todo=document.getElementById('todoOverlay');
     const collab=document.querySelector('.fc-modal.show');
     if(account){setActive('account');return}
-    if(collab||isVisible(familyPlan)||isVisible(familySummary)){setActive('family');return}
+    if(collab||isVisible(familyHub)||isVisible(familyPlan)||isVisible(familySummary)){setActive('family');return}
     if(isVisible(todo)){setActive('todo');return}
     setActive('schedule');
   }
@@ -74,11 +75,13 @@
     const todo=document.getElementById('todoOverlay');
     const familyPlan=document.getElementById('familyPlanOverlay');
     const familySummary=document.getElementById('familySummaryOverlay');
+    const familyHub=document.getElementById('familyHubOverlay');
     const collab=document.querySelector('.fc-modal.show');
     if(except!=='todo'&&todo)todo.style.display='none';
     if(except!=='family'){
       if(familyPlan)familyPlan.style.display='none';
       if(familySummary)familySummary.style.display='none';
+      if(familyHub)familyHub.style.display='none';
       if(collab)collab.classList.remove('show');
     }
     if(except!=='account'){
@@ -113,9 +116,8 @@
 
   buttons.family.onclick=()=>{
     closeNavigationOverlays('family');
-    if(window.tripFamilyLine?.openLatestUnread?.()){setActive('family');return}
-    if(window.tripFamilyPlanning?.openHub)window.tripFamilyPlanning.openHub();
-    else document.getElementById('familyPlanningHome')?.scrollIntoView({behavior:'smooth',block:'center'});
+    if(window.tripFamilyHub?.open)window.tripFamilyHub.open();
+    else if(window.tripFamilyPlanning?.openHub)window.tripFamilyPlanning.openHub();
     setActive('family');
   };
 
@@ -141,6 +143,7 @@
     document.getElementById('todoOverlay'),
     document.getElementById('familyPlanOverlay'),
     document.getElementById('familySummaryOverlay'),
+    document.getElementById('familyHubOverlay'),
     document.querySelector('.fa-modal'),
     document.querySelector('.fc-modal')
   ].filter(Boolean);
