@@ -67,7 +67,8 @@
           const out=document.getElementById('flGroupState');out.textContent='処理中…';
           try{
             const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/12.4.0/firebase-functions.js');
-            const fn=getFunctions(a.auth.app,'asia-northeast1');
+            const appModule=await import('https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js');
+            const fn=getFunctions(appModule.getApp(),'asia-northeast1');
             await httpsCallable(fn,enabled?'activateLineGroup':'disableLineGroup')({});
             out.textContent=enabled?'グループ通知を有効化しました':'グループ通知を停止しました';
           }catch(err){out.textContent='操作に失敗しました：'+(err.message||err.code||'不明なエラー')}
