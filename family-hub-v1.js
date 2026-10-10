@@ -84,14 +84,17 @@
       },()=>{});
     }catch(e){console.warn('Family hub subscription failed',e)}
   }
+  let previewLineInvite=false;
   async function refreshLineInvite(){
     const invite=document.getElementById('fhLineInvite'),p=profile(),a=api();
     if(!invite)return;
     invite.style.display='none';
     if(!p?.authenticated||!a?.db)return;
+    if(p.role==='admin'&&previewLineInvite){invite.style.display='block';return;}
     try{const snap=await a.fs.getDoc(a.fs.doc(a.db,'family_users',p.uid));if(overlay.style.display==='block'&&!snap.data()?.lineUserId)invite.style.display='block'}catch(_){}
   }
   document.getElementById('fhLineSetup').onclick=()=>{close();window.openTripFamilyAccount?.()};
+  window.tripPreviewLineInvite=()=>{if(profile()?.role!=='admin')return;previewLineInvite=true;open()};
   function open(){
     overlay.style.display='block';
     refreshLineInvite();overlay.scrollTop=0;document.body.style.overflow='hidden';
