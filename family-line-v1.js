@@ -83,12 +83,20 @@
         };
       }else{
         document.getElementById('flLink').onclick=async()=>{
-          const c=code(),expires=new Date(Date.now()+10*60*1000);
-          await a.fs.setDoc(a.fs.doc(a.db,'line_link_codes',c),{
-            uid:p.uid,memberId:p.memberId,label:p.label,createdAt:a.fs.serverTimestamp(),expiresAt:a.fs.Timestamp.fromDate(expires)
-          });
-          document.getElementById('flHelp').innerHTML='<div class="fl-code">'+c+'</div>LINE公式アカウントを友だち追加後、この8桁コードだけを送信してください。10分間有効です。';
-          window.tripAnalytics?.track('line_link_code_created',{});
+          const btn=document.getElementById('flLink'),help=document.getElementById('flHelp');
+          btn.disabled=true;
+          help.textContent='連携コードを発行しています…';
+          try{
+            const c=code(),expires=new Date(Date.now()+10*60*1000);
+            await a.fs.setDoc(a.fs.doc(a.db,'line_link_codes',c),{
+              uid:p.uid,memberId:p.memberId,label:p.label,createdAt:a.fs.serverTimestamp(),expiresAt:a.fs.Timestamp.fromDate(expires)
+            });
+            help.innerHTML='<div class="fl-code">'+c+'</div>LINE公式アカウントを友だち追加後、この8桁コードだけを送信してください。10分間有効です。';
+            window.tripAnalytics?.track('line_link_code_created',{});
+          }catch(err){
+            help.textContent='連携コードの発行に失敗しました：'+(err.code||err.message||'不明なエラー');
+            console.error('LINE link code generation failed',err);
+          }finally{btn.disabled=false}
         };
       }
     }catch(e){card.innerHTML='<div class="fl-title">LINE通知</div><div class="fl-sub">設定を読み込めませんでした。</div>'}
