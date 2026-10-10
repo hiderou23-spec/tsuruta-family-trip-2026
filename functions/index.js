@@ -79,19 +79,6 @@ exports.notifyFamilyComment=onDocumentCreated({
       const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url,4900);
       // A single shared reminder per Tokyo calendar day, only when an active recipient is unlinked.
       // Reserving it transactionally prevents simultaneous comments from spamming the group.
-      const dayParts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
-      const part=type=>dayParts.find(p=>p.type===type)?.value;
-      const day=part('year')+'-'+part('month')+'-'+part('day');
-      const reminderRef=db.doc('line_link_reminders/'+day);
-      let showLinkReminder=false;
-      if(hasUnlinkedRecipient){
-        showLinkReminder=await db.runTransaction(async tx=>{
-          const prior=await tx.get(reminderRef);
-          if(prior.exists)return false;
-          tx.create(reminderRef,{day,createdAt:FieldValue.serverTimestamp(),commentId,itemId});
-          return true;
-        });
-      }
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'template',
@@ -101,9 +88,8 @@ exports.notifyFamilyComment=onDocumentCreated({
             title:clip(d.itemTitle||'家族旅行',40),
             text:clip((d.label||'家族')+'：'+(d.text||''),160),
             actions:[
-              {type:'postback',label:'返信する',data:'reply:'+itemId,displayText:'返信する'},
-              {type:'uri',label:'コメントを見る',uri:url},
-              ...(showLinkReminder?[{type:'uri',label:'LINE通知を設定',uri:SITE_URL+'?guide=line'}]:[])
+              {type:'postback',label:'返信する',data:'reply:'+itemId,inputOption:'openKeyboard',fillInText:'返信 '+itemId+' '},
+              {type:'uri',label:'コメントを見る',uri:url}
             ]
           }
         }]},LINE_CHANNEL_ACCESS_TOKEN.value());
@@ -168,7 +154,7 @@ exports.lineWebhook=onRequest({
           await replyLine(e.replyToken,'対象の予定が見つかりません。',token);continue;
         }
         await draftRef.set({itemId:match[1],groupId,userId,expiresAt:Date.now()+10*60*1000,createdAt:FieldValue.serverTimestamp()});
-        await replyLine(e.replyToken,'返信したい文章だけを、このLINEグループに送信してください（10分以内）。取り消す場合は「キャンセル」と送ってください。',token);
+        // LINE opens the composer with a prefilled reply command; no extra Bot message.
         continue;
       }
       if(e.type!=='message'||e.message?.type!=='text')continue;
