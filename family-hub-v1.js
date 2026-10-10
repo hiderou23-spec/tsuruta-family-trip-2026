@@ -22,7 +22,7 @@
   document.head.appendChild(style);
 
   const overlay=document.createElement('div');overlay.id='familyHubOverlay';
-  overlay.innerHTML='<div class="fh-shell"><div class="fh-head"><div class="fh-title">家族で相談</div><div class="fh-sub">家族のコメントを、予定をまたいでまとめて確認できます。</div></div><div class="fh-body"><div class="fh-card"><div class="fh-toolbar"><button type="button" class="fh-filter active" data-filter="all">すべて</button><button type="button" class="fh-filter" data-filter="unread">未読のみ</button><button type="button" id="fhPlans" class="fh-plan-btn">相談テーマ・回答状況 ›</button></div></div><div id="fhComments"></div></div></div>';
+  overlay.innerHTML='<div class="fh-shell"><div class="fh-head"><div class="fh-title">家族で相談</div><div class="fh-sub">家族のコメントを、予定をまたいでまとめて確認できます。</div></div><div class="fh-body"><div id="fhLineInvite" class="fh-card" style="display:none"><div style="font-weight:850;font-size:13px">LINEでもコメント通知を受け取れます</div><div style="font-size:11px;color:#788197;margin-top:5px">約1分で連携できます。アカウント画面の案内に沿って設定してください。</div><button type="button" id="fhLineSetup" class="fh-plan-btn" style="margin-top:9px">LINE連携ガイドを開く ›</button></div><div class="fh-card"><div class="fh-toolbar"><button type="button" class="fh-filter active" data-filter="all">すべて</button><button type="button" class="fh-filter" data-filter="unread">未読のみ</button><button type="button" id="fhPlans" class="fh-plan-btn">相談テーマ・回答状況 ›</button></div></div><div id="fhComments"></div></div></div>';
   document.body.appendChild(overlay);
 
   function fmt(ts){
@@ -84,8 +84,17 @@
       },()=>{});
     }catch(e){console.warn('Family hub subscription failed',e)}
   }
+  async function refreshLineInvite(){
+    const invite=document.getElementById('fhLineInvite'),p=profile(),a=api();
+    if(!invite)return;
+    invite.style.display='none';
+    if(!p?.authenticated||!a?.db)return;
+    try{const snap=await a.fs.getDoc(a.fs.doc(a.db,'family_users',p.uid));if(overlay.style.display==='block'&&!snap.data()?.lineUserId)invite.style.display='block'}catch(_){}
+  }
+  document.getElementById('fhLineSetup').onclick=()=>{close();window.openTripFamilyAccount?.()};
   function open(){
-    overlay.style.display='block';overlay.scrollTop=0;document.body.style.overflow='hidden';
+    overlay.style.display='block';
+    refreshLineInvite();overlay.scrollTop=0;document.body.style.overflow='hidden';
     subscribe();window.tripAnalytics?.track('family_comment_hub_open',{});
   }
   function close(){overlay.style.display='none';document.body.style.overflow='';stop()}
