@@ -127,7 +127,7 @@ exports.lineWebhook=onRequest({
       const member=users.docs.find(x=>x.data().active!==false&&['member','admin'].includes(x.data().role));
       if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8文字の連携コードを送信してください。',token);continue}
       const itemId=m[1],body=m[2].trim();
-      if(!/^[A-Za-z0-9_%.-]{1,200}$/.test(itemId))continue;
+      if(!/^[A-Za-z0-9_-]{1,200}$/.test(itemId))continue;
       const eventId=String(e.webhookEventId||e.message.id||'').replace(/[^A-Za-z0-9_-]/g,'');
       if(!eventId)continue;
       const itemRef=db.doc('trip_items/'+itemId);
