@@ -61,7 +61,20 @@
       card.innerHTML='<div class="fl-title">LINE通知</div>'+
         '<div class="fl-sub">'+(linked?(enabled?'連携済み・コメント通知ON':'連携済み・通知OFF'):'未連携。コメント通知をLINEで受け取れます。')+'</div>'+
         (linked?'<button class="fl-btn" id="flToggle">'+(enabled?'LINE通知をOFF':'LINE通知をON')+'</button>':'<button class="fl-btn" id="flLink">連携コードを発行</button>')+
-        '<div id="flHelp" class="fl-sub"></div>';
+        '<div id="flHelp" class="fl-sub"></div>'+(p.role==='admin'?'<div class="fl-sub" style="margin-top:12px">家族LINEグループ通知（管理者）</div><button class="fl-btn" id="flGroupEnable">グループ通知を有効化</button><button class="fl-btn" id="flGroupDisable">グループ通知を停止</button><div id="flGroupState" class="fl-sub"></div>':'');
+      if(p.role==='admin'){
+        const setGroup=async enabled=>{
+          const out=document.getElementById('flGroupState');out.textContent='処理中…';
+          try{
+            const {getFunctions,httpsCallable}=await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js');
+            const fn=getFunctions(a.auth.app,'asia-northeast1');
+            await httpsCallable(fn,enabled?'activateLineGroup':'disableLineGroup')({});
+            out.textContent=enabled?'グループ通知を有効化しました':'グループ通知を停止しました';
+          }catch(err){out.textContent='操作に失敗しました：'+(err.message||err.code||'不明なエラー')}
+        };
+        document.getElementById('flGroupEnable').onclick=()=>setGroup(true);
+        document.getElementById('flGroupDisable').onclick=()=>setGroup(false);
+      }
       if(linked){
         document.getElementById('flToggle').onclick=async()=>{
           await a.fs.updateDoc(a.fs.doc(a.db,'family_users',p.uid),{lineNotifications:!enabled});
