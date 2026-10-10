@@ -325,6 +325,7 @@
         }catch(e){setProfile({authenticated:false,role:'error'});}
         render();
         restoreAccountOpen();
+        if(window.tripFamilyAuth?.authenticated)setTimeout(openLineGuideFromUrl,350);
         if(window.tripFamilyAuth?.authenticated){startPresence();recordUsageSession();if(window.tripFamilyAuth.role==='admin'){setTimeout(loadUsageDashboard,250);if(usageRefreshTimer)clearInterval(usageRefreshTimer);usageRefreshTimer=setInterval(()=>{if(document.visibilityState==='visible')loadUsageDashboard()},180000)}}
       });
     }catch(e){console.warn('Family Auth unavailable',e);setProfile({authenticated:false,role:'unavailable'});}
@@ -359,5 +360,25 @@
   window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&modal.classList.contains('show'))loadUsageDashboard()}});
   window.openTripFamilyAccount=()=>{rememberAccountOpen(true);modal.classList.add('show');modal.scrollTop=0;render();if(current?.role==='admin')setTimeout(loadUsageDashboard,50)};
   window.openTripUsageDashboard=()=>{rememberAccountOpen(true);modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
+  function openLineGuideFromUrl(){
+    const q=new URLSearchParams(location.search);
+    if(q.get('guide')!=='line')return false;
+    if(!current?.authenticated){modal.classList.add('show');return false}
+    rememberAccountOpen(false);
+    modal.classList.add('show');
+    render();
+    let attempts=0;
+    const focusGuide=()=>{
+      const guide=document.getElementById('faLineCard');
+      if(guide){guide.scrollIntoView({block:'start',behavior:'smooth'});guide.setAttribute('tabindex','-1');guide.focus({preventScroll:true});return}
+      if(++attempts<15)setTimeout(focusGuide,200);
+    };
+    setTimeout(focusGuide,150);
+    return true;
+  }
+  document.addEventListener('tripFamilyAuthReady',()=>setTimeout(openLineGuideFromUrl,250));
+  window.addEventListener('pageshow',()=>setTimeout(openLineGuideFromUrl,200));
+  setTimeout(openLineGuideFromUrl,1300);
+
   init();
 })();
