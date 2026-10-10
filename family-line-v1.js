@@ -6,6 +6,13 @@
     .fl-title{font-size:12px;font-weight:900;color:#39435a}.fl-sub{font-size:11px;color:#81899a;margin-top:3px;line-height:1.5}
     .fl-btn{margin-top:9px;width:100%;border:1px solid #dcd6e6;background:#f8f5fc;color:#5e5574;border-radius:11px;padding:9px;font:inherit;font-size:12px;font-weight:850}
     .fl-code{font-size:24px;font-weight:900;letter-spacing:.14em;text-align:center;margin:9px 0;color:#4f4666}
+    .fl-btn:disabled{opacity:.65;cursor:wait}
+    .fl-status{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:12px;line-height:1.6}
+    .fl-status-loading{background:#edf3ff;color:#294c85}
+    .fl-status-error{background:#fff0f0;color:#a52626;border:1px solid #f2c8c8}
+    .fl-status-success{background:#eff8f0;color:#276b3c}
+    .fl-spinner{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:fl-spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+    @keyframes fl-spin{to{transform:rotate(360deg)}}
     #tbFamilyLineCount{display:none;position:absolute;top:3px;right:18%;min-width:17px;height:17px;border-radius:9px;padding:0 4px;background:#bd665c;color:#fff;border:2px solid rgba(255,255,255,.96);font-size:9px;font-weight:800;line-height:13px;text-align:center}
   `;
   document.head.appendChild(style);
@@ -85,16 +92,27 @@
         document.getElementById('flLink').onclick=async()=>{
           const btn=document.getElementById('flLink'),help=document.getElementById('flHelp');
           btn.disabled=true;
-          help.textContent='連携コードを発行しています…';
+          btn.textContent='発行中…';
+          help.innerHTML='<div class="fl-status fl-status-loading" role="status" aria-live="polite"><span class="fl-spinner" aria-hidden="true"></span>連携コードを発行しています。しばらくお待ちください。</div>';
+          // Allow the browser to paint the loading state before starting Firestore work.
+          await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
           try{
             const c=code(),expires=new Date(Date.now()+10*60*1000);
             await a.fs.setDoc(a.fs.doc(a.db,'line_link_codes',c),{
               uid:p.uid,memberId:p.memberId,label:p.label,createdAt:a.fs.serverTimestamp(),expiresAt:a.fs.Timestamp.fromDate(expires)
             });
-            help.innerHTML='<div class="fl-code">'+c+'</div>LINE公式アカウントを友だち追加後、この8桁コードだけを送信してください。10分間有効です。';
+            help.innerHTML='<div class="fl-status fl-status-success" role="status">連携コードを発行しました（10分間有効）</div><div class="fl-code">'+c+'</div><button type="button" class="fl-btn" id="flCopyCode">コードをコピー</button><div class="fl-sub">LINE公式アカウントとの個別トークに、この8桁コードだけを送信してください。</div>';
+            document.getElementById('flCopyCode').onclick=async()=>{
+              try{await navigator.clipboard.writeText(c);document.getElementById('flCopyCode').textContent='コピーしました ✓'}
+              catch(_){document.getElementById('flCopyCode').textContent='コピーできませんでした。コードを手動で選択してください。'}
+            };
+            btn.textContent='新しいコードを発行';
             window.tripAnalytics?.track('line_link_code_created',{});
           }catch(err){
-            help.textContent='連携コードの発行に失敗しました：'+(err.code||err.message||'不明なエラー');
+            const detail=String(err.code||err.message||'不明なエラー');
+            help.innerHTML='<div class="fl-status fl-status-error" role="alert">連携コードを発行できませんでした。<div id="flErrorDetail"></div><div>Firebaseのアクセス権限を確認してください。</div></div>';
+            document.getElementById('flErrorDetail').textContent='エラー：'+detail;
+            btn.textContent='再試行';
             console.error('LINE link code generation failed',err);
           }finally{btn.disabled=false}
         };
