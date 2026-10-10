@@ -145,7 +145,7 @@
         let uv=0,today=0;
         for(let i=0;i<days.length;i++){
           const ds=otherSnaps[i];
-          const n=ds.exists()?Number(ds.data()?.visits||0):0;uv+=n;if(day===days[0])today=n;
+          const n=ds.exists()?Number(ds.data()?.visits||0):0;uv+=n;if(days[i]===days[0])today=n;
         }
         const items=otherSnaps[days.length];
         const last=rd.lastActive?.toDate?.();
@@ -189,7 +189,7 @@
       document.getElementById('faCommentsStat')?.addEventListener('click',()=>showComments(''));
       host.querySelectorAll('.fa-comment-link').forEach(b=>b.onclick=()=>showComments(b.dataset.commentMember||''));
     }catch(e){
-      console.warn(e);if(requestId===usageRequestId)host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できませんでした。通信状態やアクセス権限を確認してください。<button type="button" id="faUsageRetry">再試行</button></div>';
+      console.warn(e);if(requestId===usageRequestId)host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できませんでした（'+esc(e?.code||e?.message||'不明なエラー')+'）。<button type="button" id="faUsageRetry">再試行</button></div>';
       document.getElementById('faUsageRetry')?.addEventListener('click',loadUsageDashboard);
     }finally{clearTimeout(slowNotice);clearTimeout(failSafe);usageInFlight=false}
   }
@@ -227,6 +227,7 @@
     if(presenceUnsub){presenceUnsub();presenceUnsub=null}
     if(current?.role!=='admin'||!db||!fs)return;
     const host=document.getElementById('faPresenceRows'); if(!host)return;
+    host.innerHTML='<div style="font-size:11px;color:#8a8295">接続しています…</div>';
     presenceUnsub=fs.onSnapshot(fs.collection(db,'family_presence'),snap=>{
       const by={}; snap.forEach(s=>{const d=s.data()||{};if(d.memberId)by[d.memberId]=d});
       const members=[['family_01','パパ'],['family_02','Emi'],['family_03','Saki'],['family_04','Takeru']];
@@ -234,7 +235,7 @@
         const d=by[id]||{}; const online=d.lastSeen?.toDate&&Date.now()-d.lastSeen.toDate().getTime()<120000&&d.visible!==false;
         return '<div class="fa-presence-row"><span class="fa-dot '+(online?'on':'')+'"></span><span class="fa-presence-name">'+label+'</span><span class="fa-presence-meta">'+fmtSeen(d.lastSeen)+'</span></div>';
       }).join('');
-    },()=>{host.innerHTML='<div style="font-size:11px;color:#9a8290">Firestoreルール公開後に表示されます。</div>'});
+    },err=>{console.warn('presence subscription failed',err);host.innerHTML='<div style="font-size:11px;color:#a34c4c">利用状況を取得できませんでした（'+esc(err?.code||'通信エラー')+'）。<button type="button" id="faPresenceRetry">再試行</button></div>';document.getElementById('faPresenceRetry')?.addEventListener('click',watchPresence)});
   }
   function render(){
     const on=current?.authenticated;
