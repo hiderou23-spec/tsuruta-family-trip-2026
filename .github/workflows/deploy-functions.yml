@@ -37,5 +37,7 @@ jobs:
         run: npm install --global firebase-tools
       - name: Install Functions dependencies
         run: npm install --prefix functions --no-audit --no-fund
+      - name: Test LINE notification links
+        run: npm test --prefix functions
       - name: Deploy Functions
         run: firebase deploy --only functions --project tsuruta-family-trip-2026 --non-interactive
