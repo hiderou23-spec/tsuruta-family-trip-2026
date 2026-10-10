@@ -9,7 +9,9 @@
   };
   const PROFILE_KEY='tsuruta_family_profile_v1';
   let auth=null,db=null,authMod=null,fs=null,current=null;
-  let presenceTimer=null,presenceUnsub=null;
+  let presenceTimer=null,presenceUnsub=null,usageRefreshTimer=null;
+  let usageDashboardLoaded=false;
+  const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
   const style=document.createElement('style');
   style.textContent=`
@@ -116,6 +118,12 @@
       const users=[];usersSnap.forEach(s=>{const d=s.data()||{};if(d.active!==false)users.push({uid:s.id,memberId:d.memberId,label:d.label||d.memberId})});
       const votesSnap=await fs.getDocs(fs.collection(db,'family_votes'));
       const voteSets={};votesSnap.forEach(s=>{const d=s.data()||{};if(d.memberId&&d.key){(voteSets[d.memberId]||(voteSets[d.memberId]=new Set())).add(d.key)}});
+      let commentRows=[];
+      try{
+        const commentsSnap=await fs.getDocs(fs.collectionGroup(db,'comments'));
+        commentsSnap.forEach(x=>{const d=x.data()||{};if(d.itemKey&&d.text)commentRows.push({id:x.id,...d})});
+        commentRows.sort((a,b)=>((b.createdAt?.seconds||0)-(a.createdAt?.seconds||0)));
+      }catch(_){}
       const totalPlans=window.tripFamilyPlanning?.count?.()||4;
       const days=[0,-1,-2,-3,-4,-5,-6].map(tokyoDay);
       let todayUsers=0,weekVisits=0,totalComments=0;
@@ -145,12 +153,27 @@
         '<div class="fa-dash-grid">'+
           '<div class="fa-stat"><b>'+todayUsers+' / '+users.length+'</b><span>今日利用</span></div>'+
           '<div class="fa-stat"><b>'+weekVisits+'</b><span>直近7日セッション</span></div>'+
-          '<div class="fa-stat"><b>'+totalComments+'</b><span>コメント追加</span></div>'+
+          '<button type="button" id="faCommentsStat" class="fa-stat" style="text-align:left;cursor:pointer"><b>'+totalComments+'</b><span>コメント追加 ›</span></button>'+
           '<div class="fa-stat"><b>'+totalPlans+'</b><span>相談テーマ数</span></div>'+
         '</div>'+
-        rows.map(r=>'<div class="fa-dash-person"><div class="fa-dash-head"><span class="fa-dash-name">'+r.label+'</span><span class="fa-dash-meta">最終 '+r.lastText+'</span></div><div class="fa-dash-line">7日 '+r.week+'回 ・ 相談 '+r.answered+'/'+totalPlans+'（'+r.rate+'%）・ コメント '+r.comments+'</div></div>').join('')+
+        rows.map(r=>'<div class="fa-dash-person"><div class="fa-dash-head"><span class="fa-dash-name">'+r.label+'</span><span class="fa-dash-meta">最終 '+r.lastText+'</span></div><div class="fa-dash-line">7日 '+r.week+'回 ・ 相談 '+r.answered+'/'+totalPlans+'（'+r.rate+'%）・ <button type="button" class="fa-comment-link" data-comment-member="'+esc(r.label)+'" style="border:0;background:transparent;color:#687eab;padding:0;font:inherit;font-weight:800">コメント '+r.comments+'件 ›</button></div></div>').join('')+
         '<div class="fa-popular"><div class="fa-presence-title">よく見られている予定</div>'+(tops.length?tops.map(([t,n])=>'<div class="fa-pop-row"><span>'+t+'</span><b>'+n+'回</b></div>').join(''):'<div style="font-size:11px;color:#8a8295">これから閲覧データを蓄積します。</div>')+'</div>'+
+        '<div id="faCommentList" style="display:none;margin-top:10px"></div>'+ 
         '<div style="font-size:10px;color:#9a92a1;margin-top:9px">セッション数・閲覧数はこの機能導入後から集計します。</div>';
+      usageDashboardLoaded=true;
+      const showComments=(label='')=>{
+        const box=document.getElementById('faCommentList');if(!box)return;
+        const rows2=commentRows.filter(c=>!label||c.label===label).slice(0,20);
+        box.style.display='block';
+        box.innerHTML='<div class="fa-presence-title">'+(label?esc(label)+'のコメント':'最近のコメント')+'</div>'+(rows2.length?rows2.map(c=>'<button type="button" class="fa-dash-person fa-open-comment" data-item-key="'+esc(c.itemKey)+'" data-comment-id="'+esc(c.id)+'" style="width:100%;text-align:left;cursor:pointer"><div class="fa-dash-head"><span class="fa-dash-name">'+esc(c.label||'家族')+'</span><span class="fa-dash-meta">'+esc(c.itemTitle||'予定')+'</span></div><div class="fa-dash-line">'+esc(c.text)+'</div></button>').join(''):'<div style="font-size:11px;color:#8a8295">コメントはありません。</div>');
+        box.querySelectorAll('.fa-open-comment').forEach(b=>b.onclick=()=>{
+          const id=encodeURIComponent(b.dataset.itemKey||'').replace(/%/g,'_');
+          modal.classList.remove('show');
+          setTimeout(()=>window.tripFamilyCollab?.openByDocId?.(id,b.dataset.commentId||''),50);
+        });
+      };
+      document.getElementById('faCommentsStat')?.addEventListener('click',()=>showComments(''));
+      host.querySelectorAll('.fa-comment-link').forEach(b=>b.onclick=()=>showComments(b.dataset.commentMember||''));
     }catch(e){
       console.warn(e);host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できません。Firestoreルールを最新版に公開してください。</div>';
     }
@@ -208,7 +231,7 @@
       a.innerHTML='<div style="background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:14px"><b>'+current.label+'</b><div style="font-size:12px;color:#7d8493;margin-top:4px">'+
         (current.role==='admin'?'管理者：最終決定・家族管理が可能':current.role==='viewer'?'閲覧のみ':'家族メンバー：投票・既読・コメントが可能')+
         '</div></div>'+
-        (current.role==='admin'?'<div class="fa-presence"><div class="fa-presence-title">現在の利用状況</div><div id="faPresenceRows"><div style="font-size:11px;color:#8a8295">確認中…</div></div></div><button id="faUsageBtn" class="fa-link" style="width:100%;margin-top:8px" type="button">利用状況ダッシュボード</button><div id="faUsageWrap" class="fa-dash" style="display:none"><div id="faUsageDashboard"></div></div>':'')+
+        (current.role==='admin'?'<div class="fa-presence"><div class="fa-presence-title">現在の利用状況</div><div id="faPresenceRows"><div style="font-size:11px;color:#8a8295">確認中…</div></div></div><div id="faUsageWrap" class="fa-dash"><div class="fa-presence-title" style="margin:12px 0 7px">利用状況ダッシュボード</div><div id="faUsageDashboard"><div style="font-size:11px;color:#8a8295">集計中…</div></div></div>':'')+
         '<button id="faChangePw" class="fa-link" style="width:100%;margin-top:8px" type="button">パスワード変更</button>'+
         '<div id="faChangeArea" style="display:none;margin-top:6px">'+
           '<input id="faCurrentPw" type="password" autocomplete="current-password" placeholder="現在のパスワード">'+
@@ -221,12 +244,7 @@
       document.getElementById('faLogout').onclick=async()=>{await authMod.signOut(auth);};
       if(current.role==='admin'){
         watchPresence();
-        document.getElementById('faUsageBtn').onclick=async()=>{
-          const w=document.getElementById('faUsageWrap');
-          const opening=w.style.display==='none';
-          w.style.display=opening?'block':'none';
-          if(opening){window.tripAnalytics?.track('admin_dashboard_open',{});await loadUsageDashboard()}
-        };
+        if(usageDashboardLoaded) loadUsageDashboard();
       }
       document.getElementById('faChangePw').onclick=()=>{const el=document.getElementById('faChangeArea');el.style.display=el.style.display==='none'?'block':'none';};
       document.getElementById('faChangeSubmit').onclick=async()=>{
@@ -274,6 +292,7 @@
       authMod.onAuthStateChanged(auth,async user=>{
         if(!user){
           stopPresence();
+          if(usageRefreshTimer){clearInterval(usageRefreshTimer);usageRefreshTimer=null}
           setProfile({authenticated:false,role:'guest'});render();
           setTimeout(()=>{ if(!window.tripFamilyAuth?.authenticated) modal.classList.add('show'); },900);
           return
@@ -286,7 +305,7 @@
           }else setProfile(p);
         }catch(e){setProfile({authenticated:false,role:'error'});}
         render();
-        if(window.tripFamilyAuth?.authenticated){startPresence();recordUsageSession();}
+        if(window.tripFamilyAuth?.authenticated){startPresence();recordUsageSession();if(window.tripFamilyAuth.role==='admin'){setTimeout(loadUsageDashboard,250);if(usageRefreshTimer)clearInterval(usageRefreshTimer);usageRefreshTimer=setInterval(()=>{if(document.visibilityState==='visible')loadUsageDashboard()},180000)}}
       });
     }catch(e){console.warn('Family Auth unavailable',e);setProfile({authenticated:false,role:'unavailable'});}
   }
@@ -316,9 +335,9 @@
       err.textContent='再設定メールを送信できませんでした。メールアドレスを確認してください。';
     }
   };
-  document.addEventListener('visibilitychange',()=>{if(current?.authenticated)writePresence()});
-  window.addEventListener('focus',()=>{if(current?.authenticated)writePresence()});
+  document.addEventListener('visibilitychange',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&document.visibilityState==='visible')loadUsageDashboard()}});
+  window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin')loadUsageDashboard()}});
   window.openTripFamilyAccount=()=>{modal.classList.add('show');render()};
-  window.openTripUsageDashboard=()=>{modal.classList.add('show');render();setTimeout(()=>document.getElementById('faUsageBtn')?.click(),50)};
+  window.openTripUsageDashboard=()=>{modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
   init();
 })();
