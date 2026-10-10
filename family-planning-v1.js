@@ -18,12 +18,11 @@
         {id:'easy',name:'Waikikiで気軽に',why:'翌日の移動に備えてゆったり締める。'}
       ]
     },
-    'Hawaii Waikīkī Gun Club':{
-      question:'Takeruの射撃体験、どうする？',
+    '12/26午後：Ala Moana / 射撃':{
+      question:'12/26の午後はどちらを優先する？',
       recs:[
-        {id:'waikiki_gun_club',name:'Waikīkī Gun Club',why:'ワイキキ中心部で移動が最も楽。',detail:'12歳以上。21歳未満は保護者同伴。Kalākaua Ave沿いの屋内レンジで、.22LR〜.50AEまで幅広い銃種、安全装備一式あり。ワイキキ最長クラスの屋内レンジをうたっており、今回の旅程では移動負担が小さいのが最大の利点。',fit:'今回向き：★★★★★',url:'https://www.hawaiigunclub.com/homejpn',map:'https://www.google.com/maps/search/?api=1&query=Hawaii+Waikiki+Gun+Club'},
-        {id:'808_gun_club',name:'808 Gun Club',why:'銃種・料金・弾数を比較して選びやすい。',detail:'14歳以上。14〜18歳は料金を支払う成人の同伴が必要。Kakaʻakoの屋内4レーン。初心者向けPackage Aは30分・$110〜で、Glock 17、.22ライフル、リボルバーなど4丁・46発。上位パッケージではAR-15、AK-47、ショットガン等も選べる。Ala Moanaからの動線が良い。',fit:'比較しやすさ：★★★★★',url:'https://808gunclub.com/shooting-packages/',map:'https://www.google.com/maps/search/?api=1&query=808+Gun+Club+Honolulu'},
-        {id:'skip_shooting',name:'今回は見送る',why:'最終日をもっとゆっくり過ごす。',detail:'12/26はWaikiki Beach、Ala Moana、サンセット、最後の夕食があるため、射撃を入れなくても十分に楽しめる。疲れ具合や家族全体の希望を優先したい場合はこちら。',fit:'ゆったり度：★★★★★'}
+        {id:'ala_moana',name:'Ala Moanaで買い物・自由時間',why:'お土産や最後の買い物をまとめて、家族それぞれがゆっくり過ごせる。',detail:'Kualoaから戻った後は無理に予定を詰めず、Ala Moana Centerで買い物・カフェ・自由時間を優先する案。',fit:'ゆったり度：★★★★★',map:'https://www.google.com/maps/search/?api=1&query=Ala+Moana+Center+Honolulu'},
+        {id:'shooting',name:'Takeruの射撃体験を優先',why:'今回の旅行でしかやりにくい体験を優先。買い物は短縮する。',detail:'第一候補はHawaii Waikīkī Gun Club。Takeruは16歳のため保護者同伴を前提に、予約条件と空き時間を確認して決定する。',fit:'体験重視：★★★★★',url:'https://www.hawaiigunclub.com/homejpn',map:'https://www.google.com/maps/search/?api=1&query=Hawaii+Waikiki+Gun+Club'}
       ]
     },
     'Victoria / UBC 時間配分':{
@@ -51,7 +50,7 @@
     const t=(title||'').replace(/\s+/g,' ').trim();
     return t==='Christmas Eve Dinner'
       || t==='ハワイ最後の夕食'
-      || t==='Hawaii Waikīkī Gun Club'
+      || t==='12/26午後：Ala Moana / 射撃'
       || t==='Victoria / UBC 時間配分';
   }
   function planFor(title){
