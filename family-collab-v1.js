@@ -6,7 +6,7 @@
     {id:'family_04',label:'Takeru',initial:'T'}
   ];
   const labels=Object.fromEntries(members.map(x=>[x.id,x.label]));
-  let api=null,currentKey='',currentItem=null,unsubReads=null,unsubComments=null,currentResponses={},pendingCommentId='';
+  let api=null,currentKey='',currentItem=null,unsubReads=null,unsubComments=null,currentResponses={},pendingCommentId='',replyTo=null;
   const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const docId=k=>encodeURIComponent(k).replace(/%/g,'_');
 
@@ -26,7 +26,7 @@
    .fc-toggles{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}.fc-toggle{border:1px solid #ddd7e8;background:#fff;border-radius:12px;padding:10px 8px;font:inherit;font-size:12px;font-weight:800;color:#5f687a}.fc-toggle.on{background:#edf6f0;border-color:#cfe5d7;color:#4d725d}
    .fc-save-state{font-size:11px;color:#8b8295;min-height:18px;margin-top:8px}.fc-comment{padding:10px 0;border-top:1px solid #f0ebf3}.fc-comment:first-child{border-top:0}.fc-comment-head{display:flex;justify-content:space-between;gap:10px}.fc-comment-name{font-weight:850}.fc-comment-time{font-size:10px;color:#a19aaa}
    .fc-input{display:flex;gap:7px;margin-top:10px}.fc-input input{flex:1;min-width:0;border:1px solid #ddd7e8;border-radius:11px;padding:10px;font:inherit}.fc-input button,.fc-read{border:0;border-radius:11px;padding:9px 11px;background:#eef4ff;color:#526b92;font-weight:800}.fc-read.done{background:#eaf5ee;color:#4f735e}
-   .fc-comment.reply{margin-left:18px;padding-left:10px;border-left:2px solid #e5ddf0}.fc-reply-note{font-size:10px;color:#9b91a4;margin-bottom:2px}.fc-quick{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.fc-quick button{border:1px solid #ddd7e8;background:#faf8fd;color:#625a76;border-radius:999px;padding:5px 8px;font:inherit;font-size:10.5px;font-weight:800}.fc-comment.flash{background:#fff6cf;border-radius:10px;padding-left:8px;padding-right:8px}
+   .fc-comment.reply{margin-left:18px;padding-left:10px;border-left:2px solid #e5ddf0}.fc-reply-note{font-size:10px;color:#9b91a4;margin-bottom:2px}.fc-quick{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}.fc-quick button{border:1px solid #ddd7e8;background:#faf8fd;color:#625a76;border-radius:999px;padding:5px 8px;font:inherit;font-size:10.5px;font-weight:800}.fc-reply-action{margin-top:7px;border:0;background:transparent;color:#687eab;font:inherit;font-size:12px;font-weight:800;padding:4px 0;cursor:pointer}.fc-reply-target{display:none;margin-top:10px;background:#f3eff9;border-radius:10px;padding:9px 11px;font-size:12px;color:#5f527c;align-items:center;justify-content:space-between;gap:8px}.fc-reply-target button{border:0;background:transparent;color:#62577b;font-weight:800}.fc-comment.flash{background:#fff6cf;border-radius:10px;padding-left:8px;padding-right:8px}
    @media(max-width:520px){.fc-options{grid-template-columns:repeat(3,minmax(0,1fr))}.fc-choice{font-size:11px;padding:9px 4px}.fc-toggles{grid-template-columns:1fr 1fr}}
   `;
   document.head.appendChild(style);
@@ -40,7 +40,7 @@
       '<div class="fc-toggles"><button type="button" class="fc-toggle" id="fcGuide">案内できる</button><button type="button" class="fc-toggle" id="fcRecommend">おすすめ</button></div>'+
       '<div id="fcSaveState" class="fc-save-state"></div><button id="fcReadBtn" class="fc-read" type="button">✓ 既読にする</button>'+
     '</div>'+
-    '<div class="fc-card"><div class="fc-card-title">コメント</div><div id="fcComments"></div><div class="fc-input"><input id="fcText" maxlength="300" placeholder="この予定について家族にコメント"><button id="fcSend" type="button">送信</button></div></div>'+
+    '<div class="fc-card"><div class="fc-card-title">コメント</div><div id="fcComments"></div><div id="fcReplyTarget" class="fc-reply-target"><span id="fcReplyLabel"></span><button type="button" id="fcReplyCancel">取消</button></div><div class="fc-input"><input id="fcText" maxlength="300" placeholder="この予定について家族にコメント"><button id="fcSend" type="button">送信</button></div></div>'+
   '</div></div>';
   document.body.appendChild(modal);
   modal.querySelector('.fc-back').onclick=close;
@@ -162,7 +162,7 @@
     });
   }
   async function open(item){
-    api=window.tripFamilyAuthApi;currentItem=item;currentKey=itemKey(item);currentResponses={};
+    api=window.tripFamilyAuthApi;currentItem=item;currentKey=itemKey(item);currentResponses={};replyTo=null;updateReplyTarget();
     document.getElementById('fcTitle').textContent=(item.querySelector('.title')?.childNodes[0]?.textContent||'予定').trim();
     const p=currentProfile();
     document.getElementById('fcAuth').textContent=p?.authenticated?p.label+'として編集':'ログインすると参加状況・コメントを編集できます';
@@ -174,6 +174,12 @@
     window.tripAnalytics?.track('family_collab_open',{item_title:document.getElementById('fcTitle').textContent||''});
     if(!api?.db||!api?.fs){document.getElementById('fcComments').innerHTML='<div style="font-size:13px;color:#8b8295;margin-top:8px">家族ログイン後に利用できます。</div>';renderFamily();return}
     subscribe();
+  }
+  function updateReplyTarget(){
+    const target=document.getElementById('fcReplyTarget');if(!target)return;
+    target.style.display=replyTo?'flex':'none';
+    document.getElementById('fcReplyLabel').textContent=replyTo?'↳ '+replyTo.label+'さんのコメントに返信':'';
+    document.getElementById('fcText').placeholder=replyTo?'返信を入力':'この予定について家族にコメント';
   }
   function subscribe(){
     const {db,fs}=api,base=fs.doc(db,'trip_items',docId(currentKey));
@@ -190,7 +196,8 @@
         h+='<div class="fc-comment '+(d.parentCommentId?'reply ':'')+'" data-comment-id="'+esc(x.id)+'">'+
           (d.parentCommentId?'<div class="fc-reply-note">↳ 返信</div>':'')+
           '<div class="fc-comment-head"><span class="fc-comment-name">'+esc(d.label||labels[d.memberId]||'家族')+'</span><span class="fc-comment-time">'+esc(formatTime(d.createdAt))+'</span></div>'+
-          '<div style="font-size:13px;color:#5f687a;margin-top:3px">'+esc(d.text)+'</div>'+chips+'</div>';
+          '<div style="font-size:13px;color:#5f687a;margin-top:3px">'+esc(d.text)+'</div>'+
+          (isWritable()?'<button type="button" class="fc-reply-action" data-reply-to="'+esc(x.id)+'" data-reply-label="'+esc(d.label||labels[d.memberId]||'家族')+'">↳ 返信する</button>':'')+chips+'</div>';
       });
       const host=document.getElementById('fcComments');
       host.innerHTML=h||'<div style="font-size:13px;color:#8b8295;margin-top:8px">まだコメントはありません。</div>';
@@ -241,10 +248,14 @@
   document.getElementById('fcSend').onclick=async()=>{
     const input=document.getElementById('fcText'),text=input.value.trim();
     if(!text)return;
-    await postComment(text);
-    input.value='';
+    const parent=replyTo?.id||'';
+    try{await postComment(text,parent);input.value='';replyTo=null;updateReplyTarget()}
+    catch(e){console.warn('Reply failed',e);alert('コメントを送信できませんでした。もう一度お試しください。')}
   };
+  document.getElementById('fcReplyCancel').onclick=()=>{replyTo=null;updateReplyTarget()};
   document.getElementById('fcComments').addEventListener('click',async e=>{
+    const reply=e.target.closest('[data-reply-to]');
+    if(reply){replyTo={id:reply.dataset.replyTo,label:reply.dataset.replyLabel};updateReplyTarget();document.getElementById('fcText').focus();document.getElementById('fcReplyTarget').scrollIntoView({behavior:'smooth',block:'nearest'});return}
     const b=e.target.closest('[data-quick-reply]');if(!b)return;
     b.disabled=true;
     try{await postComment(b.dataset.quickReply,b.dataset.parentComment||'',true)}finally{b.disabled=false}
