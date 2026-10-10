@@ -235,12 +235,25 @@
     const p=currentProfile();text=String(text||'').trim();
     if(!isWritable()||!text)return;
     const {db,fs}=api,itemId=docId(currentKey),base=fs.doc(db,'trip_items',itemId);
-    await fs.addDoc(fs.collection(base,'comments'),{
+    const created=await fs.addDoc(fs.collection(base,'comments'),{
       uid:p.uid,memberId:p.memberId,label:p.label,text,
       itemKey:currentKey,itemTitle:document.getElementById('fcTitle').textContent||'',
       parentCommentId:parentCommentId||null,quickReply:!!quickReply,
       createdAt:fs.serverTimestamp()
     });
+    if(parentCommentId){
+      try{
+        const original=await fs.getDoc(fs.doc(base,'comments',parentCommentId));
+        const targetUid=original.exists()?original.data()?.uid:null;
+        if(targetUid&&targetUid!==p.uid){
+          await fs.addDoc(fs.collection(db,'family_notifications',targetUid,'items'),{
+            type:'comment_reply',itemId,commentId:created.id,parentCommentId,
+            senderUid:p.uid,senderLabel:p.label,itemTitle:document.getElementById('fcTitle').textContent||'',
+            preview:text.slice(0,120),read:false,createdAt:fs.serverTimestamp()
+          });
+        }
+      }catch(err){console.warn('Reply notification unavailable',err)}
+    }
     window.tripAnalytics?.track(quickReply?'family_quick_reply':'family_comment_add',{item_title:document.getElementById('fcTitle').textContent||''});
     window.tripUsage?.trackAction(quickReply?'family_quick_reply':'family_comment_add');
     await saveOwn({readAt:fs.serverTimestamp()});
