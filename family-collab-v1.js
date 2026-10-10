@@ -241,18 +241,31 @@
       parentCommentId:parentCommentId||null,quickReply:!!quickReply,
       createdAt:fs.serverTimestamp()
     });
-    if(parentCommentId){
-      try{
-        const original=await fs.getDoc(fs.doc(base,'comments',parentCommentId));
-        const targetUid=original.exists()?original.data()?.uid:null;
-        if(targetUid&&targetUid!==p.uid){
-          await fs.addDoc(fs.collection(db,'family_notifications',targetUid,'items'),{
-            type:'comment_reply',itemId,commentId:created.id,parentCommentId,
-            senderUid:p.uid,senderLabel:p.label,itemTitle:document.getElementById('fcTitle').textContent||'',
+    // Fan out site notifications to every active family member except the author.
+    // Email delivery must be implemented server-side; never expose mail credentials here.
+    try{
+      const users=await fs.getDocs(fs.collection(db,'family_users'));
+      const recipients=[];
+      users.forEach(doc=>{
+        const u=doc.data()||{};
+        if(doc.id!==p.uid&&u.active!==false&&u.memberId&&['family_01','family_02','family_03','family_04'].includes(u.memberId))recipients.push(doc.id);
+      });
+      if(recipients.length){
+        const batch=fs.writeBatch(db);
+        recipients.forEach(uid=>{
+          const ref=fs.doc(fs.collection(db,'family_notifications',uid,'items'));
+          batch.set(ref,{
+            type:parentCommentId?'comment_reply':'family_comment',
+            itemId,commentId:created.id,parentCommentId:parentCommentId||null,
+            senderUid:p.uid,senderLabel:p.label,
+            itemTitle:document.getElementById('fcTitle').textContent||'',
             preview:text.slice(0,120),read:false,createdAt:fs.serverTimestamp()
           });
-        }
-      }catch(err){console.warn('Reply notification unavailable',err)}
+        });
+        await batch.commit();
+      }
+    }catch(err){
+      console.warn('Family-wide notification fanout failed; check Firestore security rules',err);
     }
     window.tripAnalytics?.track(quickReply?'family_quick_reply':'family_comment_add',{item_title:document.getElementById('fcTitle').textContent||''});
     window.tripUsage?.trackAction(quickReply?'family_quick_reply':'family_comment_add');
