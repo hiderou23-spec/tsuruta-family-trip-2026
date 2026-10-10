@@ -1,5 +1,5 @@
 (function(){
-  let commentsUnsubs=[],notifUnsub=null,comments=[],unreadByComment={},filter='all',commentBuckets=new Map();
+  let commentsUnsubs=[],notifUnsub=null,comments=[],unreadByComment={},replyNotices={},filter='all',commentBuckets=new Map();
   const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const api=()=>window.tripFamilyAuthApi;
   const profile=()=>window.tripFamilyAuth;
@@ -40,7 +40,7 @@
     host.innerHTML=rows.map(c=>'<button type="button" class="fh-comment '+(isUnread(c)?'unread':'')+'" data-comment-id="'+esc(c.id)+'" data-item-id="'+esc(c.itemId||'')+'">'+
       '<div class="fh-top"><span class="fh-who">'+esc(c.label||'家族')+'</span>'+(isUnread(c)?'<span class="fh-unread">未読</span>':'')+'<span class="fh-time">'+esc(fmt(c.createdAt))+'</span></div>'+
       '<div class="fh-date">'+esc(dateFor(c))+'</div><div class="fh-item">'+esc(c.itemTitle||'予定')+'</div>'+
-      (c.parentCommentId?'<div class="fh-reply">↳ 返信</div>':'')+
+      (c.parentCommentId?'<div class="fh-reply">↳ '+(replyNotices[c.id]?'あなたへの返信':'返信')+'</div>':'')+
       '<div class="fh-text">'+esc(c.text||'')+'</div><div class="fh-go">この予定・コメントを見る ›</div></button>').join('');
     host.querySelectorAll('.fh-comment').forEach(b=>b.onclick=()=>{
       overlay.style.display='none';
@@ -79,7 +79,7 @@
       });
       const ncol=a.fs.collection(a.db,'family_notifications',p.uid,'items');
       notifUnsub=a.fs.onSnapshot(ncol,snap=>{
-        unreadByComment={};snap.forEach(x=>{const d=x.data()||{};if(d.read!==true&&d.commentId)unreadByComment[d.commentId]=true});
+        unreadByComment={};replyNotices={};snap.forEach(x=>{const d=x.data()||{};if(d.type==='comment_reply'&&d.commentId)replyNotices[d.commentId]=true;if(d.read!==true&&d.commentId)unreadByComment[d.commentId]=true});
         render();
       },()=>{});
     }catch(e){console.warn('Family hub subscription failed',e)}
