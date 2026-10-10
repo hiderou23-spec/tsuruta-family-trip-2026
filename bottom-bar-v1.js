@@ -85,6 +85,7 @@
       if(collab)collab.classList.remove('show');
     }
     if(except!=='account'){
+      window.tripCloseAccountOnNavigation?.();
       const account=document.querySelector('.fa-modal.show');
       if(account)account.classList.remove('show');
     }
