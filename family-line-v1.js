@@ -1,8 +1,12 @@
 (function(){
-  let unsub=null,unread=[];\n  let linkCodeState=null;
+  let unsub=null,unread=[];
+  let linkCodeState=null;
   const style=document.createElement('style');
   style.textContent=`
-    .fl-step{margin-top:12px;padding:11px;border:1px solid #e9e3ed;border-radius:12px;background:#fff}\n    .fl-step-title{font-size:12px;font-weight:850;color:#39435a}\n    .fl-step-note{font-size:11px;color:#737d90;margin-top:5px;line-height:1.6}\n    .fl-card{margin-top:10px;background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:12px}
+    .fl-step{margin-top:12px;padding:11px;border:1px solid #e9e3ed;border-radius:12px;background:#fff}
+    .fl-step-title{font-size:12px;font-weight:850;color:#39435a}
+    .fl-step-note{font-size:11px;color:#737d90;margin-top:5px;line-height:1.6}
+    .fl-card{margin-top:10px;background:#fff;border:1px solid #e8e1eb;border-radius:14px;padding:12px}
     .fl-title{font-size:12px;font-weight:900;color:#39435a}.fl-sub{font-size:11px;color:#81899a;margin-top:3px;line-height:1.5}
     .fl-btn{margin-top:9px;width:100%;border:1px solid #dcd6e6;background:#f8f5fc;color:#5e5574;border-radius:11px;padding:9px;font:inherit;font-size:12px;font-weight:850}
     .fl-code{font-size:24px;font-weight:900;letter-spacing:.14em;text-align:center;margin:9px 0;color:#4f4666}
