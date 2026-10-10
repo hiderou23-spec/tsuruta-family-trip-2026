@@ -76,21 +76,26 @@ exports.notifyFamilyComment=onDocumentCreated({
     });
     if(reserved){
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
-      const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url,4900);
-      // A single shared reminder per Tokyo calendar day, only when an active recipient is unlinked.
-      // Reserving it transactionally prevents simultaneous comments from spamming the group.
+      const author=clip(d.label||'家族',40);
+      const quote=clip(d.text||'コメントが投稿されました',650);
+      const replyCommand='返信 '+itemId+' ';
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
-          type:'template',
-          altText:clip(message,400),
-          template:{
-            type:'buttons',
-            title:clip(d.itemTitle||'家族旅行',40),
-            text:clip((d.label||'家族')+'：'+(d.text||''),160),
-            actions:[
-              {type:'postback',label:'返信する',data:'reply:'+itemId,inputOption:'openKeyboard',fillInText:'返信 '+itemId+' '},
-              {type:'uri',label:'コメントを見る',uri:url}
-            ]
+          type:'flex',
+          altText:clip(author+'：'+quote,400),
+          contents:{
+            type:'bubble',size:'mega',
+            body:{type:'box',layout:'vertical',spacing:'md',paddingAll:'14px',contents:[
+              {type:'text',text:author+' のコメント',size:'xs',color:'#777777',weight:'bold'},
+              {type:'box',layout:'horizontal',spacing:'sm',contents:[
+                {type:'box',layout:'vertical',width:'3px',backgroundColor:'#B9C8DC',contents:[{type:'filler'}]},
+                {type:'text',text:quote,size:'md',color:'#242424',wrap:true,flex:1}
+              ]},
+              {type:'box',layout:'horizontal',spacing:'sm',contents:[
+                {type:'button',style:'link',height:'sm',flex:1,action:{type:'uri',label:'旅行サイトを見る',uri:url}},
+                {type:'button',style:'link',height:'sm',flex:1,action:{type:'postback',label:'返信する',data:'reply:'+itemId,inputOption:'openKeyboard',fillInText:replyCommand}}
+              ]}
+            ]}
           }
         }]},LINE_CHANNEL_ACCESS_TOKEN.value());
         await delivery.update({status:'sent',sentAt:FieldValue.serverTimestamp()});
