@@ -112,14 +112,16 @@
   }
   window.tripUsage={trackAction:trackUsageAction,trackItem:trackUsageItem};
 
+  let usageRequestId=0;
   async function loadUsageDashboard(){
+    const requestId=++usageRequestId;
     if(current?.role!=='admin'||!db||!fs)return;
     const host=document.getElementById('faUsageDashboard'); if(!host)return;
-    host.innerHTML='<div style="font-size:11px;color:#8a8295">集計中…</div>';
+    host.innerHTML='<div style="font-size:11px;color:#8a8295">集計中…（通信状況によって時間がかかります）</div>';
+    const slowNotice=setTimeout(()=>{if(requestId===usageRequestId&&host.isConnected&&host.textContent.includes('集計中'))host.innerHTML='<div style="font-size:11px;color:#8a8295">データを取得しています。時間がかかる場合は通信状態をご確認ください。</div>'},12000);
     try{
-      const usersSnap=await fs.getDocs(fs.collection(db,'family_users'));
+      const [usersSnap,votesSnap]=await Promise.all([fs.getDocs(fs.collection(db,'family_users')),fs.getDocs(fs.collection(db,'family_votes'))]);
       const users=[];usersSnap.forEach(s=>{const d=s.data()||{};if(d.active!==false)users.push({uid:s.id,memberId:d.memberId,label:d.label||d.memberId})});
-      const votesSnap=await fs.getDocs(fs.collection(db,'family_votes'));
       const voteSets={};votesSnap.forEach(s=>{const d=s.data()||{};if(d.memberId&&d.key){(voteSets[d.memberId]||(voteSets[d.memberId]=new Set())).add(d.key)}});
       let commentRows=[];
       try{
@@ -132,25 +134,29 @@
       let todayUsers=0,weekVisits=0,totalComments=0;
       const popular={};
       const rows=[];
-      for(const u of users){
-        const rootSnap=await fs.getDoc(fs.doc(db,'family_usage',u.uid));
+      const userStats=await Promise.all(users.map(async u=>{
+        const [rootSnap,...otherSnaps]=await Promise.all([fs.getDoc(fs.doc(db,'family_usage',u.uid)),...days.map(day=>fs.getDoc(fs.doc(db,'family_usage',u.uid,'days',day))),fs.getDocs(fs.collection(db,'family_usage',u.uid,'items'))]);
         const rd=rootSnap.exists()?rootSnap.data()||{}:{};
         let uv=0,today=0;
-        for(const day of days){
-          const ds=await fs.getDoc(fs.doc(db,'family_usage',u.uid,'days',day));
+        for(let i=0;i<days.length;i++){
+          const ds=otherSnaps[i];
           const n=ds.exists()?Number(ds.data()?.visits||0):0;uv+=n;if(day===days[0])today=n;
         }
-        if(today>0)todayUsers++;
-        weekVisits+=uv;
-        totalComments+=Number(rd.count_family_comment_add||0);
-        const items=await fs.getDocs(fs.collection(db,'family_usage',u.uid,'items'));
-        items.forEach(s=>{const d=s.data()||{};if(d.title)popular[d.title]=(popular[d.title]||0)+Number(d.views||0)});
+        const items=otherSnaps[days.length];
         const last=rd.lastActive?.toDate?.();
         const lastText=last?new Intl.DateTimeFormat('ja-JP',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(last):'—';
         const answered=voteSets[u.memberId]?.size||0;
         const rate=Math.round((answered/Math.max(totalPlans,1))*100);
-        rows.push({label:u.label,lastText,week:uv,answered,rate,comments:Number(rd.count_family_comment_add||0)});
+        return {label:u.label,lastText,week:uv,answered,rate,comments:Number(rd.count_family_comment_add||0),today,uv,popularEntries:[...items.docs.map(x=>x.data())]};
+      }));
+      for(const r of userStats){
+        if(r.today>0)todayUsers++;
+        weekVisits+=r.uv;
+        totalComments+=r.comments;
+        for(const d of r.popularEntries){if(d.title)popular[d.title]=(popular[d.title]||0)+Number(d.views||0)}
+        rows.push(r);
       }
+      if(requestId!==usageRequestId)return;
       const tops=Object.entries(popular).sort((a,b)=>b[1]-a[1]).slice(0,5);
       host.innerHTML=
         '<div class="fa-dash-grid">'+
@@ -178,8 +184,9 @@
       document.getElementById('faCommentsStat')?.addEventListener('click',()=>showComments(''));
       host.querySelectorAll('.fa-comment-link').forEach(b=>b.onclick=()=>showComments(b.dataset.commentMember||''));
     }catch(e){
-      console.warn(e);host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できません。Firestoreルールを最新版に公開してください。</div>';
-    }
+      console.warn(e);if(requestId===usageRequestId)host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できませんでした。通信状態やアクセス権限を確認してください。<button type="button" id="faUsageRetry">再試行</button></div>';
+      document.getElementById('faUsageRetry')?.addEventListener('click',loadUsageDashboard);
+    }finally{clearTimeout(slowNotice)}
   }
 
   function stopPresence(){
