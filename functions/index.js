@@ -79,7 +79,9 @@ exports.notifyFamilyComment=onDocumentCreated({
       const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url,4900);
       // A single shared reminder per Tokyo calendar day, only when an active recipient is unlinked.
       // Reserving it transactionally prevents simultaneous comments from spamming the group.
-      const day=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+      const dayParts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+      const part=type=>dayParts.find(p=>p.type===type)?.value;
+      const day=part('year')+'-'+part('month')+'-'+part('day');
       const reminderRef=db.doc('line_link_reminders/'+day);
       let showLinkReminder=false;
       if(hasUnlinkedRecipient){
@@ -90,7 +92,7 @@ exports.notifyFamilyComment=onDocumentCreated({
           return true;
         });
       }
-      const reminderText='📱 LINE個別通知が未設定の方へ\\nコメント・返信の個別通知を受け取るには、初回のみこちらから設定してください。\\n'+SITE_URL+'?guide=line';
+      const reminderText='📱 LINE個別通知が未設定の方へ\nコメント・返信の個別通知を受け取るには、初回のみこちらから設定してください。\n'+SITE_URL+'?guide=line';
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'template',
