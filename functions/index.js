@@ -78,7 +78,7 @@ exports.notifyFamilyComment=onDocumentCreated({
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       const author=clip(d.label||'家族',40);
       const quote=clip(d.text||'コメントが投稿されました',650);
-      const replyUrl=SITE_URL+'line-reply.html?item='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
+      const replyUrl='https://liff.line.me/2011962049-s5buQT2a?item='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       try{
         await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
           type:'flex',
