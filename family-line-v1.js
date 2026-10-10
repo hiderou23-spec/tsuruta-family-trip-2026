@@ -4,7 +4,7 @@
   let accountRendering=false;
   let linkCheckTimer=null;
   let expiryTimer=null;
-  const LINE_BOT_URL=''; // Set only after verifying the official LINE account URL.
+  const LINE_BOT_URL='https://lin.ee/N273xSL'; // Official friend-add URL provided by the site administrator.
   const style=document.createElement('style');
   style.textContent=`
     .fl-step{margin-top:12px;padding:11px;border:1px solid #e9e3ed;border-radius:12px;background:#fff}
