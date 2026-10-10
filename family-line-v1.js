@@ -1,6 +1,9 @@
 (function(){
   let unsub=null,unread=[];
   let linkCodeState=null;
+  let accountRendering=false;
+  let linkCheckTimer=null;
+  const LINE_BOT_URL=''; // Set only after verifying the official LINE account URL.
   const style=document.createElement('style');
   style.textContent=`
     .fl-step{margin-top:12px;padding:11px;border:1px solid #e9e3ed;border-radius:12px;background:#fff}
@@ -63,18 +66,22 @@
     return false;
   }
   async function renderAccount(){
+    if(accountRendering)return;
+    accountRendering=true;
+    try{
     const host=document.getElementById('faAccount'),p=profile(),a=api();
     if(!host||!p?.authenticated||!a?.db)return;
     let card=document.getElementById('faLineCard');
     if(!card){card=document.createElement('div');card.id='faLineCard';card.className='fl-card';host.insertBefore(card,document.getElementById('faChangePw')||null)}
     try{
+      if(linkCodeState?.expiresAt<=Date.now())linkCodeState=null;
       const snap=await a.fs.getDoc(a.fs.doc(a.db,'family_users',p.uid)),d=snap.data()||{},linked=!!d.lineUserId,enabled=d.lineNotifications!==false;
       card.innerHTML='<div class="fl-title">LINE通知</div>'+
         '<div class="fl-sub">'+(linked?(enabled?'連携済み・コメント通知ON':'連携済み・通知OFF'):'未連携。コメント通知をLINEで受け取れます。')+'</div>'+
         (linked?'<div class="fl-status fl-status-success">✓ 個人LINE連携が完了しています。</div><button class="fl-btn" id="flToggle">'+(enabled?'LINE通知をOFF':'LINE通知をON')+'</button>':
         '<div class="fl-step"><div class="fl-step-title">STEP 1　旅行サイトにログイン</div><div class="fl-step-note">✓ ログイン済みです。</div></div>'+
         '<div class="fl-step"><div class="fl-step-title">STEP 2　連携コードを発行</div><div class="fl-step-note">下のボタンで8桁のコードを発行します。コードは10分間有効です。</div><button type="button" class="fl-btn" id="flLink">連携コードを発行</button><div id="flHelp" class="fl-sub" aria-live="polite"></div></div>'+
-        '<div class="fl-step"><div class="fl-step-title">STEP 3　LINE Botの個別トークを開く</div><div class="fl-step-note">家族LINEグループのメンバー一覧から旅行サイトBotを選び、友だち追加（未追加の場合）して「トーク」を開いてください。<b>家族グループにはコードを送らないでください。</b></div></div>'+
+        '<div class="fl-step"><div class="fl-step-title">STEP 3　LINE Botの個別トークを開く</div><div class="fl-step-note">家族LINEグループのメンバー一覧から旅行サイトBotを選び、友だち追加（未追加の場合）して「トーク」を開いてください。<b>家族グループにはコードを送らないでください。</b></div>'+(LINE_BOT_URL?'<a class="fl-btn" style="display:block;text-align:center;box-sizing:border-box;text-decoration:none" href="'+LINE_BOT_URL+'" target="_blank" rel="noopener">LINE Botを開く ↗</a>':'')+'</div>'+
         '<div class="fl-step"><div class="fl-step-title">STEP 4　コードを送信して完了</div><div class="fl-step-note">コピーした8桁のコードだけをBotとの個別トークに送信してください。連携完了の返信が届いたら、この画面に戻って確認します。</div><button type="button" class="fl-btn" id="flCheckLink">連携状態を確認</button><div id="flCheckStatus" class="fl-sub" aria-live="polite"></div></div>')+(p.role==='admin'?'<div class="fl-sub" style="margin-top:12px">家族LINEグループ通知（管理者）</div><button class="fl-btn" id="flGroupEnable">グループ通知を有効化</button><button class="fl-btn" id="flGroupDisable">グループ通知を停止</button><div id="flGroupState" class="fl-sub"></div>':'');
       if(p.role==='admin'){
         const setGroup=async enabled=>{
@@ -91,6 +98,7 @@
         document.getElementById('flGroupDisable').onclick=()=>setGroup(false);
       }
       if(linked){
+        linkCodeState=null;
         document.getElementById('flToggle').onclick=async()=>{
           await a.fs.updateDoc(a.fs.doc(a.db,'family_users',p.uid),{lineNotifications:!enabled});
           window.tripAnalytics?.track('line_notification_toggle',{enabled:!enabled?'yes':'no'});renderAccount();
@@ -125,7 +133,8 @@
           }finally{btn.disabled=false}
         };
       }
-    }catch(e){card.innerHTML='<div class="fl-title">LINE通知</div><div class="fl-sub">設定を読み込めませんでした。</div>'}
+    }catch(e){card.innerHTML='<div class="fl-title">LINE通知</div><div class="fl-sub">設定を読み込めませんでした。通信状態を確認して再読み込みしてください。</div>'}
+    }finally{accountRendering=false}
   }
   function tryDeepLink(){
     const p=profile();if(!p?.authenticated)return;
@@ -143,7 +152,10 @@
     },250);
   }
   const account=document.getElementById('faAccount');
-  if(account)new MutationObserver(()=>setTimeout(renderAccount,0)).observe(account,{childList:true});
+  if(account)new MutationObserver(records=>{
+    if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.id!=='faLineCard'&&n.id!=='flHelp'))setTimeout(renderAccount,0);
+  }).observe(account,{childList:true});
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&document.getElementById('faLineCard'))renderAccount()});
   document.addEventListener('tripFamilyAuthReady',()=>{subscribe();setTimeout(renderAccount,100);setTimeout(tryDeepLink,350)});
   setTimeout(()=>{ensureBadge();subscribe();renderAccount();tryDeepLink()},1200);
   window.tripFamilyLine={markItemRead,openLatestUnread,refresh:subscribe};
