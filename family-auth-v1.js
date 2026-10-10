@@ -11,6 +11,7 @@
   const ACCOUNT_OPEN_KEY='tsuruta_family_account_open_v1';
   function rememberAccountOpen(open){try{if(open)sessionStorage.setItem(ACCOUNT_OPEN_KEY,'1');else sessionStorage.removeItem(ACCOUNT_OPEN_KEY)}catch(_){}}
   function restoreAccountOpen(){try{if(sessionStorage.getItem(ACCOUNT_OPEN_KEY)==='1'&&current?.authenticated)modal.classList.add('show')}catch(_){}}
+  window.tripCloseAccountOnNavigation=()=>{rememberAccountOpen(false);modal.classList.remove('show')};
   let auth=null,db=null,authMod=null,fs=null,current=null;
   let presenceTimer=null,presenceUnsub=null,usageRefreshTimer=null;
   let usageDashboardLoaded=false;
@@ -113,10 +114,13 @@
   window.tripUsage={trackAction:trackUsageAction,trackItem:trackUsageItem};
 
   let usageRequestId=0;
+  let usageInFlight=false;
   async function loadUsageDashboard(){
+    if(usageInFlight)return;
     const requestId=++usageRequestId;
     if(current?.role!=='admin'||!db||!fs)return;
     const host=document.getElementById('faUsageDashboard'); if(!host)return;
+    usageInFlight=true;
     host.innerHTML='<div style="font-size:11px;color:#8a8295">集計中…（通信状況によって時間がかかります）</div>';
     const slowNotice=setTimeout(()=>{if(requestId===usageRequestId&&host.isConnected&&host.textContent.includes('集計中'))host.innerHTML='<div style="font-size:11px;color:#8a8295">データを取得しています。時間がかかる場合は通信状態をご確認ください。</div>'},12000);
     try{
@@ -186,7 +190,7 @@
     }catch(e){
       console.warn(e);if(requestId===usageRequestId)host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できませんでした。通信状態やアクセス権限を確認してください。<button type="button" id="faUsageRetry">再試行</button></div>';
       document.getElementById('faUsageRetry')?.addEventListener('click',loadUsageDashboard);
-    }finally{clearTimeout(slowNotice)}
+    }finally{clearTimeout(slowNotice);usageInFlight=false}
   }
 
   function stopPresence(){
@@ -257,7 +261,7 @@
       document.getElementById('faLogout').onclick=async()=>{rememberAccountOpen(false);await authMod.signOut(auth);};
       if(current.role==='admin'){
         watchPresence();
-        if(usageDashboardLoaded) loadUsageDashboard();
+        if(usageDashboardLoaded) setTimeout(loadUsageDashboard,50);
       }
       document.getElementById('faChangePw').onclick=()=>{const el=document.getElementById('faChangeArea');el.style.display=el.style.display==='none'?'block':'none';};
       document.getElementById('faChangeSubmit').onclick=async()=>{
@@ -350,7 +354,7 @@
     }
   };
   document.addEventListener('visibilitychange',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&document.visibilityState==='visible')loadUsageDashboard()}});
-  window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin')loadUsageDashboard()}});
+  window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&modal.classList.contains('show'))loadUsageDashboard()}});
   window.openTripFamilyAccount=()=>{rememberAccountOpen(true);modal.classList.add('show');modal.scrollTop=0;render()};
   window.openTripUsageDashboard=()=>{rememberAccountOpen(true);modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
   init();
