@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ja" data-build="20261010-1227-christmas-plan">
+<html lang="ja" data-build="20261010-1232-change-history">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -200,10 +200,10 @@ body{
 </head>
 <body>
 <div class="wrap">
-<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/10 12:27 JST</div>
+<header class="hero"><div class="update-stamp" id="lastUpdatedStamp">最終更新<br>2026/10/10 12:32 JST</div>
 <h1>Tsuruta Family Trip 2026</h1>
 <p>東京 → ホノルル → バンクーバー → ビクトリア → UBC → 東京</p>
-<div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><button type="button" id="todoOpen" class="badge warn" style="border:0;cursor:pointer;font:inherit">! 要確認 <span id="todoCount"></span></button></div>
+<div class="legend"><span class="badge ok">● 確定予約</span><span class="badge plan">○ 推奨時間</span><button type="button" id="todoOpen" class="badge warn" style="border:0;cursor:pointer;font:inherit">! 要確認 <span id="todoCount"></span></button><button type="button" id="changeHistoryOpen" class="badge plan" style="border:0;cursor:pointer;font:inherit">🕘 更新履歴</button></div>
 </header>
 <div class="status" id="liveStatus">旅行開始前です。</div>
 <div id="todoOverlay" style="display:none;position:fixed;inset:0;z-index:1300;background:#fffaf6;overflow:auto">
@@ -213,6 +213,15 @@ body{
       <div><div style="font-weight:800;font-size:18px">旅行TODO</div><div style="font-size:12px;color:#7c8191">まだ確認・決定が必要な項目</div></div>
     </div>
     <div id="todoList" style="padding:18px 14px 32px"></div>
+  </div>
+</div>
+<div id="changeHistoryOverlay" style="display:none;position:fixed;inset:0;z-index:1350;background:#fffaf6;overflow:auto">
+  <div style="max-width:760px;margin:0 auto;min-height:100%;background:linear-gradient(180deg,#fffaf6 0%,#f9fbff 65%,#fff 100%)">
+    <div style="position:sticky;top:0;z-index:2;background:rgba(255,250,246,.96);backdrop-filter:blur(8px);border-bottom:1px solid #e9e2ed;padding:12px 16px;display:flex;align-items:center;gap:12px">
+      <button id="changeHistoryBack" aria-label="戻る" style="width:44px;height:44px;border-radius:50%;border:1px solid #e1dbea;background:#f5f1fb;color:#5f6d85;font-size:28px;line-height:1">‹</button>
+      <div><div style="font-weight:800;font-size:18px">更新履歴</div><div style="font-size:12px;color:#7c8191">旅行プランの主な変更を家族で確認できます</div></div>
+    </div>
+    <div id="changeHistoryList" style="padding:18px 14px 32px"></div>
   </div>
 </div>
 <div class="navwrap"><nav class="nav" id="dateNav">
@@ -398,21 +407,22 @@ async function dec(pw){const base=await crypto.subtle.importKey('raw',te.encode(
 })();
 </script>
 
-<script src="details-v2.js?v=20261010-1227-christmas-plan"></script>
-<script src="tripit-list-v3.js?v=20261010-1227-christmas-plan"></script>
-<script src="version-check.js?v=20261010-1227-christmas-plan"></script>
-<script src="city-photos-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="vxd-polish-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="google-maps-links-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="today-mode-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="family-auth-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="app-v2.js?v=20261010-1227-christmas-plan"></script>
-<script src="family-profile-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="ga4-family-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="firebase-sync-v1.js?v=20261010-1227-christmas-plan"></script>
+<script src="details-v2.js?v=20261010-1232-change-history"></script>
+<script src="tripit-list-v3.js?v=20261010-1232-change-history"></script>
+<script src="version-check.js?v=20261010-1232-change-history"></script>
+<script src="city-photos-v1.js?v=20261010-1232-change-history"></script>
+<script src="vxd-polish-v1.js?v=20261010-1232-change-history"></script>
+<script src="google-maps-links-v1.js?v=20261010-1232-change-history"></script>
+<script src="today-mode-v1.js?v=20261010-1232-change-history"></script>
+<script src="family-auth-v1.js?v=20261010-1232-change-history"></script>
+<script src="app-v2.js?v=20261010-1232-change-history"></script>
+<script src="family-profile-v1.js?v=20261010-1232-change-history"></script>
+<script src="ga4-family-v1.js?v=20261010-1232-change-history"></script>
+<script src="firebase-sync-v1.js?v=20261010-1232-change-history"></script>
 
-<script src="family-planning-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="family-collab-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="bottom-bar-v1.js?v=20261010-1227-christmas-plan"></script>
-<script src="family-line-v1.js?v=20261010-1227-christmas-plan"></script>
+<script src="family-planning-v1.js?v=20261010-1232-change-history"></script>
+<script src="family-collab-v1.js?v=20261010-1232-change-history"></script>
+<script src="bottom-bar-v1.js?v=20261010-1232-change-history"></script>
+<script src="family-line-v1.js?v=20261010-1232-change-history"></script>
+<script src="change-history-v1.js?v=20261010-1232-change-history"></script>
 </body></html>
