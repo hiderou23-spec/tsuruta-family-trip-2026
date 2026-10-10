@@ -8,6 +8,9 @@
     appId:"1:687129835506:web:778b20db9500c92a9b1d6b"
   };
   const PROFILE_KEY='tsuruta_family_profile_v1';
+  const ACCOUNT_OPEN_KEY='tsuruta_family_account_open_v1';
+  function rememberAccountOpen(open){try{if(open)sessionStorage.setItem(ACCOUNT_OPEN_KEY,'1');else sessionStorage.removeItem(ACCOUNT_OPEN_KEY)}catch(_){}}
+  function restoreAccountOpen(){try{if(sessionStorage.getItem(ACCOUNT_OPEN_KEY)==='1'&&current?.authenticated)modal.classList.add('show')}catch(_){}}
   let auth=null,db=null,authMod=null,fs=null,current=null;
   let presenceTimer=null,presenceUnsub=null,usageRefreshTimer=null;
   let usageDashboardLoaded=false;
@@ -244,7 +247,7 @@
           '<button id="faChangeSubmit" class="fa-primary" type="button">変更する</button>'+
         '</div>'+
         '<button id="faLogout" class="fa-link" style="width:100%;margin-top:8px" type="button">ログアウト</button>';
-      document.getElementById('faLogout').onclick=async()=>{await authMod.signOut(auth);};
+      document.getElementById('faLogout').onclick=async()=>{rememberAccountOpen(false);await authMod.signOut(auth);};
       if(current.role==='admin'){
         watchPresence();
         if(usageDashboardLoaded) loadUsageDashboard();
@@ -308,17 +311,18 @@
           }else setProfile(p);
         }catch(e){setProfile({authenticated:false,role:'error'});}
         render();
+        restoreAccountOpen();
         if(window.tripFamilyAuth?.authenticated){startPresence();recordUsageSession();if(window.tripFamilyAuth.role==='admin'){setTimeout(loadUsageDashboard,250);if(usageRefreshTimer)clearInterval(usageRefreshTimer);usageRefreshTimer=setInterval(()=>{if(document.visibilityState==='visible')loadUsageDashboard()},180000)}}
       });
     }catch(e){console.warn('Family Auth unavailable',e);setProfile({authenticated:false,role:'unavailable'});}
   }
-  badge.onclick=()=>{modal.classList.add('show');render()};
-  document.getElementById('faClose').onclick=()=>{if(current?.authenticated)modal.classList.remove('show')};
+  badge.onclick=()=>{rememberAccountOpen(true);modal.classList.add('show');render()};
+  document.getElementById('faClose').onclick=()=>{if(current?.authenticated){rememberAccountOpen(false);modal.classList.remove('show')}};
   document.getElementById('faSubmit').onclick=async()=>{
     const err=document.getElementById('faErr');err.textContent='確認しています…';
     try{
       await authMod.signInWithEmailAndPassword(auth,document.getElementById('faEmail').value.trim(),document.getElementById('faPassword').value);
-      err.textContent='';modal.classList.remove('show');
+      err.textContent='';rememberAccountOpen(false);modal.classList.remove('show');
     }catch(e){
       err.textContent=e?.code==='auth/operation-not-allowed'?'FirebaseでEmail/Passwordログインを有効にしてください。':e?.code==='auth/invalid-credential'?'メールアドレスまたはパスワードが違います。':'ログインできません。メールアドレスとパスワードを確認してください。';
     }
@@ -340,7 +344,7 @@
   };
   document.addEventListener('visibilitychange',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&document.visibilityState==='visible')loadUsageDashboard()}});
   window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin')loadUsageDashboard()}});
-  window.openTripFamilyAccount=()=>{modal.classList.add('show');modal.scrollTop=0;render()};
-  window.openTripUsageDashboard=()=>{modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
+  window.openTripFamilyAccount=()=>{rememberAccountOpen(true);modal.classList.add('show');modal.scrollTop=0;render()};
+  window.openTripUsageDashboard=()=>{rememberAccountOpen(true);modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
   init();
 })();
