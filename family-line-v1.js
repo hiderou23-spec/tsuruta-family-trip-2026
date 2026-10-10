@@ -3,6 +3,7 @@
   let linkCodeState=null;
   let accountRendering=false;
   let linkCheckTimer=null;
+  let expiryTimer=null;
   const LINE_BOT_URL=''; // Set only after verifying the official LINE account URL.
   const style=document.createElement('style');
   style.textContent=`
@@ -99,6 +100,7 @@
       }
       if(linked){
         linkCodeState=null;
+        if(expiryTimer){clearInterval(expiryTimer);expiryTimer=null;}
         document.getElementById('flToggle').onclick=async()=>{
           await a.fs.updateDoc(a.fs.doc(a.db,'family_users',p.uid),{lineNotifications:!enabled});
           window.tripAnalytics?.track('line_notification_toggle',{enabled:!enabled?'yes':'no'});renderAccount();
@@ -117,6 +119,7 @@
               uid:p.uid,memberId:p.memberId,label:p.label,createdAt:a.fs.serverTimestamp(),expiresAt:a.fs.Timestamp.fromDate(expires)
             });
             linkCodeState={code:c,expiresAt:expires.getTime()};
+            startExpiryTimer();
             help.innerHTML='<div class="fl-status fl-status-success" role="status">連携コードを発行しました（10分間有効）</div><div class="fl-code">'+c+'</div><button type="button" class="fl-btn" id="flCopyCode">コードをコピー</button><div class="fl-sub">LINE公式アカウントとの個別トークに、この8桁コードだけを送信してください。</div>';
             document.getElementById('flCopyCode').onclick=async()=>{
               try{await navigator.clipboard.writeText(c);document.getElementById('flCopyCode').textContent='コピーしました ✓'}
@@ -135,6 +138,17 @@
       }
     }catch(e){card.innerHTML='<div class="fl-title">LINE通知</div><div class="fl-sub">設定を読み込めませんでした。通信状態を確認して再読み込みしてください。</div>'}
     }finally{accountRendering=false}
+  }
+  function startExpiryTimer(){
+    if(expiryTimer)clearInterval(expiryTimer);
+    const tick=()=>{
+      const el=document.getElementById('flExpiry');
+      if(!linkCodeState)return;
+      const remaining=Math.max(0,Math.ceil((linkCodeState.expiresAt-Date.now())/1000));
+      if(el)el.textContent=remaining?`残り ${Math.floor(remaining/60)}分${String(remaining%60).padStart(2,'0')}秒`:'有効期限が切れました。新しいコードを発行してください。';
+      if(!remaining){linkCodeState=null;clearInterval(expiryTimer);expiryTimer=null;}
+    };
+    tick();expiryTimer=setInterval(tick,1000);
   }
   function tryDeepLink(){
     const p=profile();if(!p?.authenticated)return;
@@ -156,6 +170,7 @@
     if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.id!=='faLineCard'&&n.id!=='flHelp')))setTimeout(renderAccount,0);
   }).observe(account,{childList:true});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&document.getElementById('faLineCard'))renderAccount()});
+  window.addEventListener('focus',()=>{if(document.getElementById('faLineCard'))renderAccount()});
   document.addEventListener('tripFamilyAuthReady',()=>{subscribe();setTimeout(renderAccount,100);setTimeout(tryDeepLink,350)});
   setTimeout(()=>{ensureBadge();subscribe();renderAccount();tryDeepLink()},1200);
   window.tripFamilyLine={markItemRead,openLatestUnread,refresh:subscribe};
