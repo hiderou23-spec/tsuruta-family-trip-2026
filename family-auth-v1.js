@@ -122,6 +122,7 @@
     const host=document.getElementById('faUsageDashboard'); if(!host)return;
     usageInFlight=true;
     host.innerHTML='<div style="font-size:11px;color:#8a8295">集計中…（通信状況によって時間がかかります）</div>';
+    const failSafe=setTimeout(()=>{if(requestId===usageRequestId&&host.isConnected&&host.textContent.includes('データを取得しています'))host.innerHTML='<div style="font-size:11px;color:#a34c4c">取得に時間がかかっています。通信状態を確認して、再試行してください。<button type="button" id="faUsageRetry">再試行</button></div>';document.getElementById('faUsageRetry')?.addEventListener('click',()=>{usageRequestId++;usageInFlight=false;loadUsageDashboard()})},25000);
     const slowNotice=setTimeout(()=>{if(requestId===usageRequestId&&host.isConnected&&host.textContent.includes('集計中'))host.innerHTML='<div style="font-size:11px;color:#8a8295">データを取得しています。時間がかかる場合は通信状態をご確認ください。</div>'},12000);
     try{
       const [usersSnap,votesSnap]=await Promise.all([fs.getDocs(fs.collection(db,'family_users')),fs.getDocs(fs.collection(db,'family_votes'))]);
@@ -160,7 +161,7 @@
         for(const d of r.popularEntries){if(d.title)popular[d.title]=(popular[d.title]||0)+Number(d.views||0)}
         rows.push(r);
       }
-      if(requestId!==usageRequestId)return;
+      if(requestId!==usageRequestId||!host.isConnected)return;
       const tops=Object.entries(popular).sort((a,b)=>b[1]-a[1]).slice(0,5);
       host.innerHTML=
         '<div class="fa-dash-grid">'+
@@ -190,7 +191,7 @@
     }catch(e){
       console.warn(e);if(requestId===usageRequestId)host.innerHTML='<div style="font-size:11px;color:#a34c4c">集計できませんでした。通信状態やアクセス権限を確認してください。<button type="button" id="faUsageRetry">再試行</button></div>';
       document.getElementById('faUsageRetry')?.addEventListener('click',loadUsageDashboard);
-    }finally{clearTimeout(slowNotice);usageInFlight=false}
+    }finally{clearTimeout(slowNotice);clearTimeout(failSafe);usageInFlight=false}
   }
 
   function stopPresence(){
@@ -355,7 +356,7 @@
   };
   document.addEventListener('visibilitychange',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&document.visibilityState==='visible')loadUsageDashboard()}});
   window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&modal.classList.contains('show'))loadUsageDashboard()}});
-  window.openTripFamilyAccount=()=>{rememberAccountOpen(true);modal.classList.add('show');modal.scrollTop=0;render()};
+  window.openTripFamilyAccount=()=>{rememberAccountOpen(true);modal.classList.add('show');modal.scrollTop=0;render();if(current?.role==='admin')setTimeout(loadUsageDashboard,50)};
   window.openTripUsageDashboard=()=>{rememberAccountOpen(true);modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
   init();
 })();
