@@ -95,6 +95,7 @@ exports.notifyFamilyComment=onDocumentCreated({
 
 exports.lineWebhook=onRequest({
   region:'asia-northeast1',
+  maxInstances:1,
   secrets:[LINE_CHANNEL_SECRET,LINE_CHANNEL_ACCESS_TOKEN]
 },async(req,res)=>{
   const raw=req.rawBody||Buffer.from(JSON.stringify(req.body||{}));
