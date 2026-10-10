@@ -96,6 +96,8 @@
   document.getElementById('fhLineSetup').onclick=()=>{close();window.openTripFamilyAccount?.()};
   window.tripPreviewLineInvite=()=>{if(profile()?.role!=='admin')return;previewLineInvite=true;open()};
   function open(){
+    let preview=document.getElementById('fhPreviewLine');
+    if(profile()?.role==='admin'&&!preview){preview=document.createElement('button');preview.id='fhPreviewLine';preview.type='button';preview.className='fh-plan-btn';preview.style.cssText='display:block;margin:8px 14px';preview.textContent='管理者用：未連携案内をプレビュー';overlay.querySelector('.fh-body')?.prepend(preview);preview.onclick=()=>{previewLineInvite=!previewLineInvite;preview.textContent=previewLineInvite?'プレビューを終了':'管理者用：未連携案内をプレビュー';refreshLineInvite()}}
     overlay.style.display='block';
     refreshLineInvite();overlay.scrollTop=0;document.body.style.overflow='hidden';
     subscribe();window.tripAnalytics?.track('family_comment_hub_open',{});
