@@ -76,7 +76,19 @@ exports.notifyFamilyComment=onDocumentCreated({
       const url=SITE_URL+'?familyItem='+encodeURIComponent(itemId)+'&comment='+encodeURIComponent(commentId);
       const message=clip('【家族旅行】'+(d.label||'家族')+'：'+(d.itemTitle||'予定')+'\n'+(d.text||'')+'\n'+url+'\n\nこの予定へ返信：\n返信 '+itemId+' メッセージ',4900);
       try{
-        await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{type:'text',text:message}]},LINE_CHANNEL_ACCESS_TOKEN.value());
+        await lineCall('/v2/bot/message/push',{to:group.groupId,messages:[{
+          type:'template',
+          altText:clip(message,400),
+          template:{
+            type:'buttons',
+            title:clip(d.itemTitle||'家族旅行',40),
+            text:clip((d.label||'家族')+'：'+(d.text||''),160),
+            actions:[
+              {type:'uri',label:'返信する',uri:url},
+              {type:'uri',label:'コメントを見る',uri:url}
+            ]
+          }
+        }]},LINE_CHANNEL_ACCESS_TOKEN.value());
         await delivery.update({status:'sent',sentAt:FieldValue.serverTimestamp()});
       }catch(err){
         await delivery.update({status:'failed',error:clip(err.message,300)});
