@@ -172,8 +172,6 @@ exports.lineWebhook=onRequest({
         }
       }
       if(!m)continue;
-      const m=String(e.message.text||'').trim().match(/^返信\s+([^\s]+)\s+([\s\S]{1,300})$/);
-      if(!m)continue;
       if(!userId){await replyLine(e.replyToken,'先に個別トークでアカウント連携を行ってください。',token);continue}
       const member=await linked();
       if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8文字の連携コードを送信してください。',token);continue}
