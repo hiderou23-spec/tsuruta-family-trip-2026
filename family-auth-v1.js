@@ -324,6 +324,7 @@
           }else setProfile(p);
         }catch(e){setProfile({authenticated:false,role:'error'});}
         render();
+        document.dispatchEvent(new Event('tripFamilyAccountRendered'));
         restoreAccountOpen();
         if(window.tripFamilyAuth?.authenticated)setTimeout(openLineGuideFromUrl,350);
         if(window.tripFamilyAuth?.authenticated){startPresence();recordUsageSession();if(window.tripFamilyAuth.role==='admin'){setTimeout(loadUsageDashboard,250);if(usageRefreshTimer)clearInterval(usageRefreshTimer);usageRefreshTimer=setInterval(()=>{if(document.visibilityState==='visible')loadUsageDashboard()},180000)}}
@@ -358,7 +359,7 @@
   };
   document.addEventListener('visibilitychange',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&document.visibilityState==='visible')loadUsageDashboard()}});
   window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&modal.classList.contains('show'))loadUsageDashboard()}});
-  window.openTripFamilyAccount=()=>{rememberAccountOpen(true);modal.classList.add('show');modal.scrollTop=0;render();if(current?.role==='admin')setTimeout(loadUsageDashboard,50)};
+  window.openTripFamilyAccount=()=>{rememberAccountOpen(true);modal.classList.add('show');modal.scrollTop=0;render();document.dispatchEvent(new Event('tripFamilyAccountRendered'));if(current?.role==='admin')setTimeout(loadUsageDashboard,50)};
   window.openTripUsageDashboard=()=>{rememberAccountOpen(true);modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
   function openLineGuideFromUrl(){
     const q=new URLSearchParams(location.search);
