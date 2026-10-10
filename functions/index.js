@@ -285,3 +285,16 @@ exports.submitLineReply=onCall({region:'asia-northeast1',maxInstances:3},async r
     parentCommentId:commentId,quickReply:true,origin:'line',createdAt:FieldValue.serverTimestamp()});
   return {ok:true,commentId:newRef.id};
 });
+
+exports.getLineReplyContext=onCall({region:'asia-northeast1'},async request=>{
+  const input=request.data||{},token=String(input.lineAccessToken||''),itemId=String(input.itemId||''),commentId=String(input.commentId||'');
+  if(!token||token.length>4096||!/^[A-Za-z0-9_-]{1,200}$/.test(itemId)||!/^[A-Za-z0-9_-]{1,200}$/.test(commentId))throw new HttpsError('invalid-argument','返信先が不正です');
+  const response=await fetch('https://api.line.me/v2/profile',{headers:{Authorization:'Bearer '+token}});
+  if(!response.ok)throw new HttpsError('unauthenticated','LINEの認証が必要です');
+  const profile=await response.json();
+  const users=await db.collection('family_users').where('lineUserId','==',profile.userId).limit(3).get();
+  if(!users.docs.some(doc=>doc.data().active!==false&&['member','admin'].includes(doc.data().role)))throw new HttpsError('permission-denied','家族アカウントとLINEを連携してください');
+  const snap=await db.doc('trip_items/'+itemId+'/comments/'+commentId).get();
+  if(!snap.exists)throw new HttpsError('not-found','コメントが見つかりません');
+  const d=snap.data()||{};return {label:clip(d.label||'家族',50),text:clip(d.text||'',3000)};
+});
