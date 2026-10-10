@@ -3,7 +3,7 @@
 
   const icon=(body)=>'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+body+'</svg>';
   const icons={
-    schedule:icon('<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"></path>'),
+    schedule:icon('<path d="M3 11.5 12 4l9 7.5"></path><path d="M5.5 10.5V20h13v-9.5"></path><path d="M9.5 20v-6h5v6"></path>'),
     todo:icon('<path d="M9 6h11M9 12h11M9 18h11"></path><path d="m3.5 6 1.5 1.5L7.5 5M3.5 12l1.5 1.5 2.5-2.5M3.5 18l1.5 1.5 2.5-2.5"></path>'),
     family:icon('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path><path d="M15.5 11.5h5l1.5 1.5v-4.5"></path>'),
     account:icon('<circle cx="12" cy="8" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path>')
@@ -33,7 +33,7 @@
   bar.className='trip-bottom';
   bar.setAttribute('aria-label','主要メニュー');
   bar.innerHTML=`<div class="trip-bottom-inner">
-    <button type="button" id="tbSchedule"><span class="tb-icon">${icons.schedule}</span><span class="tb-label" id="tbScheduleLabel">予定</span></button>
+    <button type="button" id="tbSchedule"><span class="tb-icon">${icons.schedule}</span><span class="tb-label" id="tbScheduleLabel">ホーム</span></button>
     <button type="button" id="tbTodo"><span class="tb-todo-wrap"><span class="tb-icon">${icons.todo}</span><span class="tb-count" id="tbTodoCount"></span></span><span class="tb-label">TODO</span></button>
     <button type="button" id="tbFamily"><span class="tb-icon">${icons.family}</span><span class="tb-label">家族で相談</span></button>
     <button type="button" id="tbAccount"><span class="tb-icon">${icons.account}</span><span class="tb-label">アカウント</span></button>
@@ -47,15 +47,9 @@
     account:document.getElementById('tbAccount')
   };
 
-  function tokyoYmd(){
-    const p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
-    const m={};p.forEach(x=>m[x.type]=x.value);
-    return m.year+'-'+m.month+'-'+m.day;
-  }
-  function inTrip(){const d=tokyoYmd();return d>='2026-12-23'&&d<='2026-12-31'}
   function updateScheduleLabel(){
     const el=document.getElementById('tbScheduleLabel');
-    if(el)el.textContent=inTrip()?'今日':'予定';
+    if(el)el.textContent='ホーム';
   }
 
   function isVisible(el){
@@ -99,10 +93,16 @@
   buttons.schedule.onclick=()=>{
     closeNavigationOverlays('schedule');
     setActive('schedule');
-    requestAnimationFrame(()=>{
-      window.scrollTo({top:0,behavior:'smooth'});
-      try{history.replaceState(null,'',location.pathname+location.search)}catch(_){}
-    });
+    try{history.replaceState(null,'',location.pathname+location.search)}catch(_){}
+    const goTop=()=>{
+      document.documentElement.scrollTop=0;
+      document.body.scrollTop=0;
+      window.scrollTo(0,0);
+      document.querySelector('.hero')?.scrollIntoView({block:'start'});
+    };
+    goTop();
+    requestAnimationFrame(goTop);
+    setTimeout(goTop,80);
   };
 
   buttons.todo.onclick=()=>{
