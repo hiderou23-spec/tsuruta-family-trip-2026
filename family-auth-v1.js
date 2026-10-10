@@ -16,8 +16,8 @@
   const style=document.createElement('style');
   style.textContent=`
     .fa-badge{display:none!important;position:fixed;left:12px;bottom:12px;z-index:120;border:1px solid #ddd7e8;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-radius:999px;padding:7px 10px;font-size:11px;font-weight:800;color:#5e6a80;box-shadow:0 4px 14px rgba(80,72,102,.08)}
-    .fa-badge.on{color:#477566}.fa-modal{position:fixed;inset:0;z-index:5200;background:rgba(39,50,71,.45);display:none;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}.fa-modal.show{display:flex}
-    .fa-box{width:min(430px,100%);max-height:min(88vh,820px);overflow:auto;background:#fffaf6;border:1px solid #e7dfeb;border-radius:20px;padding:20px;box-shadow:0 18px 50px rgba(70,62,95,.18)}
+    .fa-badge.on{color:#477566}.fa-modal{position:fixed;inset:0 0 calc(69px + env(safe-area-inset-bottom)) 0;z-index:1850;background:#fffaf6;display:none;overflow:auto;-webkit-overflow-scrolling:touch;padding:0}.fa-modal.show{display:block}
+    .fa-box{width:min(760px,100%);min-height:100%;box-sizing:border-box;margin:0 auto;background:linear-gradient(180deg,#fffaf6,#f9fbff 62%,#fff);border:0;border-radius:0;padding:18px 16px 36px;box-shadow:none}
     .fa-box input{width:100%;box-sizing:border-box;padding:11px;border:1px solid #d9d3e3;border-radius:11px;margin:6px 0 10px;font:inherit}
     .fa-primary{width:100%;border:0;border-radius:11px;padding:11px;background:linear-gradient(135deg,#82b9eb,#ad93de);color:#fff;font-weight:800}
     .fa-link{border:0;background:transparent;color:#687eab;font-weight:800;padding:8px}.fa-err{font-size:12px;color:#a34c4c;min-height:18px}
@@ -223,6 +223,9 @@
   }
   function render(){
     const on=current?.authenticated;
+    const title=document.getElementById('faTitle'),note=document.getElementById('faNote');
+    if(title)title.textContent=on?'アカウント':'家族ログイン';
+    if(note)note.textContent=on?'家族アカウント・利用状況・設定を確認できます。':'家族ごとの投票・既読・コメントを本人名義で保存します。';
     document.getElementById('faClose').style.display=on?'inline-block':'none';
     document.getElementById('faLogin').style.display=on?'none':'block';
     const a=document.getElementById('faAccount');
@@ -337,7 +340,7 @@
   };
   document.addEventListener('visibilitychange',()=>{if(current?.authenticated){writePresence();if(current.role==='admin'&&document.visibilityState==='visible')loadUsageDashboard()}});
   window.addEventListener('focus',()=>{if(current?.authenticated){writePresence();if(current.role==='admin')loadUsageDashboard()}});
-  window.openTripFamilyAccount=()=>{modal.classList.add('show');render()};
+  window.openTripFamilyAccount=()=>{modal.classList.add('show');modal.scrollTop=0;render()};
   window.openTripUsageDashboard=()=>{modal.classList.add('show');render();setTimeout(loadUsageDashboard,50)};
   init();
 })();
