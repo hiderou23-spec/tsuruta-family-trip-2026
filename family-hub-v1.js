@@ -1,5 +1,5 @@
 (function(){
-  let commentsUnsub=null,notifUnsub=null,comments=[],unreadByComment={},filter='all';
+  let commentsUnsubs=[],notifUnsub=null,comments=[],unreadByComment={},filter='all',commentBuckets=new Map();
   const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const api=()=>window.tripFamilyAuthApi;
   const profile=()=>window.tripFamilyAuth;
@@ -51,29 +51,38 @@
     });
   }
   function stop(){
-    if(commentsUnsub){commentsUnsub();commentsUnsub=null}
+    commentsUnsubs.forEach(fn=>fn());commentsUnsubs=[];commentBuckets.clear()
     if(notifUnsub){notifUnsub();notifUnsub=null}
   }
   function subscribe(){
     stop();comments=[];unreadByComment={};render();
     const a=api(),p=profile();if(!a?.db||!a?.fs||!p?.authenticated)return;
     try{
-      commentsUnsub=a.fs.onSnapshot(a.fs.collectionGroup(a.db,'comments'),snap=>{
-        comments=[];snap.forEach(x=>{
-          const d=x.data()||{};
-          if(!d.itemKey||!d.text)return;
-          const itemId=encodeURIComponent(d.itemKey).replace(/%/g,'_');
-          comments.push({id:x.id,itemId,...d});
-        });
-        comments.sort((x,y)=>(y.createdAt?.toMillis?.()||0)-(x.createdAt?.toMillis?.()||0));
-        render();
-      },()=>{document.getElementById('fhComments').innerHTML='<div class="fh-empty">コメントを読み込めませんでした。</div>'});
+      // Read each itinerary item's comments directly. Collection-group queries may
+      // silently omit results when Firestore collection-group rules are unavailable.
+      const items=[...document.querySelectorAll('.item')].filter(x=>x.querySelector('.fc-entry'));
+      const idFor=k=>encodeURIComponent(k).replace(/%/g,'_');
+      if(!items.length){document.getElementById('fhComments').innerHTML='<div class="fh-empty">予定の読み込みを待っています。ホームに戻って再度お試しください。</div>';}
+      items.forEach(item=>{
+        const key=window.tripFamilyCollab?.itemKey?.(item);
+        if(!key)return;
+        const id=idFor(key);
+        const ref=a.fs.collection(a.fs.doc(a.db,'trip_items',id),'comments');
+        const unsub=a.fs.onSnapshot(ref,snap=>{
+          const bucket=[];
+          snap.forEach(x=>{const d=x.data()||{};if(d.text)bucket.push({id:x.id,itemId:id,itemKey:d.itemKey||key,itemTitle:d.itemTitle||key.split('|').slice(1).join('|'),...d})});
+          commentBuckets.set(id,bucket);
+          comments=[...commentBuckets.values()].flat().sort((x,y)=>(y.createdAt?.toMillis?.()||0)-(x.createdAt?.toMillis?.()||0));
+          render();
+        },err=>{console.warn('Family comments unavailable',id,err);});
+        commentsUnsubs.push(unsub);
+      });
       const ncol=a.fs.collection(a.db,'family_notifications',p.uid,'items');
       notifUnsub=a.fs.onSnapshot(ncol,snap=>{
         unreadByComment={};snap.forEach(x=>{const d=x.data()||{};if(d.read!==true&&d.commentId)unreadByComment[d.commentId]=true});
         render();
       },()=>{});
-    }catch(_){}
+    }catch(e){console.warn('Family hub subscription failed',e)}
   }
   function open(){
     overlay.style.display='block';overlay.scrollTop=0;document.body.style.overflow='hidden';
