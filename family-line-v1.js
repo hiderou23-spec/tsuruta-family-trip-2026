@@ -171,7 +171,16 @@
   }).observe(account,{childList:true});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&document.getElementById('faLineCard'))renderAccount()});
   window.addEventListener('focus',()=>{if(document.getElementById('faLineCard'))renderAccount()});
-  document.addEventListener('tripFamilyAuthReady',()=>{subscribe();setTimeout(renderAccount,100);setTimeout(tryDeepLink,350)});
+  function refreshLineGuide(){
+    renderAccount().then(()=>{
+      if(new URLSearchParams(location.search).get('guide')!=='line')return;
+      const card=document.getElementById('faLineCard');
+      if(card&&profile()?.authenticated){card.scrollIntoView({block:'start',behavior:'smooth'});card.setAttribute('tabindex','-1');card.focus({preventScroll:true})}
+    });
+  }
+  document.addEventListener('tripFamilyAuthReady',()=>{subscribe();setTimeout(refreshLineGuide,100);setTimeout(refreshLineGuide,650);setTimeout(tryDeepLink,350)});
+  document.addEventListener('tripFamilyAccountRendered',()=>setTimeout(refreshLineGuide,0));
+  setInterval(()=>{if(profile()?.authenticated&&document.getElementById('faAccount')&&!document.getElementById('faLineCard'))refreshLineGuide()},2500);
   setTimeout(()=>{ensureBadge();subscribe();renderAccount();tryDeepLink()},1200);
   window.tripFamilyLine={markItemRead,openLatestUnread,refresh:subscribe};
 })();
