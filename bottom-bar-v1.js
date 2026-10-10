@@ -100,14 +100,8 @@
     closeNavigationOverlays('schedule');
     setActive('schedule');
     requestAnimationFrame(()=>{
-      if(inTrip()){
-        const card=document.getElementById('todayCard');
-        if(card&&getComputedStyle(card).display!=='none'){card.scrollIntoView({behavior:'smooth',block:'start'});return}
-        const today=document.querySelector('.section.today');
-        if(today){today.scrollIntoView({behavior:'smooth',block:'start'});return}
-      }
-      const nav=document.querySelector('.navwrap')||document.querySelector('.wrap');
-      nav?.scrollIntoView({behavior:'smooth',block:'start'});
+      window.scrollTo({top:0,behavior:'smooth'});
+      try{history.replaceState(null,'',location.pathname+location.search)}catch(_){}
     });
   };
 
