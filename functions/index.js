@@ -120,30 +120,33 @@ exports.lineWebhook=onRequest({
       }
       const settings=(await db.doc('line_settings/group').get()).data()||{};
       if(!settings.enabled||settings.groupId!==groupId||e.type!=='message'||e.message?.type!=='text')continue;
-      const m=String(e.message.text||'').trim().match(/^返信\\s+([^\\s]+)\\s+([\\s\\S]{1,300})$/);
+      const m=String(e.message.text||'').trim().match(/^返信\s+([^\s]+)\s+([\s\S]{1,300})$/);
       if(!m)continue;
       if(!userId){await replyLine(e.replyToken,'先に個別トークでアカウント連携を行ってください。',token);continue}
       const users=await db.collection('family_users').where('lineUserId','==',userId).limit(2).get();
       const member=users.docs.find(x=>x.data().active!==false&&['member','admin'].includes(x.data().role));
-      if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8桁の連携コードを送信してください。',token);continue}
+      if(!member){await replyLine(e.replyToken,'先にBotとの個別トークで8文字の連携コードを送信してください。',token);continue}
       const itemId=m[1],body=m[2].trim();
       if(!/^[A-Za-z0-9_%.-]{1,200}$/.test(itemId))continue;
       const eventId=String(e.webhookEventId||e.message.id||'').replace(/[^A-Za-z0-9_-]/g,'');
       if(!eventId)continue;
-      const ref=db.doc('trip_items/'+itemId+'/comments/line_'+eventId);
+      const itemRef=db.doc('trip_items/'+itemId);
+      const itemSnap=await itemRef.get();
+      if(!itemSnap.exists){await replyLine(e.replyToken,'指定された予定が見つかりません。',token);continue}
+      const ref=itemRef.collection('comments').doc('line_'+eventId);
       const data=member.data();
       await db.runTransaction(async tx=>{
         if((await tx.get(ref)).exists)return;
         tx.create(ref,{uid:member.id,memberId:data.memberId||'',label:data.label||'家族',
-          text:body,itemTitle:itemId,itemKey:'',parentCommentId:null,quickReply:false,
+          text:body,itemTitle:itemSnap.data()?.title||itemId,itemKey:itemSnap.data()?.itemKey||'',parentCommentId:null,quickReply:false,
           origin:'line',lineEventId:eventId,createdAt:FieldValue.serverTimestamp()});
       });
       await replyLine(e.replyToken,'旅行サイトにコメントを反映しました。',token);
       continue;
     }
-    if(!userId)continue;
+    if(e.source?.type!=='user'||!userId)continue;
     if(e.type==='follow'){
-      await replyLine(e.replyToken,'旅行サイトの「アカウント → LINE通知」で連携コードを発行し、その8桁コードをこのトークに送ってください。',token);
+      await replyLine(e.replyToken,'旅行サイトの「アカウント → LINE通知」で連携コードを発行し、その8文字コードをこのトークに送ってください。',token);
       continue;
     }
     if(e.type!=='message'||e.message?.type!=='text')continue;
@@ -157,7 +160,7 @@ exports.lineWebhook=onRequest({
     }
     const m=text.match(/^(?:LINK\s*)?([A-HJ-NP-Z2-9]{8})$/);
     if(!m){
-      await replyLine(e.replyToken,'旅行サイトのアカウント画面で発行した8桁の連携コードを送ってください。',token);
+      await replyLine(e.replyToken,'旅行サイトのアカウント画面で発行した8文字の連携コードを送ってください。',token);
       continue;
     }
     const code=m[1],ref=db.collection('line_link_codes').doc(code),snap=await ref.get();
