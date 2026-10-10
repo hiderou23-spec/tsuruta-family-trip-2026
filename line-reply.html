@@ -18,17 +18,15 @@ reply.addEventListener('input',refresh);
 async function start(){
   if(!/^[A-Za-z0-9_-]{1,200}$/.test(itemId||'')||!/^[A-Za-z0-9_-]{1,200}$/.test(commentId||'')){report('返信先のURLが正しくありません',true);return}
   try{
-    const snap=await getDoc(doc(db,'trip_items',itemId,'comments',commentId));
-    if(snap.exists()){const d=snap.data();document.getElementById('author').textContent=(d.label||'家族')+'のコメント';document.getElementById('quote').textContent=d.text||''}
-    else{report('元のコメントが見つかりません',true);return}
-  }catch(e){report('コメントを読み込めません。ログインが必要な場合は旅行サイトを開いてください。',true);return}
-  try{
     const config=await fetch('./liff-config.json',{cache:'no-store'}).then(r=>r.json());
     if(!config.liffId){report('LIFFの初期設定がまだ完了していません。管理者によるLINE Developers設定が必要です。',true);return}
     await liff.init({liffId:config.liffId});
     if(!liff.isLoggedIn()){liff.login({redirectUri:location.href});return}
     token=liff.getAccessToken();
     if(!token)throw Error('LINEのアクセストークンを取得できません');
+    const context=await httpsCallable(fn,'getLineReplyContext')({lineAccessToken:token,itemId,commentId});
+    document.getElementById('author').textContent=(context.data.label||'家族')+'のコメント';
+    document.getElementById('quote').textContent=context.data.text||'';
     ready=true;refresh();report('LINEアカウントを確認しました。返信を入力してください。');
   }catch(e){report('LINE認証に失敗しました：'+(e.message||String(e)),true)}
 }
