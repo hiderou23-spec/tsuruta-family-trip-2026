@@ -153,7 +153,7 @@
   }
   const account=document.getElementById('faAccount');
   if(account)new MutationObserver(records=>{
-    if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.id!=='faLineCard'&&n.id!=='flHelp'))setTimeout(renderAccount,0);
+    if(records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1&&n.id!=='faLineCard'&&n.id!=='flHelp')))setTimeout(renderAccount,0);
   }).observe(account,{childList:true});
   document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&document.getElementById('faLineCard'))renderAccount()});
   document.addEventListener('tripFamilyAuthReady',()=>{subscribe();setTimeout(renderAccount,100);setTimeout(tryDeepLink,350)});
