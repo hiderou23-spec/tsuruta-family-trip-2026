@@ -1,6 +1,11 @@
 (function(){
   const entries=[
     {
+      at:'2026/10/10 12:35 JST',
+      title:'更新履歴画面のスクロールを修正',
+      detail:'iPhoneなどのモバイル端末でも更新履歴を上下にスクロールできるように表示処理を修正しました。'
+    },
+    {
       at:'2026/10/10 12:32 JST',
       title:'更新履歴を追加',
       detail:'家族全員が、旅行サイトから主な変更内容と更新日時を確認できるようにしました。'
@@ -38,8 +43,8 @@
     list.innerHTML=entries.map((e,i)=>'<div style="background:#fff;border:1px solid #e8e1eb;border-radius:16px;padding:14px 15px;margin-bottom:10px;box-shadow:0 5px 14px rgba(82,76,110,.05)"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div style="font-weight:800;color:#273247">'+esc(e.title)+'</div>'+(i===0?'<span style="font-size:10px;font-weight:800;background:#e7f3ff;color:#5276a3;padding:3px 7px;border-radius:999px">最新</span>':'')+'</div><div style="font-size:11px;color:#9a8eaa;margin-top:3px">'+esc(e.at)+'</div><div style="font-size:13px;color:#6f788c;margin-top:7px;line-height:1.6">'+esc(e.detail)+'</div></div>').join('');
   }
   open.addEventListener('click',()=>{
-    render();overlay.style.display='block';overlay.scrollTop=0;document.body.style.overflow='hidden';
+    render();overlay.style.display='block';overlay.scrollTop=0;
     try{window.tripAnalytics?.track('change_history_open',{})}catch(_){}
   });
-  back.addEventListener('click',()=>{overlay.style.display='none';document.body.style.overflow=''});
+  back.addEventListener('click',()=>{overlay.style.display='none'});
 })();
