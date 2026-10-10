@@ -108,7 +108,8 @@
             await a.fs.setDoc(a.fs.doc(a.db,'line_link_codes',c),{
               uid:p.uid,memberId:p.memberId,label:p.label,createdAt:a.fs.serverTimestamp(),expiresAt:a.fs.Timestamp.fromDate(expires)
             });
-            linkCodeState={code:c,expiresAt:expires.getTime()};\n            help.innerHTML='<div class="fl-status fl-status-success" role="status">連携コードを発行しました（10分間有効）</div><div class="fl-code">'+c+'</div><button type="button" class="fl-btn" id="flCopyCode">コードをコピー</button><div class="fl-sub">LINE公式アカウントとの個別トークに、この8桁コードだけを送信してください。</div>';
+            linkCodeState={code:c,expiresAt:expires.getTime()};
+            help.innerHTML='<div class="fl-status fl-status-success" role="status">連携コードを発行しました（10分間有効）</div><div class="fl-code">'+c+'</div><button type="button" class="fl-btn" id="flCopyCode">コードをコピー</button><div class="fl-sub">LINE公式アカウントとの個別トークに、この8桁コードだけを送信してください。</div>';
             document.getElementById('flCopyCode').onclick=async()=>{
               try{await navigator.clipboard.writeText(c);document.getElementById('flCopyCode').textContent='コピーしました ✓'}
               catch(_){document.getElementById('flCopyCode').textContent='コピーできませんでした。コードを手動で選択してください。'}
