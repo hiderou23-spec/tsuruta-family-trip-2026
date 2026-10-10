@@ -16,7 +16,13 @@ function report(t,err=false){status.textContent=t;status.className='status'+(err
 function refresh(){send.disabled=!ready||!reply.value.trim()}
 reply.addEventListener('input',refresh);
 async function start(){
-  if(!/^[A-Za-z0-9_-]{1,200}$/.test(itemId||'')||!/^[A-Za-z0-9_-]{1,200}$/.test(commentId||'')){report('返信先のURLが正しくありません',true);return}
+  if(!/^[A-Za-z0-9_-]{1,200}$/.test(itemId||'')||!/^[A-Za-z0-9_-]{1,200}$/.test(commentId||'')){
+    document.getElementById('author').textContent='返信先が指定されていません';
+    document.getElementById('quote').textContent='LINEグループに届いたコメント通知の「返信する」ボタンから開いてください。';
+    reply.disabled=true;
+    report('このページを直接開いても返信できません。コメント通知から開き直してください。',true);
+    return;
+  }
   try{
     const config=await fetch('./liff-config.json',{cache:'no-store'}).then(r=>r.json());
     if(!config.liffId){report('LIFFの初期設定がまだ完了していません。管理者によるLINE Developers設定が必要です。',true);return}
